@@ -18,6 +18,6 @@ public class Notificacao {
     private String link;
 
     @OneToMany
-    @JoinColumn(name = "notificacaoIdNotificacao", nullable = false)
+    @JoinColumn(name = "notificacoesUsuarioIdNotificacao", nullable = false)
     private Integer notificacoesUsuarioIdNotificacao;
 }
