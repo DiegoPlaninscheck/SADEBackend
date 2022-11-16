@@ -1,7 +1,17 @@
 package br.weg.sod.model.entities;
 
+import lombok.*;
+
 import javax.persistence.*;
 
+@Entity
+@Table(name = "usuario")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class Usuario {
 
     @Id
@@ -34,15 +44,15 @@ public class Usuario {
     private String cargo;
 
     @OneToMany
-    @JoinColumn(name = "usuarioIdUsuario", nullable = false)
-    private Integer usuariosForumIdUsuario;
+    @JoinColumn(name = "idUsuario", nullable = false)
+    private Integer responsaveisNegocioIdUsuario;
 
     @OneToMany
-    @JoinColumn(name = "usuarioIdUsuario", nullable = false)
-    private Integer responsavelNegocioIdUsuario;
-
-    @OneToMany
-    @JoinColumn(name = "usuarioIdUsuario", nullable = false)
+    @JoinColumn(name = "idUsuario", nullable = false)
     private Integer notificacoesUsuarioIdUsuario;
+
+    @OneToMany
+    @JoinColumn(name = "idUsuario", nullable = false)
+    private Integer usuariosForumIdUsuario;
 
 }

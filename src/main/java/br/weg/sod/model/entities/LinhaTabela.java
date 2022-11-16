@@ -1,10 +1,18 @@
 package br.weg.sod.model.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import lombok.*;
 
+import javax.persistence.*;
+
+
+@Entity
+@Table(name = "linhaTabela")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class LinhaTabela {
 
     @Id

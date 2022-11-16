@@ -1,8 +1,18 @@
 package br.weg.sod.model.entities;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.sql.Time;
 
+@Entity
+@Table(name = "demanda")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class Demanda {
 
     @Id
@@ -43,6 +53,7 @@ public class Demanda {
     private Double score;
 
     @OneToOne
+    @JoinColumn(name = "idBU")
     private Integer idBUSolicitante;
 
     @ManyToOne
@@ -50,7 +61,7 @@ public class Demanda {
     private Integer idUsuario;
 
     @OneToMany
-    @JoinColumn(name = "busBeneficiadasIdDemanda", nullable = false)
+    @JoinColumn(name = "idDemanda", nullable = false)
     private Integer demandaIdDemanda;
 
 }

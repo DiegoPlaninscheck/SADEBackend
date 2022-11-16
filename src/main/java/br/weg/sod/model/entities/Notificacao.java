@@ -1,10 +1,17 @@
 package br.weg.sod.model.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import lombok.*;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "notificacao")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class Notificacao {
 
     @Id
@@ -18,6 +25,6 @@ public class Notificacao {
     private String link;
 
     @OneToMany
-    @JoinColumn(name = "notificacoesUsuarioIdNotificacao", nullable = false)
-    private Integer notificacoesUsuarioIdNotificacao;
+    @JoinColumn(name = "idNotificacao", nullable = false)
+    private Integer notificacaoIdNotificacao;
 }

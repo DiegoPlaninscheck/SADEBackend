@@ -1,10 +1,17 @@
 package br.weg.sod.model.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import lombok.*;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "BU")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class BU {
 
     @Id

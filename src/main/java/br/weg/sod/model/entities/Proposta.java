@@ -1,8 +1,18 @@
 package br.weg.sod.model.entities;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.Date;
 
+@Entity
+@Table(name = "proposta")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class Proposta {
 
     @Id
@@ -28,10 +38,11 @@ public class Proposta {
     private Boolean emWorkflow;
 
     @OneToOne
+    @JoinColumn(name = "idDemanda", nullable = false)
     private Integer idDemanda;
 
     @OneToMany
-    @JoinColumn(name = "propostaIdProposta", nullable = false)
-    private Integer responsavelNegocioIdProposta;
+    @JoinColumn(name = "idProposta", nullable = false)
+    private Integer propostaIdProposta;
 
 }

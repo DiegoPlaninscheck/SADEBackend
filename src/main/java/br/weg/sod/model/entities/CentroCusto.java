@@ -1,8 +1,20 @@
 package br.weg.sod.model.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
+import lombok.*;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "centroCusto")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class CentroCusto {
 
     @Id

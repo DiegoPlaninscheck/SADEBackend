@@ -1,9 +1,17 @@
 package br.weg.sod.model.entities;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import lombok.*;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "decisaoProposta")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class DecisaoProposta {
 
     @Column

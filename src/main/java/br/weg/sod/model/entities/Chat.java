@@ -1,10 +1,17 @@
 package br.weg.sod.model.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import lombok.*;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "chat")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class Chat {
 
     @Id
@@ -15,6 +22,7 @@ public class Chat {
     private Boolean ativo;
 
     @OneToOne
+    @JoinColumn(name = "idDemanda", nullable = false)
     private Integer idDemanda;
 
 }
