@@ -1,2 +1,4 @@
-# sod
+# SOD
+
+create database sod;
  
