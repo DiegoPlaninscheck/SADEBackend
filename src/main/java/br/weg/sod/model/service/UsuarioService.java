@@ -1,5 +1,6 @@
 package br.weg.sod.model.service;
 
+import br.weg.sod.model.entities.Usuario;
 import br.weg.sod.repository.UsuarioRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,15 +14,15 @@ public class UsuarioService {
 
     private UsuarioRepository usuarioRepository;
 
-    public List<UsuarioRepository> findAll() {
+    public List<Usuario> findAll() {
         return usuarioRepository.findAll();
     }
 
-    public <S extends UsuarioRepository> S save(S entity) {
+    public <S extends Usuario> S save(S entity) {
         return usuarioRepository.save(entity);
     }
 
-    public Optional<UsuarioRepository> findById(Integer integer) {
+    public Optional<Usuario> findById(Integer integer) {
         return usuarioRepository.findById(integer);
     }
 
