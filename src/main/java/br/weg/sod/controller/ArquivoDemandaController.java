@@ -29,7 +29,7 @@ public class ArquivoDemandaController {
     @GetMapping("/{id}")
     public ResponseEntity<Object> findById(@PathVariable(name = "id") Integer idArquivoDemanda) {
         if (!arquivoDemandaService.existsById(idArquivoDemanda)) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum arquivoDemanda com este ID");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum arquivoDemanda com este ID");
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(arquivoDemandaService.findById(idArquivoDemanda));
@@ -43,22 +43,22 @@ public class ArquivoDemandaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody @Valid ArquivoDemandaDTO arquivoDemandaDTO, @PathVariable(name = "id") Integer idArquivoDemanda){
+    public ResponseEntity<Object> edit(@RequestBody @Valid ArquivoDemandaDTO arquivoDemandaDTO, @PathVariable(name = "id") Integer idArquivoDemanda) {
         if (!arquivoDemandaService.existsById(idArquivoDemanda)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum  com o ID informado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum arquivoDemanda com o ID informado");
         }
 
-        PecaReserva pecaReserva = pecaReservaService.findById(id).get();
-        BeanUtils.copyProperties(pecaReservaDTO, pecaReserva);
-        pecaReserva.setIdPecaReserva(id);
+        ArquivoDemanda arquivoDemanda = arquivoDemandaService.findById(idArquivoDemanda).get();
+        BeanUtils.copyProperties(arquivoDemandaDTO, arquivoDemanda);
+        arquivoDemanda.setIdArquivoDemanda(idArquivoDemanda);
 
-        return ResponseEntity.status(HttpStatus.OK).body(pecaReservaService.save(pecaReserva));
+        return ResponseEntity.status(HttpStatus.OK).body(arquivoDemandaService.save(arquivoDemanda));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteById(@PathVariable(name = "id") Integer idArquivoDemanda) {
         if (!arquivoDemandaService.existsById(idArquivoDemanda)) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum arquivoDemanda com este ID");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum arquivoDemanda com este ID");
         }
         arquivoDemandaService.deleteById(idArquivoDemanda);
         return ResponseEntity.status(HttpStatus.OK).body("Arquivo demanda deletada com sucesso!");
