@@ -14,15 +14,19 @@ import javax.persistence.*;
 @EqualsAndHashCode
 public class CentroCustoDemanda {
 
+    @Id
+    @Column
+    private Integer idCentroCustoDemanda;
+
     @Column
     private Double porcentagemDespesa;
 
     @ManyToOne
     @JoinColumn(name = "idDemanda", nullable = false)
-    private Integer idDemanda;
+    private Demanda idDemanda;
 
     @ManyToOne
     @JoinColumn(name = "idCentroCusto", nullable = false)
-    private Integer idCentroCusto;
+    private CentroCusto idCentroCusto;
 
 }

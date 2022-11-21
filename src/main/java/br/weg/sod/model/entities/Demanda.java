@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Time;
+import java.util.List;
 
 @Entity
 @Table(name = "demanda")
@@ -20,7 +21,7 @@ public class Demanda {
     private Integer idDemanda;
 
     @Column
-    private String tituloDemanda;
+    private String titulo;
 
     @Column(nullable = false)
     private Status status;
@@ -52,16 +53,17 @@ public class Demanda {
     @Column
     private Double score;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "idBU")
-    private Integer idBUSolicitante;
+    private BU idBUSolicitante;
 
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
-    private Integer idUsuario;
+    private Usuario idUsuario;
 
-    @OneToMany
-    @JoinColumn(name = "idDemanda", nullable = false)
-    private Integer demandaIdDemanda;
+    @ManyToMany
+    @JoinTable(name = "busBeneficiadas", joinColumns = @JoinColumn(name = "idDemanda", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "idBU", nullable = false))
+    private List<BU> busBeneficiadas;
 
 }

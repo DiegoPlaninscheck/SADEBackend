@@ -24,7 +24,7 @@ public class Notificacao {
     @Column(nullable = false)
     private String link;
 
-    @OneToMany
-    @JoinColumn(name = "idNotificacao", nullable = false)
-    private Integer notificacaoIdNotificacao;
+//    @OneToMany
+//    @JoinColumn(name = "idNotificacao", nullable = false)
+//    private Integer notificacaoIdNotificacao;
 }

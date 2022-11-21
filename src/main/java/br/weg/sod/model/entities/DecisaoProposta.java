@@ -14,6 +14,10 @@ import javax.persistence.*;
 @EqualsAndHashCode
 public class DecisaoProposta {
 
+    @Id
+    @Column
+    private Integer idDecisaoProposta;
+
     @Column
     private StatusComissao statusComissao;
 
@@ -28,15 +32,15 @@ public class DecisaoProposta {
 
     @ManyToOne
     @JoinColumn(name =  "idProposta", nullable = false)
-    private Integer idProposta;
+    private Proposta idProposta;
 
     @ManyToOne
     @JoinColumn(name =  "idPauta", nullable = false)
-    private Integer idPauta;
+    private Pauta idPauta;
 
     @ManyToOne
     @JoinColumn(name =  "idATA")
-    private Integer idATA;
+    private ATA idATA;
 
 
 }

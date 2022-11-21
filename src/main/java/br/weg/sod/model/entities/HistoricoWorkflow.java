@@ -45,9 +45,9 @@ public class HistoricoWorkflow {
 
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
-    private Integer idUsuario;
+    private Usuario idUsuario;
 
     @ManyToOne
     @JoinColumn(name = "idDemanda", nullable = false)
-    private Integer idDemanda;
+    private Demanda idDemanda;
 }

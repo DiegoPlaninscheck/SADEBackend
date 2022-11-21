@@ -3,6 +3,7 @@ package br.weg.sod.model.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "forum")
@@ -23,10 +24,11 @@ public class Forum {
 
     @OneToOne
     @JoinColumn(name = "idUsuario", nullable = false)
-    private Integer analistaIdUsuario;
+    private Usuario analistaIdUsuario;
 
-    @OneToMany
-    @JoinColumn(name = "idForum", nullable = false)
-    private Integer forumIdForum;
+    @ManyToMany
+    @JoinTable(name = "usuariosForum", joinColumns = @JoinColumn(name = "idForum", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "idUsuario", nullable = false))
+    private List<Usuario> usuariosForum;
 
 }

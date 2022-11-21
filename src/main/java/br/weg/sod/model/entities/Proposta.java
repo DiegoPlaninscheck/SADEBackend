@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "proposta")
@@ -39,10 +40,11 @@ public class Proposta {
 
     @OneToOne
     @JoinColumn(name = "idDemanda", nullable = false)
-    private Integer idDemanda;
+    private Demanda idDemanda;
 
-    @OneToMany
-    @JoinColumn(name = "idProposta", nullable = false)
-    private Integer propostaIdProposta;
+    @ManyToMany
+    @JoinTable(name = "responsaveisNegocio", joinColumns = @JoinColumn(name = "idProposta", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "idUsuario", nullable = false))
+    private List<Usuario> usuariosProposta;
 
 }

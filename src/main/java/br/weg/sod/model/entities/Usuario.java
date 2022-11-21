@@ -3,6 +3,7 @@ package br.weg.sod.model.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "usuario")
@@ -43,16 +44,17 @@ public class Usuario {
     @Column(nullable = false)
     private String cargo;
 
-    @OneToMany
-    @JoinColumn(name = "idUsuario", nullable = false)
-    private Integer responsaveisNegocioIdUsuario;
+//    @OneToMany
+//    @JoinColumn(name = "idUsuario", nullable = false)
+//    private Integer responsaveisNegocioIdUsuario;
 
-    @OneToMany
-    @JoinColumn(name = "idUsuario", nullable = false)
-    private Integer notificacoesUsuarioIdUsuario;
+    @ManyToMany
+    @JoinTable(name = "notificacoesUsuario", joinColumns = @JoinColumn(name = "idUsuario", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "idNotificacao", nullable = false))
+    private List<Notificacao> notificacoesUsuario;
 
-    @OneToMany
-    @JoinColumn(name = "idUsuario", nullable = false)
-    private Integer usuariosForumIdUsuario;
+//    @OneToMany
+//    @JoinColumn(name = "idUsuario", nullable = false)
+//    private Integer forumIdUsuario;
 
 }

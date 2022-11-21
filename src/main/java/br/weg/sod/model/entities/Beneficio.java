@@ -33,5 +33,5 @@ public class Beneficio {
 
     @ManyToOne
     @JoinColumn(name = "idDemanda", nullable = false)
-    private Integer idDemanda;
+    private Demanda idDemanda;
 }

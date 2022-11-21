@@ -29,5 +29,5 @@ public class TabelaCusto {
 
     @ManyToOne
     @JoinColumn(name =  "idProposta", nullable = false)
-    private Integer idProposta;
+    private Proposta idProposta;
 }

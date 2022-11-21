@@ -30,6 +30,6 @@ public class LinhaTabela {
 
     @ManyToOne
     @JoinColumn(name = "idTabelaCusto", nullable = false)
-    private Integer idTabelaCusto;
+    private TabelaCusto idTabelaCusto;
 
 }
