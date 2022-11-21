@@ -1,6 +1,6 @@
 package br.weg.sod.dto;
 
-import br.weg.sod.model.entities.Status;
+import br.weg.sod.model.entities.enuns.Status;
 import lombok.NonNull;
 
 import java.sql.Timestamp;

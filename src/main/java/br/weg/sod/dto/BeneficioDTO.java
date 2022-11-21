@@ -1,7 +1,7 @@
 package br.weg.sod.dto;
 
-import br.weg.sod.model.entities.Moeda;
-import br.weg.sod.model.entities.TipoBeneficio;
+import br.weg.sod.model.entities.enuns.Moeda;
+import br.weg.sod.model.entities.enuns.TipoBeneficio;
 import lombok.NonNull;
 
 public class BeneficioDTO {

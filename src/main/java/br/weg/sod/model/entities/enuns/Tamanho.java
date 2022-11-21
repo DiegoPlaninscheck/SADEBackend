@@ -1,4 +1,4 @@
-package br.weg.sod.model.entities;
+package br.weg.sod.model.entities.enuns;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

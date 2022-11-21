@@ -26,7 +26,7 @@ public class LinhaTabela {
     private Integer valor;
 
     @Column(nullable = false)
-    private Double total;
+    private Double valorHora;
 
     @ManyToOne
     @JoinColumn(name = "idTabelaCusto", nullable = false)

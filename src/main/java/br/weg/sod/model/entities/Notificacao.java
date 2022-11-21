@@ -19,12 +19,12 @@ public class Notificacao {
     private Integer idNotificacao;
 
     @Column(nullable = false)
-    private String notificacao;
+    private String tituloNotificacao;
 
     @Column(nullable = false)
-    private String link;
+    private String descricaoNotificacao;
 
-//    @OneToMany
-//    @JoinColumn(name = "idNotificacao", nullable = false)
-//    private Integer notificacaoIdNotificacao;
+    @Column(nullable = false)
+    private String linkNotificacao;
+
 }

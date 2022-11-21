@@ -3,6 +3,7 @@ package br.weg.sod.model.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +25,9 @@ public class Proposta {
     private String escopo;
 
     @Column(nullable = false)
-    private Double payback;
+    private Timestamp payback;
+
+    //paramo aqui
 
     @Column(nullable = false)
     private Date periodoExecucaoInicio;

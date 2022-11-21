@@ -1,7 +1,7 @@
 package br.weg.sod.dto;
 
-import br.weg.sod.model.entities.Status;
-import br.weg.sod.model.entities.Tamanho;
+import br.weg.sod.model.entities.enuns.Status;
+import br.weg.sod.model.entities.enuns.Tamanho;
 import lombok.NonNull;
 
 import java.sql.Time;

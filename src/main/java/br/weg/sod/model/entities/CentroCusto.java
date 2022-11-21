@@ -20,4 +20,7 @@ public class CentroCusto {
     @Id
     @Column
     private Integer idCentroCusto;
+
+    @Column(nullable = false)
+    private String nome;
 }

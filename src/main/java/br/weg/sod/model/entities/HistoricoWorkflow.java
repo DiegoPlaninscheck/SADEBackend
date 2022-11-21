@@ -1,5 +1,7 @@
 package br.weg.sod.model.entities;
 
+import br.weg.sod.model.entities.enuns.Status;
+import br.weg.sod.model.entities.enuns.Tarefa;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,7 +28,7 @@ public class HistoricoWorkflow {
     private Timestamp prazo;
 
     @Column(nullable = false)
-    private String tarefa;
+    private Tarefa tarefa;
 
     @Column(nullable = false)
     private Status status;
@@ -38,10 +40,10 @@ public class HistoricoWorkflow {
     private String motivoDevolucao;
 
     @Column
-    private Timestamp conclusao;
+    private Timestamp conclusaoTarefa;
 
     @Column
-    private String acaoFeita;
+    private Tarefa acaoFeita;
 
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)

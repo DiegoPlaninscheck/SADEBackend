@@ -1,13 +1,15 @@
-package br.weg.sod.model.entities;
+package br.weg.sod.model.entities.enuns;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum TipoBeneficio {
+public enum Moeda {
 
-    TESTE("");
+    BRL("Real"),
+    DOLAR("Dolar"),
+    EURO("Euro");
 
     private String nome;
 

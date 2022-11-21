@@ -1,5 +1,8 @@
 package br.weg.sod.model.entities;
 
+import br.weg.sod.model.entities.enuns.SecaoTI;
+import br.weg.sod.model.entities.enuns.Status;
+import br.weg.sod.model.entities.enuns.Tamanho;
 import lombok.*;
 
 import javax.persistence.*;
@@ -33,7 +36,7 @@ public class Demanda {
     private String objetivo;
 
     @Column
-    private String secaoTIResponsavel;
+    private SecaoTI secaoTIResponsavel;
 
     @Column
     private String situacaoAtual;

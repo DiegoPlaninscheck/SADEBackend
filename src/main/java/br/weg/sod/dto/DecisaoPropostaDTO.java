@@ -1,6 +1,5 @@
 package br.weg.sod.dto;
 
-import br.weg.sod.model.entities.StatusComissao;
 import lombok.NonNull;
 
 public class DecisaoPropostaDTO {

@@ -22,7 +22,10 @@ public class ATA {
     private Integer idATA;
 
     @Column(nullable = false)
-    private byte[] pdf;
+    private byte[] pdfATAPublicada;
+
+    @Column(nullable = false)
+    private byte[] pdfATANaoPublicada;
 
     @Column
     private Integer numeroDG;

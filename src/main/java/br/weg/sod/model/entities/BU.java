@@ -21,8 +21,4 @@ public class BU {
     @Column(nullable = false)
     private String nomeBU;
 
-//    @OneToMany
-//    @JoinColumn(name = "busBeneficiadasIdBu", nullable = false)
-//    private Integer buIdBU;
-
 }

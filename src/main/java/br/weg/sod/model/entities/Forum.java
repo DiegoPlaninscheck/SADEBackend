@@ -20,11 +20,11 @@ public class Forum {
     private Integer idForum;
 
     @Column(nullable = false)
-    private String nomeForum;
+    private Forum nomeForum;
 
     @OneToOne
     @JoinColumn(name = "idUsuario", nullable = false)
-    private Usuario analistaIdUsuario;
+    private Usuario analistaResponsavel;
 
     @ManyToMany
     @JoinTable(name = "usuariosForum", joinColumns = @JoinColumn(name = "idForum", nullable = false),
