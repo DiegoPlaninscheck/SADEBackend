@@ -7,7 +7,9 @@ import lombok.Getter;
 @Getter
 public enum TipoBeneficio {
 
-    TESTE("");
+    REAL("Real"),
+    POTENCIAL("Potencial"),
+    QUALITATIVO("Qualitativo");
 
     private String nome;
 

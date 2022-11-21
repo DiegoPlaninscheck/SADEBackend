@@ -1,5 +1,6 @@
 package br.weg.sod.model.entities;
 
+import br.weg.sod.model.entities.enuns.TipoForum;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,7 +21,7 @@ public class Forum {
     private Integer idForum;
 
     @Column(nullable = false)
-    private Forum nomeForum;
+    private String nomeForum;
 
     @OneToOne
     @JoinColumn(name = "idUsuario", nullable = false)

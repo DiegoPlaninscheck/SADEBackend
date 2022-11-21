@@ -25,9 +25,7 @@ public class Proposta {
     private String escopo;
 
     @Column(nullable = false)
-    private Timestamp payback;
-
-    //paramo aqui
+    private Integer payback;
 
     @Column(nullable = false)
     private Date periodoExecucaoInicio;
@@ -48,6 +46,6 @@ public class Proposta {
     @ManyToMany
     @JoinTable(name = "responsaveisNegocio", joinColumns = @JoinColumn(name = "idProposta", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "idUsuario", nullable = false))
-    private List<Usuario> usuariosProposta;
+    private List<Usuario> responsaveisNegocio;
 
 }

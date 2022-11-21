@@ -9,9 +9,9 @@ public enum Status {
 
     BACKLOG("Backlog"),
     ASSESSMENT("Assessment"),
-    DESIGNANDBUILD("Design and Build"),
+    BUSINESSCASE("Business Case"),
     CANCELED("Canceled"),
-    TODO("To do");
+    TODO("To Do");
 
     private String nome;
 

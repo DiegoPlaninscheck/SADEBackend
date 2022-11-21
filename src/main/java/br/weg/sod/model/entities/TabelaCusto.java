@@ -27,7 +27,10 @@ public class TabelaCusto {
     @Column(nullable = false)
     private Double total;
 
+    @Column(nullable = false)
+    private Boolean licenca;
+
     @ManyToOne
-    @JoinColumn(name =  "idProposta", nullable = false)
+    @JoinColumn(name = "idProposta", nullable = false)
     private Proposta idProposta;
 }

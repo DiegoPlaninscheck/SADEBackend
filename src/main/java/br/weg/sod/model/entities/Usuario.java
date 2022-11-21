@@ -44,17 +44,9 @@ public class Usuario {
     @Column(nullable = false)
     private String cargo;
 
-//    @OneToMany
-//    @JoinColumn(name = "idUsuario", nullable = false)
-//    private Integer responsaveisNegocioIdUsuario;
-
     @ManyToMany
     @JoinTable(name = "notificacoesUsuario", joinColumns = @JoinColumn(name = "idUsuario", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "idNotificacao", nullable = false))
     private List<Notificacao> notificacoesUsuario;
-
-//    @OneToMany
-//    @JoinColumn(name = "idUsuario", nullable = false)
-//    private Integer forumIdUsuario;
 
 }
