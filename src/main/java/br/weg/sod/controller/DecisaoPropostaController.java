@@ -54,25 +54,38 @@ public class DecisaoPropostaController {
         historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(1));
         historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
         historicoWorkflowVelho.setAcaoFeita(Tarefa.CRIARPAUTA);
-
+        historicoWorkflowService.save(historicoWorkflowVelho);
 
         //inicio informar parecer da comissao
         Pauta pauta = decisaoProposta.getPauta();
         Timestamp time = new Timestamp(pauta.getDataReuniao().getTime());
         AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-        HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(time , new Timestamp(time.getTime() + 5), Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoProposta.getProposta().getDemanda() );
+        HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(time, new Timestamp(time.getTime() + 5), Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoProposta.getProposta().getDemanda());
+        historicoWorkflowService.save(historicoWorkflow);
 
         return ResponseEntity.status(HttpStatus.OK).body(decisaoPropostaService.save(decisaoProposta));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody @Valid DecisaoPropostaDTO decisaoPropostaDTO, @PathVariable(name = "id") Integer idDecisaoProposta) {
+    @PutMapping("/{idDecisaoProposta}/{idAnalista}")
+    public ResponseEntity<Object> edit(@RequestBody @Valid DecisaoPropostaDTO decisaoPropostaDTO, @PathVariable(name = "idDecisaoProspota") Integer idDecisaoProposta, @PathVariable(name = "idAnalista") Integer idAnalista) {
         if (!decisaoPropostaService.existsById(idDecisaoProposta)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma decisao proposta com o ID informado");
         }
 
         DecisaoProposta decisaoProposta = decisaoPropostaService.findById(idDecisaoProposta).get();
         BeanUtils.copyProperties(decisaoPropostaDTO, decisaoProposta);
+
+        // Encerrando historico infomar parecer comissao
+        HistoricoWorkflow historicoWorkflowVelho = historicoWorkflowService.findLastHistoricoByProposta(decisaoProposta.getProposta());
+        historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(1));
+        historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
+        historicoWorkflowVelho.setAcaoFeita(Tarefa.INFORMARPARECERFORUM);
+        historicoWorkflowService.save(historicoWorkflowVelho);
+
+        // iniciando historico informar parecer DG
+        AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
+        HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(new Timestamp(1), new Timestamp(5), Tarefa.INFORMARPARECERDG, StatusHistorico.EMANDAMENTO, analistaResponsavel, decisaoProposta.getProposta().getDemanda());
+        historicoWorkflowService.save(historicoWorkflow);
 
         return ResponseEntity.status(HttpStatus.OK).body(decisaoPropostaService.save(decisaoProposta));
     }

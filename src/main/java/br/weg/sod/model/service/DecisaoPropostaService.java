@@ -1,5 +1,6 @@
 package br.weg.sod.model.service;
 
+import br.weg.sod.model.entities.ATA;
 import br.weg.sod.model.entities.DecisaoProposta;
 import br.weg.sod.repository.DecisaoPropostaRepository;
 import lombok.AllArgsConstructor;
@@ -32,5 +33,9 @@ public class DecisaoPropostaService {
 
     public void deleteById(Integer integer) {
         decisaoPropostaRepository.deleteById(integer);
+    }
+
+    public List<DecisaoProposta> findByATA(ATA ATA) {
+        return decisaoPropostaRepository.findByATA(ATA);
     }
 }

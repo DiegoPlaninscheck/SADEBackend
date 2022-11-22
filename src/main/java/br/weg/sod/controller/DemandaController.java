@@ -69,6 +69,7 @@ public class DemandaController {
             historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(1));
             historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
             historicoWorkflowVelho.setAcaoFeita(Tarefa.CLASSIFICAR);
+            historicoWorkflowService.save(historicoWorkflowVelho);
             //dar um jeito no pdf
 
             //iniciando o histórico de avaliacao do gerente de negócio
@@ -81,6 +82,7 @@ public class DemandaController {
             historicoWorkflowVelho.setAcaoFeita(Tarefa.ADICIONARINFORMACOES);
             historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(24));
             historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
+            historicoWorkflowService.save(historicoWorkflowVelho);
             //dar um jeito no pdf
 
             //inicia o histórico de criar proposta

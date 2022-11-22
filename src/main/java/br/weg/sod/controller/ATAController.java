@@ -2,7 +2,14 @@ package br.weg.sod.controller;
 
 import br.weg.sod.dto.ATADTO;
 import br.weg.sod.model.entities.ATA;
+import br.weg.sod.model.entities.DecisaoProposta;
+import br.weg.sod.model.entities.HistoricoWorkflow;
+import br.weg.sod.model.entities.Proposta;
+import br.weg.sod.model.entities.enuns.StatusHistorico;
+import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.ATAService;
+import br.weg.sod.model.service.DecisaoPropostaService;
+import br.weg.sod.model.service.HistoricoWorkflowService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -11,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.sql.Timestamp;
 import java.util.List;
 
 @CrossOrigin
@@ -20,6 +28,8 @@ import java.util.List;
 public class ATAController {
 
     private ATAService ataService;
+    private HistoricoWorkflowService historicoWorkflowService;
+    private DecisaoPropostaService decisaoPropostaService;
 
     @GetMapping
     public ResponseEntity<List<ATA>> findAll() {
@@ -51,6 +61,17 @@ public class ATAController {
         ATA ata = ataService.findById(idATA).get();
         BeanUtils.copyProperties(atadto, ata);
         ata.setIdATA(idATA);
+
+        List<DecisaoProposta> listaDecisaoProposta = decisaoPropostaService.findByATA(ata);
+
+        for (DecisaoProposta deicasaoProposta : listaDecisaoProposta) {
+            Proposta proposta = deicasaoProposta.getProposta();
+            HistoricoWorkflow historicoWorkflowVelho = historicoWorkflowService.findLastHistoricoByProposta(proposta);
+            historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(1));
+            historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
+            historicoWorkflowVelho.setAcaoFeita(Tarefa.INFORMARPARECERDG);
+            historicoWorkflowService.save(historicoWorkflowVelho);
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(ataService.save(ata));
     }

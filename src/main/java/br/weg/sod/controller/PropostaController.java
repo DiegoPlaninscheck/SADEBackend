@@ -51,6 +51,7 @@ public class PropostaController {
         historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(1));
         historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
         historicoWorkflowVelho.setAcaoFeita(Tarefa.CRIARPAUTA);
+        historicoWorkflowService.save(historicoWorkflowVelho);
 
         return ResponseEntity.status(HttpStatus.OK).body(propostaService.save(proposta));
     }
