@@ -30,10 +30,10 @@ public class Mensagem {
 
     @ManyToOne
     @JoinColumn(name = "idChat", nullable = false)
-    private Chat idChat;
+    private Chat chat;
 
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
-    private Usuario idUsuario;
+    private Usuario usuario;
 
 }

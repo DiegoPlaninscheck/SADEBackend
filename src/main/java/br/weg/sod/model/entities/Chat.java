@@ -23,6 +23,6 @@ public class Chat {
 
     @OneToOne
     @JoinColumn(name = "idDemanda", nullable = false)
-    private Demanda idDemanda;
+    private Demanda demanda;
 
 }

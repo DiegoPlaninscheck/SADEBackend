@@ -1,6 +1,6 @@
 package br.weg.sod.dto;
 
-import br.weg.sod.model.entities.enuns.Status;
+import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.Tamanho;
 import lombok.NonNull;
 
@@ -15,7 +15,7 @@ public class DemandaDTO {
     private String tituloDemanda;
 
     @NonNull
-    private Status status;
+    private StatusDemanda statusDemanda;
 
     @NonNull
     private Tamanho tamanho;

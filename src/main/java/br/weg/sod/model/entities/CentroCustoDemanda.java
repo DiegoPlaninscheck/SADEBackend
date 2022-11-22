@@ -23,10 +23,10 @@ public class CentroCustoDemanda {
 
     @ManyToOne
     @JoinColumn(name = "idDemanda", nullable = false)
-    private Demanda idDemanda;
+    private Demanda demanda;
 
     @ManyToOne
     @JoinColumn(name = "idCentroCusto", nullable = false)
-    private CentroCusto idCentroCusto;
+    private CentroCusto centroCusto;
 
 }

@@ -1,6 +1,6 @@
 package br.weg.sod.dto;
 
-import br.weg.sod.model.entities.enuns.Status;
+import br.weg.sod.model.entities.enuns.StatusDemanda;
 import lombok.NonNull;
 
 import java.sql.Timestamp;
@@ -20,7 +20,7 @@ public class HistoricoWorkflowDTO {
     private String tarefa;
 
     @NonNull
-    private Status status;
+    private StatusDemanda statusDemanda;
 
     @NonNull
     private byte[] pdfHistorico;

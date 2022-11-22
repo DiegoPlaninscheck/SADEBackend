@@ -23,9 +23,9 @@ public class ArquivoDemanda {
 
     @ManyToOne
     @JoinColumn(name = "idDemanda", nullable = false)
-    private Demanda idDemanda;
+    private Demanda demanda;
 
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
-    private Usuario idUsuario;
+    private Usuario usuario;
 }

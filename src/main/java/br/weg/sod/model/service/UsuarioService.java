@@ -1,5 +1,7 @@
 package br.weg.sod.model.service;
 
+import br.weg.sod.model.entities.GerenteNegocio;
+import br.weg.sod.model.entities.GerenteTI;
 import br.weg.sod.model.entities.Usuario;
 import br.weg.sod.repository.UsuarioRepository;
 import lombok.AllArgsConstructor;
@@ -32,5 +34,34 @@ public class UsuarioService {
 
     public void deleteById(Integer integer) {
         usuarioRepository.deleteById(integer);
+    }
+
+    public List<Usuario> findByDepartamento(String departamento) {
+        return usuarioRepository.findByDepartamento(departamento);
+    }
+
+    public GerenteNegocio findGerenteBySolicitante( String departamento) {
+        List<Usuario> usuarioList = findByDepartamento(departamento);
+
+        for(Usuario usuario : usuarioList){
+            if(usuario instanceof GerenteNegocio){
+                return (GerenteNegocio) usuario;
+            }
+        }
+
+        return null;
+    }
+
+    public GerenteTI findGerenteTIByAnalista(String departamento) {
+        List<Usuario> usuarioList = findByDepartamento(departamento);
+
+        for(Usuario usuario : usuarioList){
+            if(usuario instanceof GerenteTI){
+                return (GerenteTI) usuario;
+            }
+        }
+
+        return null;
+
     }
 }

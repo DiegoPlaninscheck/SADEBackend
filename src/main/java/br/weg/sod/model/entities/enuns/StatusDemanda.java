@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum Status {
+public enum StatusDemanda {
 
     BACKLOG("Backlog"),
     ASSESSMENT("Assessment"),

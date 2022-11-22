@@ -1,6 +1,6 @@
 package br.weg.sod.model.entities;
 
-import br.weg.sod.model.entities.enuns.Status;
+import br.weg.sod.model.entities.enuns.StatusDemanda;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,7 +20,7 @@ public class DecisaoProposta {
     private Integer idDecisaoProposta;
 
     @Column
-    private Status statusComissao;
+    private StatusDemanda statusDemandaComissao;
 
     @Column
     private Boolean ataPublicada;
@@ -36,15 +36,15 @@ public class DecisaoProposta {
 
     @ManyToOne
     @JoinColumn(name = "idProposta", nullable = false)
-    private Proposta idProposta;
+    private Proposta proposta;
 
     @ManyToOne
     @JoinColumn(name = "idPauta", nullable = false)
-    private Pauta idPauta;
+    private Pauta pauta;
 
     @ManyToOne
     @JoinColumn(name = "idATA")
-    private ATA idATA;
+    private ATA ATA;
 
 
 }

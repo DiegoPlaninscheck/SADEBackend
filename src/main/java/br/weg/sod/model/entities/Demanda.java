@@ -1,7 +1,7 @@
 package br.weg.sod.model.entities;
 
 import br.weg.sod.model.entities.enuns.SecaoTI;
-import br.weg.sod.model.entities.enuns.Status;
+import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.Tamanho;
 import lombok.*;
 
@@ -27,7 +27,7 @@ public class Demanda {
     private String titulo;
 
     @Column(nullable = false)
-    private Status status;
+    private StatusDemanda statusDemanda;
 
     @Column
     private Tamanho tamanho;
@@ -58,11 +58,11 @@ public class Demanda {
 
     @ManyToOne
     @JoinColumn(name = "idBU")
-    private BU idBUSolicitante;
+    private BU BUSolicitante;
 
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
-    private Usuario idUsuario;
+    private Usuario usuario;
 
     @ManyToMany
     @JoinTable(name = "busBeneficiadas", joinColumns = @JoinColumn(name = "idDemanda", nullable = false),

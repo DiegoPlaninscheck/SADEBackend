@@ -24,6 +24,6 @@ public class Pauta {
 
     @OneToOne
     @JoinColumn(name = "idForum", nullable = false)
-    private Forum idForum;
+    private Forum forum;
 
 }

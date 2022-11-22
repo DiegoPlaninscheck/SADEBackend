@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 public enum Tarefa {
 
+    AVALIARDEMANDA("Avaliar Demanda"),
     CLASSIFICAR("Classificar Demanda"),
     APROVAR("Aprovar"),
     REPROVAR("Reprovar"),

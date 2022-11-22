@@ -1,11 +1,12 @@
 package br.weg.sod.dto;
 
+import br.weg.sod.model.entities.enuns.StatusDemanda;
 import lombok.NonNull;
 
 public class DecisaoPropostaDTO {
 
     @NonNull
-    private StatusComissao statusComissao;
+    private StatusDemanda statusDemandaComissao;
 
     @NonNull
     private Boolean ataPublicada;

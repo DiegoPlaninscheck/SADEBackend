@@ -41,7 +41,7 @@ public class Proposta {
 
     @OneToOne
     @JoinColumn(name = "idDemanda", nullable = false)
-    private Demanda idDemanda;
+    private Demanda demanda;
 
     @ManyToMany
     @JoinTable(name = "responsaveisNegocio", joinColumns = @JoinColumn(name = "idProposta", nullable = false),
