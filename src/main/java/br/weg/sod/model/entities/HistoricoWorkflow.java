@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 public class HistoricoWorkflow {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idHistoricoWorkflow;
 
@@ -28,12 +29,15 @@ public class HistoricoWorkflow {
     private Timestamp prazo;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Tarefa tarefa;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private StatusHistorico status;
 
     @Column
+    @Lob
     private byte[] pdfHistorico;
 
     @Column
@@ -43,6 +47,7 @@ public class HistoricoWorkflow {
     private Timestamp conclusaoTarefa;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private Tarefa acaoFeita;
 
     @ManyToOne
@@ -53,6 +58,8 @@ public class HistoricoWorkflow {
     @JoinColumn(name = "idDemanda", nullable = false)
     private Demanda demanda;
 
+
+    //ainda checar pdf_historico para as criações
     /**
      * Construtor para início de workflow
      *

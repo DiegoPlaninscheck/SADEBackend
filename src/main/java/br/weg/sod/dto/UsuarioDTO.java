@@ -1,42 +1,41 @@
 package br.weg.sod.dto;
 
+import br.weg.sod.model.entities.Notificacao;
 import lombok.NonNull;
+
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class UsuarioDTO {
 
-    @NonNull
-    private Integer idUsuario;
-
-    @NonNull
+    @Digits(integer = 6, fraction = 0)
     private Integer numeroCadastro;
 
-    @NonNull
-    private String nome;
+    @NotBlank
+    private String nomeUsuario;
 
-    @NonNull
+    @NotBlank
     private String departamento;
 
-    @NonNull
+    @Email
     private String email;
 
-    @NonNull
+    @NotBlank
     private String senha;
 
     @NonNull
     private byte[] foto;
 
-    @NonNull
+    @NotBlank
     private String setor;
 
-    @NonNull
+    @NotBlank
     private String cargo;
 
-    @NonNull
-    private Integer responsaveisNegocioIdUsuario;
+    @NotNull
+    private List<Notificacao> notificacoesUsuario;
 
-    @NonNull
-    private Integer notificacoesUsuarioIdUsuario;
-
-    @NonNull
-    private Integer usuariosForumIdUsuario;
 }

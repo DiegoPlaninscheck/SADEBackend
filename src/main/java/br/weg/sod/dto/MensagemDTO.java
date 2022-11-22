@@ -1,26 +1,28 @@
 package br.weg.sod.dto;
 
-import lombok.NonNull;
+import br.weg.sod.model.entities.Chat;
+import br.weg.sod.model.entities.Usuario;
+import lombok.Getter;
 
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
+@Getter
 public class MensagemDTO {
 
-    @NonNull
-    private Integer idMensagem;
-
-    @NonNull
+    @NotBlank
     private String mensagem;
 
-    @NonNull
-    private byte[] arquivo;
-
-    @NonNull
+    @FutureOrPresent
     private Timestamp dataHoraMensagem;
 
-    @NonNull
-    private Integer idChat;
+    @NotNull
+    private Chat chat;
 
-    @NonNull
-    private Integer idUsuario;
+    @NotNull
+    private Usuario usuario;
+
+    private byte[] arquivo;
 }

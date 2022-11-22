@@ -1,19 +1,24 @@
 package br.weg.sod.dto;
 
-import lombok.NonNull;
 
+import lombok.Getter;
+
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+
+@Getter
 public class ATADTO {
 
-    @NonNull
+    @Digits(integer = 10, fraction = 0)
     private Integer idATA;
 
-    @NonNull
+    @NotNull
     private byte[] pdf;
 
-    @NonNull
+    @Digits(integer = 100, fraction = 0)
     private Integer numeroDG;
 
-    @NonNull
+    @NotNull
     private byte[] documentoAprovacao;
 
 }

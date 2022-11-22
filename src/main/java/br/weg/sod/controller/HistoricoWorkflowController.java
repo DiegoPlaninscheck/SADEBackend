@@ -1,6 +1,7 @@
 package br.weg.sod.controller;
 
-import br.weg.sod.dto.HistoricoWorkflowDTO;
+import br.weg.sod.dto.HistoricoWorkflowCriacaoDTO;
+import br.weg.sod.dto.HistoricoWorkflowEdicaoDTO;
 import br.weg.sod.model.entities.HistoricoWorkflow;
 import br.weg.sod.model.service.HistoricoWorkflowService;
 import lombok.AllArgsConstructor;
@@ -35,20 +36,20 @@ public class HistoricoWorkflowController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid HistoricoWorkflowDTO historicoWorkflowDTO) {
+    public ResponseEntity<Object> save(@RequestBody @Valid HistoricoWorkflowCriacaoDTO historicoWorkflowCriacaoDTO) {
         HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow();
-        BeanUtils.copyProperties(historicoWorkflowDTO, historicoWorkflow);
+        BeanUtils.copyProperties(historicoWorkflowCriacaoDTO, historicoWorkflow);
         return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowService.save(historicoWorkflow));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody @Valid HistoricoWorkflowDTO historicoWorkflowDTO, @PathVariable(name = "id") Integer idHistoricoWorkflow) {
+    public ResponseEntity<Object> edit(@RequestBody @Valid HistoricoWorkflowEdicaoDTO historicoWorkflowCriacaoDTO, @PathVariable(name = "id") Integer idHistoricoWorkflow) {
         if (!historicoWorkflowService.existsById(idHistoricoWorkflow)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum historico workflow com o ID informado");
         }
 
         HistoricoWorkflow historicoWorkflow = historicoWorkflowService.findById(idHistoricoWorkflow).get();
-        BeanUtils.copyProperties(historicoWorkflowDTO, historicoWorkflow);
+        BeanUtils.copyProperties(historicoWorkflowCriacaoDTO, historicoWorkflow);
         historicoWorkflow.setIdHistoricoWorkflow(idHistoricoWorkflow);
 
         return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowService.save(historicoWorkflow));

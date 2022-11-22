@@ -19,6 +19,7 @@ public class ArquivoDemanda {
     private Integer idArquivoDemanda;
 
     @Column(nullable = false)
+    @Lob
     private byte[] arquivo;
 
     @ManyToOne

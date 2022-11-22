@@ -16,17 +16,18 @@ import javax.persistence.*;
 public class LinhaTabela {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idLinhaTabela;
 
     @Column(nullable = false)
-    private String recurso;
+    private String nomeRecurso;
 
     @Column(nullable = false)
-    private Integer valor;
+    private Integer quantidade;
 
     @Column(nullable = false)
-    private Double valorHora;
+    private Double valorQuantidade;
 
     @ManyToOne
     @JoinColumn(name = "idTabelaCusto", nullable = false)

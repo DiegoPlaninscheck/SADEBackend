@@ -1,15 +1,17 @@
 package br.weg.sod.dto;
 
-import lombok.NonNull;
+import lombok.Getter;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotBlank;
+
+@Getter
 public class BUDTO {
 
-    @NonNull
+    @Digits(integer = 10, fraction = 0)
     private Integer idBU;
 
-    @NonNull
+    @NotBlank
     private String nomeBU;
 
-    @NonNull
-    private Integer buidBU;
 }

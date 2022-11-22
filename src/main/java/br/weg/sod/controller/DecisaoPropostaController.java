@@ -1,6 +1,7 @@
 package br.weg.sod.controller;
 
-import br.weg.sod.dto.DecisaoPropostaDTO;
+import br.weg.sod.dto.DecisaoPropostaCriacaoDTO;
+import br.weg.sod.dto.DecisaoPropostaEdicaoDTO;
 import br.weg.sod.model.entities.AnalistaTI;
 import br.weg.sod.model.entities.DecisaoProposta;
 import br.weg.sod.model.entities.HistoricoWorkflow;
@@ -45,9 +46,9 @@ public class DecisaoPropostaController {
     }
 
     @PostMapping("/{idAnalista}")
-    public ResponseEntity<Object> save(@RequestBody @Valid DecisaoPropostaDTO decisaoPropostaDTO, @PathVariable(name = "idAnalista") Integer idAnalista) {
+    public ResponseEntity<Object> save(@RequestBody @Valid DecisaoPropostaCriacaoDTO decisaoPropostaCriacaoDTO, @PathVariable(name = "idAnalista") Integer idAnalista) {
         DecisaoProposta decisaoProposta = new DecisaoProposta();
-        BeanUtils.copyProperties(decisaoPropostaDTO, decisaoProposta);
+        BeanUtils.copyProperties(decisaoPropostaCriacaoDTO, decisaoProposta);
 
         //encerrar histprico criar pauta
         HistoricoWorkflow historicoWorkflowVelho = historicoWorkflowService.findLastHistoricoByProposta(decisaoProposta.getProposta());
@@ -67,7 +68,7 @@ public class DecisaoPropostaController {
     }
 
     @PutMapping("/{idDecisaoProposta}/{idAnalista}")
-    public ResponseEntity<Object> edit(@RequestBody @Valid DecisaoPropostaDTO decisaoPropostaDTO, @PathVariable(name = "idDecisaoProspota") Integer idDecisaoProposta, @PathVariable(name = "idAnalista") Integer idAnalista) {
+    public ResponseEntity<Object> edit(@RequestBody @Valid DecisaoPropostaEdicaoDTO decisaoPropostaDTO, @PathVariable(name = "idDecisaoProspota") Integer idDecisaoProposta, @PathVariable(name = "idAnalista") Integer idAnalista) {
         if (!decisaoPropostaService.existsById(idDecisaoProposta)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma decisao proposta com o ID informado");
         }

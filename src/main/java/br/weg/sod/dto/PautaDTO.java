@@ -1,17 +1,19 @@
 package br.weg.sod.dto;
 
-import lombok.NonNull;
+import br.weg.sod.model.entities.Forum;
+import lombok.Getter;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
+@Getter
 public class PautaDTO {
 
-    @NonNull
-    private Integer idPauta;
-
-    @NonNull
+    @Future
     private Date dataReuniao;
 
-    @NonNull
-    private Integer idForum;
+    @NotNull
+    private Forum forum;
 }

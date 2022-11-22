@@ -1,18 +1,19 @@
 package br.weg.sod.dto;
 
-import lombok.NonNull;
+import lombok.Getter;
 
+import javax.validation.constraints.NotBlank;
+
+@Getter
 public class NotificacaoDTO {
 
-    @NonNull
-    private Integer idNotificacao;
+    @NotBlank
+    private String tituloNotificacao;
 
-    @NonNull
-    private String notificacao;
+    @NotBlank
+    private String descricaoNotificacao;
 
-    @NonNull
-    private String link;
+    @NotBlank
+    private String linkNotificacao;
 
-    @NonNull
-    private Integer notificacaoIdNotificacao;
 }

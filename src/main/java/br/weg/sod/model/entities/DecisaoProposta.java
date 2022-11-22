@@ -16,10 +16,12 @@ import javax.persistence.*;
 public class DecisaoProposta {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idDecisaoProposta;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private StatusDemanda statusDemandaComissao;
 
     @Column

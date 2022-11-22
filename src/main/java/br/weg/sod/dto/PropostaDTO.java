@@ -1,35 +1,41 @@
 package br.weg.sod.dto;
 
-import lombok.NonNull;
+import br.weg.sod.model.entities.ArquivoDemanda;
+import br.weg.sod.model.entities.Demanda;
+import br.weg.sod.model.entities.Usuario;
+import lombok.Getter;
 
+import javax.validation.constraints.*;
 import java.util.Date;
+import java.util.List;
 
+@Getter
 public class PropostaDTO {
 
-    @NonNull
+    @Digits(integer = 10, fraction = 0)
     private Integer idProposta;
 
-    @NonNull
+    @NotBlank
     private String escopo;
 
-    @NonNull
+    @Positive
     private Double payback;
 
-    @NonNull
+    @FutureOrPresent
     private Date periodoExecucaoInicio;
 
-    @NonNull
+    @Future
     private Date periodoExecucaoFim;
 
-    @NonNull
-    private Boolean aprovadoWorkflow;
-
-    @NonNull
+    @NotNull
     private Boolean emWorkflow;
 
-    @NonNull
-    private Integer idDemanda;
+    @NotNull
+    private Demanda demanda;
 
-    @NonNull
-    private Integer propostaIdProposta;
+    private Boolean aprovadoWorkflow;
+
+    private List<Usuario> responsaveisNegocio;
+
+    private List<ArquivoDemanda> novosArquivos;
 }

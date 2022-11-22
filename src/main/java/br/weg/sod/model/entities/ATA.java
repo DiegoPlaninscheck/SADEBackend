@@ -2,10 +2,7 @@ package br.weg.sod.model.entities;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "ATA")
@@ -22,15 +19,18 @@ public class ATA {
     private Integer idATA;
 
     @Column(nullable = false)
+    @Lob
     private byte[] pdfATAPublicada;
 
     @Column(nullable = false)
+    @Lob
     private byte[] pdfATANaoPublicada;
 
     @Column
     private Integer numeroDG;
 
     @Column
+    @Lob
     private byte[] documentoAprovacao;
 
 }

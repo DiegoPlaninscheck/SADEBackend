@@ -17,6 +17,7 @@ import java.util.List;
 public class Forum {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idForum;
 

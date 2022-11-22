@@ -1,18 +1,20 @@
 package br.weg.sod.dto;
 
-import lombok.NonNull;
+import br.weg.sod.model.entities.Usuario;
+import lombok.Getter;
 
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+@Getter
 public class ForumDTO {
 
-    @NonNull
-    private Integer idForum;
-
-    @NonNull
+    @NotNull
     private String nomeForum;
 
-    @NonNull
+    @NotNull
     private Integer analistaIdUsuario;
 
-    @NonNull
-    private Integer forumIdForum;
+   @NotNull
+    private List<Usuario> usuariosForum;
 }

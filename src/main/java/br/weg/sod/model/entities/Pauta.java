@@ -16,6 +16,7 @@ import java.util.Date;
 public class Pauta {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idPauta;
 

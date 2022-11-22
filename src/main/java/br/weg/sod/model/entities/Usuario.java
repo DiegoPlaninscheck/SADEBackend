@@ -16,6 +16,7 @@ import java.util.List;
 public class Usuario {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idUsuario;
 
@@ -23,7 +24,7 @@ public class Usuario {
     private Integer numeroCadastro;
 
     @Column(nullable = false)
-    private String nome;
+    private String nomeUsuario;
 
     @Column(nullable = false)
     private String departamento;

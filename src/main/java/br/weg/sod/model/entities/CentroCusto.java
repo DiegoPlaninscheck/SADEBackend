@@ -22,5 +22,5 @@ public class CentroCusto {
     private Integer idCentroCusto;
 
     @Column(nullable = false)
-    private String nome;
+    private String nomeCentroCusto;
 }

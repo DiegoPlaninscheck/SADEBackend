@@ -20,6 +20,7 @@ import java.util.List;
 public class Demanda {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idDemanda;
 
@@ -27,9 +28,11 @@ public class Demanda {
     private String titulo;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private StatusDemanda statusDemanda;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private Tamanho tamanho;
 
     @Column
@@ -67,6 +70,6 @@ public class Demanda {
     @ManyToMany
     @JoinTable(name = "busBeneficiadas", joinColumns = @JoinColumn(name = "idDemanda", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "idBU", nullable = false))
-    private List<BU> busBeneficiadas;
+    private List<BU> BUsBeneficiadas;
 
 }

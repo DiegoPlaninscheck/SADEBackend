@@ -22,12 +22,14 @@ public class Beneficio {
     private Integer idBeneficio;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TipoBeneficio tipoBeneficio;
 
     @Column(nullable = false)
     private String descricao;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private Moeda moeda;
 
     @Column

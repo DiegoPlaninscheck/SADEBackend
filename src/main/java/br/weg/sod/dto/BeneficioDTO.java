@@ -1,27 +1,34 @@
 package br.weg.sod.dto;
 
+import br.weg.sod.model.entities.Demanda;
 import br.weg.sod.model.entities.enuns.Moeda;
 import br.weg.sod.model.entities.enuns.TipoBeneficio;
-import lombok.NonNull;
+import lombok.Getter;
 
+
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+@Getter
 public class BeneficioDTO {
 
-    @NonNull
+    @Digits(integer = 10, fraction = 0)
     private Integer idBeneficio;
 
-    @NonNull
+    @NotNull
     private TipoBeneficio tipoBeneficio;
 
-    @NonNull
+    @NotBlank
     private String descricao;
 
-    @NonNull
     private Moeda moeda;
 
-    @NonNull
-    private Double memoriaCalculo;
+    private String memoriaCalculo;
 
-    @NonNull
-    private Integer idDemanda;
+    private Double valor;
+
+    @NotNull
+    private Demanda demanda;
 
 }

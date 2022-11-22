@@ -1,21 +1,25 @@
 package br.weg.sod.dto;
 
-import lombok.NonNull;
+import br.weg.sod.model.entities.TabelaCusto;
+import lombok.Getter;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+
+@Getter
 public class LinhaTabelaDTO {
 
-    @NonNull
-    private Integer idLinhaTabela;
+    @NotBlank
+    private String nomeRecurso;
 
-    @NonNull
-    private String recurso;
+    @Digits(integer = 4, fraction = 0)
+    private Integer quantidade;
 
-    @NonNull
-    private Integer valor;
+    @Positive
+    private Double valorHora;
 
-    @NonNull
-    private Double total;
-
-    @NonNull
-    private Integer idTabelaCusto;
+    @NotNull
+    private TabelaCusto tabelaCusto;
 }

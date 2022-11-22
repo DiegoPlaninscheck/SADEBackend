@@ -18,7 +18,7 @@ public class CentroCustoDemanda {
     @Column
     private Integer idCentroCustoDemanda;
 
-    @Column
+    @Column(length = 3)
     private Double porcentagemDespesa;
 
     @ManyToOne

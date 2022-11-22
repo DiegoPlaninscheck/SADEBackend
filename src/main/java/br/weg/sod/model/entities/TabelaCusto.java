@@ -15,17 +15,18 @@ import javax.persistence.*;
 public class TabelaCusto {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idTabelaCusto;
 
     @Column(nullable = false)
-    private String nome;
+    private String tituloTabela;
 
     @Column(nullable = false)
-    private Integer valor;
+    private Integer quantidadeTotal;
 
     @Column(nullable = false)
-    private Double total;
+    private Double valorTotal;
 
     @Column(nullable = false)
     private Boolean licenca;

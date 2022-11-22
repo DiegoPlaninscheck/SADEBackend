@@ -15,6 +15,7 @@ import javax.persistence.*;
 public class Notificacao {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idNotificacao;
 

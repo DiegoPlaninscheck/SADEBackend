@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 public class Mensagem {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idMensagem;
 
@@ -23,6 +24,7 @@ public class Mensagem {
     private String mensagem;
 
     @Column
+    @Lob
     private byte[] arquivo;
 
     @Column(nullable = false)

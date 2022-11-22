@@ -1,6 +1,7 @@
 package br.weg.sod.controller;
 
-import br.weg.sod.dto.DemandaDTO;
+import br.weg.sod.dto.DemandaCriacaoDTO;
+import br.weg.sod.dto.DemandaEdicaoDTO;
 import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 @CrossOrigin
@@ -43,9 +43,9 @@ public class DemandaController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid DemandaDTO demandaDTO) {
+    public ResponseEntity<Object> save(@RequestBody @Valid DemandaCriacaoDTO demandaCriacaoDTO) {
         Demanda demanda = new Demanda();
-        BeanUtils.copyProperties(demandaDTO, demanda);
+        BeanUtils.copyProperties(demandaCriacaoDTO, demanda);
 
         HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demanda);
         historicoWorkflowService.save(historicoWorkflow);
@@ -54,13 +54,13 @@ public class DemandaController {
     }
 
     @PutMapping("/{idDemanda}/{idAnalista}")
-    public ResponseEntity<Object> edit(@RequestBody @Valid DemandaDTO demandaDTO, @PathVariable(name = "idDemanda") Integer idDemanda, @PathVariable(name = "idAnalista") Integer idAnalista) {
+    public ResponseEntity<Object> edit(@RequestBody @Valid DemandaEdicaoDTO demandaCriacaoDTO, @PathVariable(name = "idDemanda") Integer idDemanda, @PathVariable(name = "idAnalista") Integer idAnalista) {
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }
 
         Demanda demanda = demandaService.findById(idDemanda).get();
-        BeanUtils.copyProperties(demandaDTO, demanda);
+        BeanUtils.copyProperties(demandaCriacaoDTO, demanda);
         demanda.setIdDemanda(idDemanda);
 
         if (demanda.getTamanho() == null) {

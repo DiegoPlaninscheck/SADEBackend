@@ -1,18 +1,24 @@
 package br.weg.sod.dto;
 
-import lombok.NonNull;
+import br.weg.sod.model.entities.Demanda;
+import br.weg.sod.model.entities.Usuario;
+import lombok.Getter;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+
+@Getter
 public class ArquivoDemandaDTO {
 
-    @NonNull
+    @Digits(integer = 10, fraction = 0)
     private Integer idArquivoDemanda;
 
-    @NonNull
+    @NotNull
     private byte[] arquivo;
 
-    @NonNull
-    private Integer idDemanda;
+    @NotNull
+    private Demanda demanda;
 
-    @NonNull
-    private Integer idUsuario;
+    @NotNull
+    private Usuario usuario;
 }
