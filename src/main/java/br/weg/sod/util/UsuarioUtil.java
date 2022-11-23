@@ -23,8 +23,8 @@ public class UsuarioUtil {
         }
     }
 
-    private Usuario convertDtoToModel(@Valid UsuarioDTO pecaDTO) {
-        return this.objectMapper.convertValue(pecaDTO, Usuario.class);
+    private Usuario convertDtoToModel(@Valid UsuarioDTO usuarioDTO) {
+        return this.objectMapper.convertValue(usuarioDTO, Usuario.class);
     }
 
 }

@@ -1,5 +1,6 @@
 package br.weg.sod.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -35,8 +36,9 @@ public class Usuario {
     @Column(nullable = false)
     private String senha;
 
-    @Column(nullable = false)
+    @Column
     @Lob
+    @JsonIgnore
     private byte[] foto;
 
     @Column(nullable = false)
@@ -50,4 +52,17 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "idNotificacao", nullable = false))
     private List<Notificacao> notificacoesUsuario;
 
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "idUsuario=" + idUsuario +
+                ", numeroCadastro=" + numeroCadastro +
+                ", nomeUsuario='" + nomeUsuario + '\'' +
+                ", departamento='" + departamento + '\'' +
+                ", email='" + email + '\'' +
+                ", setor='" + setor + '\'' +
+                ", cargo='" + cargo + '\'' +
+                ", notificacoesUsuario=" + notificacoesUsuario +
+                '}';
+    }
 }

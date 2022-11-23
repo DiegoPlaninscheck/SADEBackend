@@ -1,6 +1,8 @@
 package br.weg.sod.dto;
 
 import br.weg.sod.model.entities.Notificacao;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import lombok.NonNull;
 
 import javax.validation.constraints.Digits;
@@ -9,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+@Data
 public class UsuarioDTO {
 
     @Digits(integer = 6, fraction = 0)
@@ -26,7 +29,7 @@ public class UsuarioDTO {
     @NotBlank
     private String senha;
 
-    @NonNull
+    @JsonIgnore
     private byte[] foto;
 
     @NotBlank

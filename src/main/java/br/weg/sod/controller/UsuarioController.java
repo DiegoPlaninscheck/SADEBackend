@@ -37,9 +37,11 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestParam("USUARIO") String usuarioJSON, @RequestParam("FOTO") MultipartFile foto) {
+    public ResponseEntity<Object> save(@RequestParam("usuario") String usuarioJSON, @RequestParam("foto") MultipartFile foto) {
         UsuarioUtil usuarioUtil = new UsuarioUtil();
         Usuario usuario = usuarioUtil.convertJsonToModel(usuarioJSON);
+
+        System.out.println(usuario);
 
         try {
             usuario.setFoto(foto.getBytes());
@@ -51,16 +53,25 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody @Valid UsuarioDTO usuarioDTO, @PathVariable(name = "id") Integer idUsuario) {
+    public ResponseEntity<Object> edit(@RequestParam("usuario") @Valid String usuarioJSON, @RequestParam("foto") @Valid MultipartFile foto, @PathVariable(name = "id") Integer idUsuario) {
         if (!usuarioService.existsById(idUsuario)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma usuario com o ID informado");
         }
 
+        UsuarioUtil usuarioUtil = new UsuarioUtil();
+        Usuario novoUsuario = usuarioUtil.convertJsonToModel(usuarioJSON);
         Usuario usuario = usuarioService.findById(idUsuario).get();
-        BeanUtils.copyProperties(usuarioDTO, usuario);
+        System.out.println("novo: " + novoUsuario);
+        System.out.println("velho: " + usuario);
+        BeanUtils.copyProperties(novoUsuario, usuario);
         usuario.setIdUsuario(idUsuario);
+        try {
+            usuario.setFoto(foto.getBytes());
+        } catch (Exception e) {
+            System.out.println(e);
+        }
 
-        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuario));
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuario).toString());
     }
 
     @DeleteMapping("/{id}")
