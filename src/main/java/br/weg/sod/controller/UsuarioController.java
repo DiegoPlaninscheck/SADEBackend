@@ -3,12 +3,14 @@ package br.weg.sod.controller;
 import br.weg.sod.dto.UsuarioDTO;
 import br.weg.sod.model.entities.Usuario;
 import br.weg.sod.model.service.UsuarioService;
+import br.weg.sod.util.UsuarioUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -35,9 +37,15 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid UsuarioDTO usuarioDTO) {
-        Usuario usuario = new Usuario();
-        BeanUtils.copyProperties(usuarioDTO, usuario);
+    public ResponseEntity<Object> save(@RequestParam("USUARIO") String usuarioJSON, @RequestParam("FOTO") MultipartFile foto) {
+        UsuarioUtil usuarioUtil = new UsuarioUtil();
+        Usuario usuario = usuarioUtil.convertJsonToModel(usuarioJSON);
+
+        try {
+            usuario.setFoto(foto.getBytes());
+        } catch (Exception e) {
+            System.out.println(e);
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuario));
     }

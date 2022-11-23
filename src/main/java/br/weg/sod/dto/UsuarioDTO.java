@@ -35,7 +35,6 @@ public class UsuarioDTO {
     @NotBlank
     private String cargo;
 
-    @NotNull
     private List<Notificacao> notificacoesUsuario;
 
 }
