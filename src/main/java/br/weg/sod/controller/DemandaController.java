@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin
@@ -65,30 +66,20 @@ public class DemandaController {
 
         if (demanda.getTamanho() == null) {
             //concluindo histórico da classificacao do analista de TI
-            HistoricoWorkflow historicoWorkflowVelho = historicoWorkflowService.findLastHistoricoByDemanda(demanda);
-            historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(1));
-            historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
-            historicoWorkflowVelho.setAcaoFeita(Tarefa.CLASSIFICAR);
-            historicoWorkflowService.save(historicoWorkflowVelho);
-            //dar um jeito no pdf
+            historicoWorkflowService.finishHistoricoByDemanda(demanda, Tarefa.CLASSIFICAR);
 
             //iniciando o histórico de avaliacao do gerente de negócio
             GerenteNegocio gerenteNegocio = usuarioService.findGerenteBySolicitante(demanda.getUsuario().getDepartamento());
-            HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(new Timestamp(1), new Timestamp(5), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demanda);
-            historicoWorkflowService.save(historicoWorkflow);
+            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demanda);
+
         } else {
             //conclui o histórico de adicionar informações
-            HistoricoWorkflow historicoWorkflowVelho = historicoWorkflowService.findLastHistoricoByDemanda(demanda);
-            historicoWorkflowVelho.setAcaoFeita(Tarefa.ADICIONARINFORMACOES);
-            historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(24));
-            historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
-            historicoWorkflowService.save(historicoWorkflowVelho);
-            //dar um jeito no pdf
+            historicoWorkflowService.finishHistoricoByDemanda(demanda, Tarefa.ADICIONARINFORMACOES);
 
             //inicia o histórico de criar proposta
             AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-            HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(new Timestamp(2343), new Timestamp(5), Tarefa.CRIARPROPOSTA, StatusHistorico.EMANDAMENTO, analistaResponsavel, demanda);
-            historicoWorkflowService.save(historicoWorkflow);
+            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPROPOSTA, StatusHistorico.EMANDAMENTO, analistaResponsavel, demanda);
+
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(demandaService.save(demanda));

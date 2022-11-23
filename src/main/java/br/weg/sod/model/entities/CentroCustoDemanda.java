@@ -15,6 +15,7 @@ import javax.persistence.*;
 public class CentroCustoDemanda {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idCentroCustoDemanda;
 

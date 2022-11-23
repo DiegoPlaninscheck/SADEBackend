@@ -66,11 +66,7 @@ public class ATAController {
 
         for (DecisaoProposta deicasaoProposta : listaDecisaoProposta) {
             Proposta proposta = deicasaoProposta.getProposta();
-            HistoricoWorkflow historicoWorkflowVelho = historicoWorkflowService.findLastHistoricoByProposta(proposta);
-            historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(1));
-            historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
-            historicoWorkflowVelho.setAcaoFeita(Tarefa.INFORMARPARECERDG);
-            historicoWorkflowService.save(historicoWorkflowVelho);
+            historicoWorkflowService.finishHistoricoByProposta(proposta, Tarefa.INFORMARPARECERDG);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(ataService.save(ata));

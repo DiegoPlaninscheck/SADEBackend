@@ -2,10 +2,7 @@ package br.weg.sod.model.entities;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "centroCusto")
@@ -18,6 +15,7 @@ import javax.persistence.Table;
 public class CentroCusto {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idCentroCusto;
 

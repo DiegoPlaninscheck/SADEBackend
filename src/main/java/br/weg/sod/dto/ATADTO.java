@@ -9,9 +9,6 @@ import javax.validation.constraints.NotNull;
 @Getter
 public class ATADTO {
 
-    @Digits(integer = 10, fraction = 0)
-    private Integer idATA;
-
     @NotNull
     private byte[] pdf;
 

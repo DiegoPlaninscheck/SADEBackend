@@ -10,9 +10,6 @@ import javax.validation.constraints.NotNull;
 @Getter
 public class ArquivoDemandaDTO {
 
-    @Digits(integer = 10, fraction = 0)
-    private Integer idArquivoDemanda;
-
     @NotNull
     private byte[] arquivo;
 

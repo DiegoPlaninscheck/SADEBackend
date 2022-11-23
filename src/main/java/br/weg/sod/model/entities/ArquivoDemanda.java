@@ -15,6 +15,7 @@ import javax.persistence.*;
 public class ArquivoDemanda {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idArquivoDemanda;
 

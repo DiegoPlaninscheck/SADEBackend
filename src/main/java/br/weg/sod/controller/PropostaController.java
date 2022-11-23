@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin
@@ -46,12 +47,8 @@ public class PropostaController {
         Proposta proposta = new Proposta();
         BeanUtils.copyProperties(propostaDTO, proposta);
 
-        //encerra o histórico da criação de demanda
-        HistoricoWorkflow historicoWorkflowVelho = historicoWorkflowService.findLastHistoricoByProposta(proposta);
-        historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(1));
-        historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
-        historicoWorkflowVelho.setAcaoFeita(Tarefa.CRIARPAUTA);
-        historicoWorkflowService.save(historicoWorkflowVelho);
+        //encerra o histórico da criação de proposta
+        historicoWorkflowService.finishHistoricoByProposta(proposta, Tarefa.CRIARPAUTA);
 
         return ResponseEntity.status(HttpStatus.OK).body(propostaService.save(proposta));
     }
@@ -69,8 +66,8 @@ public class PropostaController {
         if (proposta.getEmWorkflow() && proposta.getAprovadoWorkflow() == null) {
                 //inicia o histórico de aprovação em workflow
                 GerenteNegocio gerenteNegocio = usuarioService.findGerenteBySolicitante(proposta.getDemanda().getUsuario().getDepartamento());
-                HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(new Timestamp(1), new Timestamp(5), Tarefa.AVALIARWORKFLOW, StatusHistorico.EMANDAMENTO, gerenteNegocio, proposta.getDemanda());
-                historicoWorkflowService.save(historicoWorkflow);
+
+                historicoWorkflowService.initializeHistoricoByProposta(new Timestamp(new Date().getTime()),Tarefa.AVALIARWORKFLOW, StatusHistorico.EMANDAMENTO,gerenteNegocio,proposta);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(propostaService.save(proposta));

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin
@@ -51,18 +52,13 @@ public class DecisaoPropostaController {
         BeanUtils.copyProperties(decisaoPropostaCriacaoDTO, decisaoProposta);
 
         //encerrar histprico criar pauta
-        HistoricoWorkflow historicoWorkflowVelho = historicoWorkflowService.findLastHistoricoByProposta(decisaoProposta.getProposta());
-        historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(1));
-        historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
-        historicoWorkflowVelho.setAcaoFeita(Tarefa.CRIARPAUTA);
-        historicoWorkflowService.save(historicoWorkflowVelho);
+        historicoWorkflowService.finishHistoricoByProposta(decisaoProposta.getProposta(),Tarefa.CRIARPAUTA);
 
         //inicio informar parecer da comissao
-        Pauta pauta = decisaoProposta.getPauta();
-        Timestamp time = new Timestamp(pauta.getDataReuniao().getTime());
+        Timestamp time = new Timestamp(decisaoProposta.getPauta().getDataReuniao().getTime());
         AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-        HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(time, new Timestamp(time.getTime() + 5), Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoProposta.getProposta().getDemanda());
-        historicoWorkflowService.save(historicoWorkflow);
+
+        historicoWorkflowService.initializeHistoricoByProposta(time,Tarefa.INFORMARPARECERFORUM,StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoProposta.getProposta());
 
         return ResponseEntity.status(HttpStatus.OK).body(decisaoPropostaService.save(decisaoProposta));
     }
@@ -77,16 +73,12 @@ public class DecisaoPropostaController {
         BeanUtils.copyProperties(decisaoPropostaDTO, decisaoProposta);
 
         // Encerrando historico infomar parecer comissao
-        HistoricoWorkflow historicoWorkflowVelho = historicoWorkflowService.findLastHistoricoByProposta(decisaoProposta.getProposta());
-        historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(1));
-        historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
-        historicoWorkflowVelho.setAcaoFeita(Tarefa.INFORMARPARECERFORUM);
-        historicoWorkflowService.save(historicoWorkflowVelho);
+        historicoWorkflowService.finishHistoricoByProposta(decisaoProposta.getProposta(), Tarefa.INFORMARPARECERFORUM);
 
         // iniciando historico informar parecer DG
         AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-        HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(new Timestamp(1), new Timestamp(5), Tarefa.INFORMARPARECERDG, StatusHistorico.EMANDAMENTO, analistaResponsavel, decisaoProposta.getProposta().getDemanda());
-        historicoWorkflowService.save(historicoWorkflow);
+
+        historicoWorkflowService.initializeHistoricoByProposta(new Timestamp(new Date().getTime()), Tarefa.INFORMARPARECERDG, StatusHistorico.EMANDAMENTO, analistaResponsavel, decisaoProposta.getProposta());
 
         return ResponseEntity.status(HttpStatus.OK).body(decisaoPropostaService.save(decisaoProposta));
     }

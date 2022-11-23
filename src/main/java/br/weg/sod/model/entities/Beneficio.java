@@ -18,6 +18,7 @@ import javax.persistence.*;
 public class Beneficio {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idBeneficio;
 

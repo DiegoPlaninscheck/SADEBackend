@@ -15,6 +15,7 @@ import javax.persistence.*;
 public class BU {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idBU;
 

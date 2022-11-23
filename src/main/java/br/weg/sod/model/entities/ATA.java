@@ -15,6 +15,7 @@ import javax.persistence.*;
 public class ATA {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Integer idATA;
 
