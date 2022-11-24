@@ -18,9 +18,6 @@ public class DemandaCriacaoDTO {
     @NotBlank
     private String tituloDemanda;
 
-    @NotNull
-    private StatusDemanda statusDemanda;
-
     @NotBlank
     private String objetivo;
 
@@ -36,7 +33,6 @@ public class DemandaCriacaoDTO {
     @NotNull
     private List<CentroCusto> centrosCustoDemanda;
 
-    @NotNull
     private List<Beneficio> beneficiosDemanda;
 
     @NotNull

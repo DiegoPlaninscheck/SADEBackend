@@ -22,10 +22,10 @@ public class HistoricoWorkflow {
     @Column
     private Integer idHistoricoWorkflow;
 
-    @Column(nullable = false)
+    @Column
     private Timestamp recebimento;
 
-    @Column(nullable = false)
+    @Column
     private Timestamp prazo;
 
     @Column(nullable = false)
@@ -51,7 +51,7 @@ public class HistoricoWorkflow {
     private Tarefa acaoFeita;
 
     @ManyToOne
-    @JoinColumn(name = "idUsuario", nullable = false)
+    @JoinColumn(name = "idUsuario")
     private Usuario usuario;
 
     @ManyToOne

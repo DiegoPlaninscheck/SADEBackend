@@ -3,6 +3,7 @@ package br.weg.sod.controller;
 import br.weg.sod.dto.DemandaCriacaoDTO;
 import br.weg.sod.dto.DemandaEdicaoDTO;
 import br.weg.sod.model.entities.*;
+import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.DemandaService;
@@ -47,11 +48,14 @@ public class DemandaController {
     public ResponseEntity<Object> save(@RequestBody @Valid DemandaCriacaoDTO demandaCriacaoDTO) {
         Demanda demanda = new Demanda();
         BeanUtils.copyProperties(demandaCriacaoDTO, demanda);
+        demanda.setStatusDemanda(StatusDemanda.BACKLOG);
 
-        HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demanda);
+        Demanda demandaCadastrada = demandaService.save(demanda);
+
+        HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaCadastrada);
         historicoWorkflowService.save(historicoWorkflow);
 
-        return ResponseEntity.status(HttpStatus.OK).body(demandaService.save(demanda));
+        return ResponseEntity.status(HttpStatus.OK).body(demandaCadastrada);
     }
 
     @PutMapping("/{idDemanda}/{idAnalista}")
