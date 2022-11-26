@@ -41,8 +41,6 @@ public class UsuarioController {
         UsuarioUtil usuarioUtil = new UsuarioUtil();
         Usuario usuario = usuarioUtil.convertJsonToModel(usuarioJSON);
 
-        System.out.println(usuario);
-
         try {
             usuario.setFoto(foto.getBytes());
         } catch (Exception e) {

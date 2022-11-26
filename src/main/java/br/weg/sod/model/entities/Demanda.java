@@ -25,7 +25,7 @@ public class Demanda {
     private Integer idDemanda;
 
     @Column
-    private String titulo;
+    private String tituloDemanda;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -71,5 +71,10 @@ public class Demanda {
     @JoinTable(name = "busBeneficiadas", joinColumns = @JoinColumn(name = "idDemanda", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "idBU", nullable = false))
     private List<BU> BUsBeneficiadas;
+
+    @ManyToMany
+    @JoinTable(name = "centroCustoDemanda", joinColumns = @JoinColumn(name = "idDemanda", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "idCentroCusto", nullable = false))
+    private List<CentroCusto> centroCustoDemanda;
 
 }

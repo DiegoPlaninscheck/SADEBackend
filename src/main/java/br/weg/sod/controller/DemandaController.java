@@ -6,6 +6,7 @@ import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
+import br.weg.sod.model.service.CentroCustoTabelaCustoService;
 import br.weg.sod.model.service.DemandaService;
 import br.weg.sod.model.service.HistoricoWorkflowService;
 import br.weg.sod.model.service.UsuarioService;
@@ -51,6 +52,8 @@ public class DemandaController {
         demanda.setStatusDemanda(StatusDemanda.BACKLOG);
 
         Demanda demandaCadastrada = demandaService.save(demanda);
+
+        System.out.println("CENTRO CUSTO DEMANDA" + demandaCriacaoDTO.getCentrosCustoDemanda());
 
         HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaCadastrada);
         historicoWorkflowService.save(historicoWorkflow);

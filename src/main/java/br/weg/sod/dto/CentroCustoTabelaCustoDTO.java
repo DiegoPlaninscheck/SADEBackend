@@ -2,19 +2,20 @@ package br.weg.sod.dto;
 
 import br.weg.sod.model.entities.CentroCusto;
 import br.weg.sod.model.entities.Demanda;
+import br.weg.sod.model.entities.TabelaCusto;
 import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 @Getter
-public class CentroCustoDemandaDTO {
+public class CentroCustoTabelaCustoDTO {
 
     @Positive
     private Double porcentagemDespesa;
 
     @NotNull
-    private Demanda demanda;
+    private TabelaCusto tabelaCusto;
 
     @NotNull
     private CentroCusto centroCusto;
