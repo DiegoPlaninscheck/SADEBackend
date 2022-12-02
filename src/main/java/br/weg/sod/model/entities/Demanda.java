@@ -20,7 +20,7 @@ import java.util.List;
 public class Demanda {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Integer idDemanda;
 
@@ -68,13 +68,14 @@ public class Demanda {
     private Usuario usuario;
 
     @ManyToMany
-    @JoinTable(name = "busBeneficiadas", joinColumns = @JoinColumn(name = "idDemanda", nullable = false),
+    @JoinTable(name = "budemanda", joinColumns =
+    @JoinColumn(name = "idDemanda", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "idBU", nullable = false))
     private List<BU> BUsBeneficiadas;
 
     @ManyToMany
     @JoinTable(name = "centroCustoDemanda", joinColumns = @JoinColumn(name = "idDemanda", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "idCentroCusto", nullable = false))
+            inverseJoinColumns = @JoinColumn(name = "id_centrocusto", nullable = false))
     private List<CentroCusto> centroCustoDemanda;
 
 }

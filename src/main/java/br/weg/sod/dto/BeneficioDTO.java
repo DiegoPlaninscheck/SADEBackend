@@ -23,7 +23,7 @@ public class BeneficioDTO {
 
     private Double valor;
 
-    @NotNull
-    private Demanda demanda;
+//    @NotNull
+//    private Demanda demanda;
 
 }

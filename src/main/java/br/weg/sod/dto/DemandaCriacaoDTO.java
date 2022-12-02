@@ -1,18 +1,20 @@
 package br.weg.sod.dto;
 
-import br.weg.sod.model.entities.Beneficio;
-import br.weg.sod.model.entities.CentroCusto;
-import br.weg.sod.model.entities.Usuario;
+import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
+import lombok.Data;
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.ArrayList;
 import java.util.List;
 
-@Getter
+@ToString
+@Data
 public class DemandaCriacaoDTO {
 
     @NotBlank
@@ -31,9 +33,11 @@ public class DemandaCriacaoDTO {
     private Double score;
 
     @NotNull
-    private List<CentroCusto> centrosCustoDemanda;
+    private List<CentroCusto> centroCustoDemanda;
 
     private List<Beneficio> beneficiosDemanda;
+
+    private List<BU> BUsBeneficiadas;
 
     @NotNull
     private Usuario usuario;

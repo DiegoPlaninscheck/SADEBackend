@@ -6,15 +6,13 @@ import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
-import br.weg.sod.model.service.CentroCustoTabelaCustoService;
-import br.weg.sod.model.service.DemandaService;
-import br.weg.sod.model.service.HistoricoWorkflowService;
-import br.weg.sod.model.service.UsuarioService;
+import br.weg.sod.model.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -45,15 +43,16 @@ public class DemandaController {
         return ResponseEntity.status(HttpStatus.OK).body(demandaService.findById(idDemanda));
     }
 
+    @Transactional
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody @Valid DemandaCriacaoDTO demandaCriacaoDTO) {
+        System.out.println(demandaCriacaoDTO);
         Demanda demanda = new Demanda();
         BeanUtils.copyProperties(demandaCriacaoDTO, demanda);
         demanda.setStatusDemanda(StatusDemanda.BACKLOG);
+        demanda.setBUsBeneficiadas(demandaCriacaoDTO.getBUsBeneficiadas());
 
         Demanda demandaCadastrada = demandaService.save(demanda);
-
-        System.out.println("CENTRO CUSTO DEMANDA" + demandaCriacaoDTO.getCentrosCustoDemanda());
 
         HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaCadastrada);
         historicoWorkflowService.save(historicoWorkflow);

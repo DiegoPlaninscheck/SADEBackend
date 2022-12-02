@@ -18,7 +18,7 @@ import javax.persistence.*;
 public class Beneficio {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Integer idBeneficio;
 
@@ -39,7 +39,7 @@ public class Beneficio {
     @Column
     private Double valor;
 
-    @ManyToOne
-    @JoinColumn(name = "idDemanda", nullable = false)
-    private Demanda demanda;
+//    @ManyToOne
+//    @JoinColumn(name = "idDemanda", nullable = false)
+//    private Demanda demanda;
 }

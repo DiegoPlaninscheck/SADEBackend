@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 public class HistoricoWorkflow {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Integer idHistoricoWorkflow;
 

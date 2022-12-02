@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class TabelaCusto {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Integer idTabelaCusto;
 

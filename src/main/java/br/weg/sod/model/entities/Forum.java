@@ -17,7 +17,7 @@ import java.util.List;
 public class Forum {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Integer idForum;
 

@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 public class Mensagem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Integer idMensagem;
 
