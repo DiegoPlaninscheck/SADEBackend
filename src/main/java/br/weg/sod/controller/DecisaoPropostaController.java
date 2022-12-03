@@ -51,7 +51,7 @@ public class DecisaoPropostaController {
         DecisaoProposta decisaoProposta = new DecisaoProposta();
         BeanUtils.copyProperties(decisaoPropostaCriacaoDTO, decisaoProposta);
 
-        //encerrar histprico criar pauta
+        //encerrar historico criar pauta
         historicoWorkflowService.finishHistoricoByProposta(decisaoProposta.getProposta(),Tarefa.CRIARPAUTA);
 
         //inicio informar parecer da comissao

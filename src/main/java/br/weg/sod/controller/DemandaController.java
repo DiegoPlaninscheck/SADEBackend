@@ -69,6 +69,7 @@ public class DemandaController {
         Demanda demanda = demandaService.findById(idDemanda).get();
         BeanUtils.copyProperties(demandaCriacaoDTO, demanda);
         demanda.setIdDemanda(idDemanda);
+        demanda.setStatusDemanda(StatusDemanda.BACKLOG);
 
         if (demanda.getTamanho() == null) {
             //concluindo histórico da classificacao do analista de TI

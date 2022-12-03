@@ -3,13 +3,14 @@ package br.weg.sod.dto;
 import br.weg.sod.model.entities.ArquivoDemanda;
 import br.weg.sod.model.entities.Demanda;
 import br.weg.sod.model.entities.Usuario;
+import lombok.Data;
 import lombok.Getter;
 
 import javax.validation.constraints.*;
 import java.util.Date;
 import java.util.List;
 
-@Getter
+@Data
 public class PropostaDTO {
 
     @Digits(integer = 10, fraction = 0)

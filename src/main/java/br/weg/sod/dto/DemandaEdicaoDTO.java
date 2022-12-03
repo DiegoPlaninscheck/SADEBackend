@@ -3,6 +3,7 @@ package br.weg.sod.dto;
 import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.Tamanho;
+import lombok.Data;
 import lombok.Getter;
 
 import javax.validation.constraints.Digits;
@@ -12,7 +13,7 @@ import javax.validation.constraints.PositiveOrZero;
 import java.sql.Time;
 import java.util.List;
 
-@Getter
+@Data
 public class DemandaEdicaoDTO {
 
     @NotBlank

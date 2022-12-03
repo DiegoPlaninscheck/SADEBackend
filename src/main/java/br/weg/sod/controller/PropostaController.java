@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -42,10 +43,13 @@ public class PropostaController {
         return ResponseEntity.status(HttpStatus.OK).body(propostaService.findById(idProposta));
     }
 
+    @Transactional
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody @Valid PropostaDTO propostaDTO) {
         Proposta proposta = new Proposta();
         BeanUtils.copyProperties(propostaDTO, proposta);
+
+        System.out.println(propostaDTO.toString());
 
         //encerra o histórico da criação de proposta
         historicoWorkflowService.finishHistoricoByProposta(proposta, Tarefa.CRIARPAUTA);
@@ -64,10 +68,10 @@ public class PropostaController {
         proposta.setIdProposta(idProposta);
 
         if (proposta.getEmWorkflow() && proposta.getAprovadoWorkflow() == null) {
-                //inicia o histórico de aprovação em workflow
-                GerenteNegocio gerenteNegocio = usuarioService.findGerenteBySolicitante(proposta.getDemanda().getUsuario().getDepartamento());
+            //inicia o histórico de aprovação em workflow
+            GerenteNegocio gerenteNegocio = usuarioService.findGerenteBySolicitante(proposta.getDemanda().getUsuario().getDepartamento());
 
-                historicoWorkflowService.initializeHistoricoByProposta(new Timestamp(new Date().getTime()),Tarefa.AVALIARWORKFLOW, StatusHistorico.EMANDAMENTO,gerenteNegocio,proposta);
+            historicoWorkflowService.initializeHistoricoByProposta(new Timestamp(new Date().getTime()), Tarefa.AVALIARWORKFLOW, StatusHistorico.EMANDAMENTO, gerenteNegocio, proposta);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(propostaService.save(proposta));
