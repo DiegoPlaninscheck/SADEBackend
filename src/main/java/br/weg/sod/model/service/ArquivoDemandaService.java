@@ -1,6 +1,7 @@
 package br.weg.sod.model.service;
 
 import br.weg.sod.model.entities.ArquivoDemanda;
+import br.weg.sod.model.entities.Demanda;
 import br.weg.sod.repository.ArquivoDemandaRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,5 +33,9 @@ public class ArquivoDemandaService {
 
     public void deleteById(Integer integer) {
         arquivoDemandaRepository.deleteById(integer);
+    }
+
+    public List<ArquivoDemanda> findByDemanda(Demanda demanda) {
+        return arquivoDemandaRepository.findByDemanda(demanda);
     }
 }

@@ -2,12 +2,14 @@ package br.weg.sod.dto;
 
 import br.weg.sod.model.entities.TabelaCusto;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+@Setter
 @Getter
 public class LinhaTabelaDTO {
 
@@ -18,7 +20,7 @@ public class LinhaTabelaDTO {
     private Integer quantidade;
 
     @Positive
-    private Double valorHora;
+    private Double valorQuantidade;
 
     @NotNull
     private TabelaCusto tabelaCusto;

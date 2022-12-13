@@ -23,9 +23,4 @@ public class CentroCusto {
     @Column(nullable = false)
     private String nomeCentroCusto;
 
-//    @ManyToMany(mappedBy = "centroCustoDemanda")
-//    private List<Demanda> demandas;
-
-//    @OneToMany(mappedBy = "centroCusto")
-//    private List<CentroCustoDemanda> centroCustoDemandas;
 }

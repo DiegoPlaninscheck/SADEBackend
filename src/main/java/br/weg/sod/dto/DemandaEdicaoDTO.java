@@ -49,7 +49,7 @@ public class DemandaEdicaoDTO {
     @NotBlank
     private String secaoTIResponsavel;
 
-    private Time prazoElaboracao;
+    private Long miliSegundosPrazoElaboracao;
 
     private Integer codigoPPM;
 

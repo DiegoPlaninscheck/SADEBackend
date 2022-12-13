@@ -37,7 +37,7 @@ public class DemandaCriacaoDTO {
 
     private List<Beneficio> beneficiosDemanda;
 
-    private List<BU> BUsBeneficiadas;
+    private List<ArquivoDemanda> arquivosDemanda;
 
     @NotNull
     private Usuario usuario;

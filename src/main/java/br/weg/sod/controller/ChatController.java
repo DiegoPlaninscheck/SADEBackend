@@ -1,6 +1,7 @@
 package br.weg.sod.controller;
 
 import br.weg.sod.dto.ChatDTO;
+import br.weg.sod.model.entities.AnalistaTI;
 import br.weg.sod.model.entities.Chat;
 import br.weg.sod.model.service.ChatService;
 import lombok.AllArgsConstructor;
@@ -39,6 +40,8 @@ public class ChatController {
     public ResponseEntity<Object> save(@RequestBody @Valid ChatDTO chatDTO) {
         Chat chat = new Chat();
         BeanUtils.copyProperties(chatDTO, chat);
+        chat.setIdChat(chatDTO.getDemanda().getIdDemanda());
+
         return ResponseEntity.status(HttpStatus.OK).body(chatService.save(chat));
     }
 

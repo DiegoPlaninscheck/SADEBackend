@@ -76,6 +76,18 @@ public class HistoricoWorkflowService {
         save(historicoWorkflowVelho);
     }
 
+    public void finishHistoricoByDemanda(Demanda demanda, Tarefa acaoFeita,Usuario usuario) {
+        HistoricoWorkflow historicoWorkflowVelho = findLastHistoricoByDemanda(demanda);
+
+        historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(new Date().getTime()));
+        historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
+        historicoWorkflowVelho.setAcaoFeita(acaoFeita);
+        historicoWorkflowVelho.setUsuario(usuario);
+        //dar um jeito no pdf
+
+        save(historicoWorkflowVelho);
+    }
+
     public void initializeHistoricoByProposta(Timestamp recebimento, Tarefa tarefa, StatusHistorico statusHistorico, Usuario usuario, Proposta proposta) {
         initializeHistoricoByDemanda(recebimento, tarefa, statusHistorico, usuario, proposta.getDemanda());
     }

@@ -26,7 +26,7 @@ public class Forum {
 
     @OneToOne
     @JoinColumn(name = "idUsuario", nullable = false)
-    private Usuario analistaResponsavel;
+    private AnalistaTI analistaResponsavel;
 
     @ManyToMany
     @JoinTable(name = "usuariosForum", joinColumns = @JoinColumn(name = "idForum", nullable = false),

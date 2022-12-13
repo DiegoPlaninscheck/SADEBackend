@@ -40,11 +40,14 @@ public class UsuarioService {
         return usuarioRepository.findByDepartamento(departamento);
     }
 
-    public GerenteNegocio findGerenteBySolicitante( String departamento) {
+    public GerenteNegocio findGerenteByDepartamento(String departamento) {
         List<Usuario> usuarioList = findByDepartamento(departamento);
 
-        for(Usuario usuario : usuarioList){
-            if(usuario instanceof GerenteNegocio){
+        System.out.println(usuarioList);
+
+        for (Usuario usuario : usuarioList) {
+            if (usuario instanceof GerenteNegocio) {
+                System.out.println("achou");
                 return (GerenteNegocio) usuario;
             }
         }
@@ -55,8 +58,8 @@ public class UsuarioService {
     public GerenteTI findGerenteTIByAnalista(String departamento) {
         List<Usuario> usuarioList = findByDepartamento(departamento);
 
-        for(Usuario usuario : usuarioList){
-            if(usuario instanceof GerenteTI){
+        for (Usuario usuario : usuarioList) {
+            if (usuario instanceof GerenteTI) {
                 return (GerenteTI) usuario;
             }
         }

@@ -1,6 +1,7 @@
 package br.weg.sod.model.service;
 
 import br.weg.sod.model.entities.Beneficio;
+import br.weg.sod.model.entities.Demanda;
 import br.weg.sod.repository.BeneficioRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,5 +33,9 @@ public class BeneficioService {
 
     public void deleteById(Integer integer) {
         beneficioRepository.deleteById(integer);
+    }
+
+    public List<Beneficio> findByDemanda(Demanda demanda) {
+        return beneficioRepository.findByDemanda(demanda);
     }
 }

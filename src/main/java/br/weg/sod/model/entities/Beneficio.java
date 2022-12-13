@@ -34,12 +34,9 @@ public class Beneficio {
     private Moeda moeda;
 
     @Column
-    private String memoriaCalculo;
-
-    @Column
     private Double valor;
 
-//    @ManyToOne
-//    @JoinColumn(name = "idDemanda", nullable = false)
-//    private Demanda demanda;
+    @ManyToOne
+    @JoinColumn(name = "idDemanda", nullable = false)
+    private Demanda demanda;
 }

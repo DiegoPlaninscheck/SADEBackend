@@ -1,6 +1,9 @@
 package br.weg.sod.controller;
 
+import br.weg.sod.dto.DemandaEdicaoDTO;
+import br.weg.sod.dto.NotificacaoUsuarioDTO;
 import br.weg.sod.dto.UsuarioDTO;
+import br.weg.sod.model.entities.Notificacao;
 import br.weg.sod.model.entities.Usuario;
 import br.weg.sod.model.service.UsuarioService;
 import br.weg.sod.util.UsuarioUtil;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin
@@ -36,10 +40,10 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.findById(idUsuario));
     }
 
-    @PostMapping
-    public ResponseEntity<Object> save(@RequestParam("usuario") String usuarioJSON, @RequestParam("foto") MultipartFile foto) {
+    @PostMapping("/{tipoUsuario}")
+    public ResponseEntity<Object> save(@RequestParam("usuario") String usuarioJSON, @RequestParam("foto") MultipartFile foto, @PathVariable("tipoUsuario") Integer tipoUsuario) {
         UsuarioUtil usuarioUtil = new UsuarioUtil();
-        Usuario usuario = usuarioUtil.convertJsonToModel(usuarioJSON);
+        Usuario usuario = usuarioUtil.convertJsonToModel(usuarioJSON, tipoUsuario);
 
         try {
             usuario.setFoto(foto.getBytes());
@@ -50,8 +54,8 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuario));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestParam("usuario") @Valid String usuarioJSON, @RequestParam("foto") @Valid MultipartFile foto, @PathVariable(name = "id") Integer idUsuario) {
+    @PutMapping("/{idUsuario}")
+    public ResponseEntity<Object> edit(@RequestParam("usuario") @Valid String usuarioJSON, @RequestParam("foto") @Valid MultipartFile foto, @PathVariable(name = "idUsuario") Integer idUsuario) {
         if (!usuarioService.existsById(idUsuario)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma usuario com o ID informado");
         }
@@ -59,17 +63,33 @@ public class UsuarioController {
         UsuarioUtil usuarioUtil = new UsuarioUtil();
         Usuario novoUsuario = usuarioUtil.convertJsonToModel(usuarioJSON);
         Usuario usuario = usuarioService.findById(idUsuario).get();
-        System.out.println("novo: " + novoUsuario);
-        System.out.println("velho: " + usuario);
+
         BeanUtils.copyProperties(novoUsuario, usuario);
         usuario.setIdUsuario(idUsuario);
+
         try {
             usuario.setFoto(foto.getBytes());
         } catch (Exception e) {
             System.out.println(e);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuario).toString());
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuario));
+    }
+
+    @PutMapping("/notificacao")
+    public ResponseEntity<Object> novaNotificacao(@RequestBody @Valid NotificacaoUsuarioDTO notificacaoUsuarioDTO){
+        Usuario usuarioNotificacao = notificacaoUsuarioDTO.getUsuario();
+
+        if (!usuarioService.existsById(usuarioNotificacao.getIdUsuario())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma usuario com o ID informado");
+        }
+
+        List<Notificacao> notificacacaoUsuario = usuarioNotificacao.getNotificacoesUsuario();
+        notificacacaoUsuario.add(notificacaoUsuarioDTO.getNotificacao());
+
+        usuarioNotificacao.setNotificacoesUsuario(notificacacaoUsuario);
+
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuarioNotificacao));
     }
 
     @DeleteMapping("/{id}")

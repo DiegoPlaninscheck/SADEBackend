@@ -52,6 +52,11 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "idNotificacao", nullable = false))
     private List<Notificacao> notificacoesUsuario;
 
+    @ManyToMany
+    @JoinTable(name = "chatsUsuario", joinColumns = @JoinColumn(name = "idUsuario", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "idChat", nullable = false))
+    private List<Chat> chatsUsuario;
+
     @Override
     public String toString() {
         return "Usuario{" +

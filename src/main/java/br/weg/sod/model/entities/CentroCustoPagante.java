@@ -5,19 +5,19 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "centroCustoTabelaCusto")
+@Table(name = "centroCustoPagante")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
 @EqualsAndHashCode
-public class CentroCustoTabelaCusto {
+public class CentroCustoPagante {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private Integer idCentroCustoDemanda;
+    private Integer idCentroCustoPagante;
 
     @Column(length = 3, nullable = false)
     private Double porcentagemDespesa;

@@ -1,8 +1,6 @@
 package br.weg.sod.dto;
 
-import br.weg.sod.model.entities.ArquivoDemanda;
-import br.weg.sod.model.entities.Demanda;
-import br.weg.sod.model.entities.Usuario;
+import br.weg.sod.model.entities.*;
 import lombok.Data;
 import lombok.Getter;
 
@@ -13,14 +11,8 @@ import java.util.List;
 @Data
 public class PropostaDTO {
 
-    @Digits(integer = 10, fraction = 0)
-    private Integer idProposta;
-
     @NotBlank
     private String escopo;
-
-    @Positive
-    private Double payback;
 
     @FutureOrPresent
     private Date periodoExecucaoInicio;
@@ -39,4 +31,6 @@ public class PropostaDTO {
     private List<Usuario> responsaveisNegocio;
 
     private List<ArquivoDemanda> novosArquivos;
+
+    private List<TabelaCustoDTO> tabelasCustoProposta;
 }
