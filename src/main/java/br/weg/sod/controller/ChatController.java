@@ -4,6 +4,7 @@ import br.weg.sod.dto.ChatDTO;
 import br.weg.sod.model.entities.AnalistaTI;
 import br.weg.sod.model.entities.Chat;
 import br.weg.sod.model.service.ChatService;
+import br.weg.sod.model.service.NotificacaoService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.List;
 public class ChatController {
 
     private ChatService chatService;
+    private NotificacaoController notificacaoController;
 
     @GetMapping
     public ResponseEntity<List<Chat>> findAll() {
@@ -41,6 +43,8 @@ public class ChatController {
         Chat chat = new Chat();
         BeanUtils.copyProperties(chatDTO, chat);
         chat.setIdChat(chatDTO.getDemanda().getIdDemanda());
+
+        
 
         return ResponseEntity.status(HttpStatus.OK).body(chatService.save(chat));
     }

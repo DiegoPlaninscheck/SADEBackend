@@ -1,5 +1,6 @@
 package br.weg.sod.model.entities;
 
+import br.weg.sod.model.entities.enuns.TipoNotificacao;
 import lombok.*;
 
 import javax.persistence.*;
@@ -27,5 +28,12 @@ public class Notificacao {
 
     @Column(nullable = false)
     private String linkNotificacao;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TipoNotificacao tipoNotificacao;
+
+    @Column(nullable = false)
+    private Integer idComponenteLink;
 
 }

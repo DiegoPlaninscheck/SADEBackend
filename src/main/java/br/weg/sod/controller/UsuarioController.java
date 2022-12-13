@@ -35,7 +35,7 @@ public class UsuarioController {
     @GetMapping("/{id}")
     public ResponseEntity<Object> findById(@PathVariable(name = "id") Integer idUsuario) {
         if (!usuarioService.existsById(idUsuario)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma usuario com o ID informado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
         }
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.findById(idUsuario));
     }
@@ -57,7 +57,7 @@ public class UsuarioController {
     @PutMapping("/{idUsuario}")
     public ResponseEntity<Object> edit(@RequestParam("usuario") @Valid String usuarioJSON, @RequestParam("foto") @Valid MultipartFile foto, @PathVariable(name = "idUsuario") Integer idUsuario) {
         if (!usuarioService.existsById(idUsuario)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma usuario com o ID informado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
         }
 
         UsuarioUtil usuarioUtil = new UsuarioUtil();
@@ -81,13 +81,13 @@ public class UsuarioController {
         Usuario usuarioNotificacao = notificacaoUsuarioDTO.getUsuario();
 
         if (!usuarioService.existsById(usuarioNotificacao.getIdUsuario())) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma usuario com o ID informado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
         }
 
-        List<Notificacao> notificacacaoUsuario = usuarioNotificacao.getNotificacoesUsuario();
-        notificacacaoUsuario.add(notificacaoUsuarioDTO.getNotificacao());
+        List<Notificacao> novasNotificacacoesUsuario = usuarioNotificacao.getNotificacoesUsuario();
+        novasNotificacacoesUsuario.add(notificacaoUsuarioDTO.getNotificacao());
 
-        usuarioNotificacao.setNotificacoesUsuario(notificacacaoUsuario);
+        usuarioNotificacao.setNotificacoesUsuario(novasNotificacacoesUsuario);
 
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuarioNotificacao));
     }
@@ -95,7 +95,7 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteById(@PathVariable(name = "id") Integer idUsuario) {
         if (!usuarioService.existsById(idUsuario)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma usuario com o ID informado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
         }
         usuarioService.deleteById(idUsuario);
         return ResponseEntity.status(HttpStatus.OK).body("Usuario deletado com sucesso!");
