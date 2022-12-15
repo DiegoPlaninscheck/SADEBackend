@@ -46,19 +46,10 @@ public class DecisaoPropostaController {
         return ResponseEntity.status(HttpStatus.OK).body(decisaoPropostaService.findById(idDecisaoProposta));
     }
 
-    @PostMapping("/{idAnalista}")
-    public ResponseEntity<Object> save(@RequestBody @Valid DecisaoPropostaCriacaoDTO decisaoPropostaCriacaoDTO, @PathVariable(name = "idAnalista") Integer idAnalista) {
+    @PostMapping
+    public ResponseEntity<Object> save(@RequestBody @Valid DecisaoPropostaCriacaoDTO decisaoPropostaCriacaoDTO) {
         DecisaoProposta decisaoProposta = new DecisaoProposta();
         BeanUtils.copyProperties(decisaoPropostaCriacaoDTO, decisaoProposta);
-
-        //encerrar historico criar pauta
-        historicoWorkflowService.finishHistoricoByProposta(decisaoProposta.getProposta(),Tarefa.CRIARPAUTA);
-
-        //inicio informar parecer da comissao
-        Timestamp time = new Timestamp(decisaoProposta.getPauta().getDataReuniao().getTime());
-        AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-
-        historicoWorkflowService.initializeHistoricoByProposta(time,Tarefa.INFORMARPARECERFORUM,StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoProposta.getProposta());
 
         return ResponseEntity.status(HttpStatus.OK).body(decisaoPropostaService.save(decisaoProposta));
     }

@@ -41,12 +41,7 @@ public class DecisaoProposta {
     private Proposta proposta;
 
     @ManyToOne
-    @JoinColumn(name = "idPauta", nullable = false)
-    private Pauta pauta;
-
-    @ManyToOne
     @JoinColumn(name = "idATA")
     private ATA ATA;
-
 
 }

@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "pauta")
@@ -23,7 +24,10 @@ public class Pauta {
     @Column(nullable = false)
     private Date dataReuniao;
 
-    @OneToOne
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<DecisaoProposta> propostasPauta;
+
+    @ManyToOne
     @JoinColumn(name = "idForum", nullable = false)
     private Forum forum;
 
