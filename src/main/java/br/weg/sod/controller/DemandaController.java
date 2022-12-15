@@ -51,12 +51,21 @@ public class DemandaController {
         return ResponseEntity.status(HttpStatus.OK).body(demandaService.findById(idDemanda));
     }
 
+    @GetMapping("/{id}/arquivos")
+    public ResponseEntity<Object> findArquivosDemanda(@PathVariable(name = "id") Integer idDemanda){
+        if (!demandaService.existsById(idDemanda)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findById(idDemanda).get().getArquivosDemanda());
+    }
+
     @Transactional
     @PostMapping
     public ResponseEntity<Object> save(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam("files") MultipartFile[] multipartFiles) throws IOException {
         DemandaUtil util = new DemandaUtil();
 
-        Demanda demanda = util.convertJsonToModel(demandaJSON);
+        Demanda demanda = util.convertJsonToCreationModel(demandaJSON);
         demanda.setStatusDemanda(StatusDemanda.BACKLOG);
 
         for(MultipartFile multipartFile : multipartFiles){
@@ -72,16 +81,22 @@ public class DemandaController {
     }
 
     @PutMapping("/{idDemanda}/{idAnalista}")
-    public ResponseEntity<Object> edit(@RequestBody @Valid DemandaEdicaoDTO demandaCriacaoDTO, @PathVariable(name = "idDemanda") Integer idDemanda, @PathVariable(name = "idAnalista") Integer idAnalista) {
+    public ResponseEntity<Object> edit(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam("files") MultipartFile[] multipartFiles, @PathVariable(name = "idDemanda") Integer idDemanda, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException  {
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }
 
-        Demanda demanda = demandaService.findById(idDemanda).get();
-        BeanUtils.copyProperties(demandaCriacaoDTO, demanda);
+        DemandaUtil util = new DemandaUtil();
+
+        Demanda demanda = util.convertJsonToEditionModel(demandaJSON);
+        Demanda demandaBanco = demandaService.findById(idDemanda).get();
+        BeanUtils.copyProperties(demandaBanco, demanda);
         demanda.setIdDemanda(idDemanda);
-        demanda.setStatusDemanda(StatusDemanda.BACKLOG);
-        demanda.setPrazoElaboracao(new Time(demandaCriacaoDTO.getMiliSegundosPrazoElaboracao()));
+
+        for(MultipartFile multipartFile : multipartFiles){
+            demanda.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, demanda.getUsuario() ));
+        }
+
         Demanda demandaSalva = demandaService.save(demanda);
 
         if (demanda.getLinkJira() == null) {

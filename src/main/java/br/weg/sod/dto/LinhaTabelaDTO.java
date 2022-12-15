@@ -21,7 +21,4 @@ public class LinhaTabelaDTO {
 
     @Positive
     private Double valorQuantidade;
-
-    @NotNull
-    private TabelaCusto tabelaCusto;
 }

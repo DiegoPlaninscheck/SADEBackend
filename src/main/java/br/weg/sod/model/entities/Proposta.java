@@ -43,6 +43,10 @@ public class Proposta {
     @JoinColumn(name = "idDemanda", nullable = false)
     private Demanda demanda;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idProposta", nullable = false)
+    private List<TabelaCusto> tabelasCustoProposta;
+
     @ManyToMany
     @JoinTable(name = "responsaveisNegocio", joinColumns = @JoinColumn(name = "idProposta", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "idUsuario", nullable = false))

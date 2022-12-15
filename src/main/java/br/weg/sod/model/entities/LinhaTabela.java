@@ -29,8 +29,4 @@ public class LinhaTabela {
     @Column(nullable = false)
     private Double valorQuantidade;
 
-    @ManyToOne
-    @JoinColumn(name = "idTabelaCusto", nullable = false)
-    private TabelaCusto tabelaCusto;
-
 }

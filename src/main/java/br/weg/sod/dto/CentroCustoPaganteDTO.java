@@ -17,9 +17,6 @@ public class CentroCustoPaganteDTO {
     private Double porcentagemDespesa;
 
     @NotNull
-    private TabelaCusto tabelaCusto;
-
-    @NotNull
     private CentroCusto centroCusto;
 
 }

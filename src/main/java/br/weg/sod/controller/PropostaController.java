@@ -5,18 +5,23 @@ import br.weg.sod.dto.LinhaTabelaDTO;
 import br.weg.sod.dto.PropostaDTO;
 import br.weg.sod.dto.TabelaCustoDTO;
 import br.weg.sod.model.entities.*;
+import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.*;
+import br.weg.sod.util.DemandaUtil;
+import br.weg.sod.util.PropostaUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -31,10 +36,7 @@ public class PropostaController {
     private HistoricoWorkflowService historicoWorkflowService;
     private UsuarioService usuarioService;
     private DemandaService demandaService;
-
-    private TabelaCustoController tabelaCustoController;
-    private LinhaTabelaController linhaTabelaController;
-    private CentroCustoPaganteController centroCustoPaganteController;
+    private ArquivoDemandaService arquivoDemandaService;
 
     @GetMapping
     public ResponseEntity<List<Proposta>> findAll() {
@@ -50,33 +52,23 @@ public class PropostaController {
     }
 
     @Transactional
-    @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid PropostaDTO propostaDTO) {
-        Proposta proposta = new Proposta();
-        BeanUtils.copyProperties(propostaDTO, proposta);
+    @PostMapping("/{idUsuario}")
+    public ResponseEntity<Object> save(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam("files") MultipartFile[] multipartFiles, @PathVariable("idUsuario") Integer idUsuario) throws IOException  {
+        PropostaUtil util = new PropostaUtil();
+        Proposta proposta = util.convertJsonToModel(propostaJSON);
         proposta.setIdProposta(proposta.getDemanda().getIdDemanda());
 
         Integer valorPayback = 2; //depois fazer a conta com payback e custo totais e os caralho
 
         proposta.setPayback(valorPayback);
+        Proposta propostaSalva = propostaService.save(proposta);
+        Demanda demandaRelacionada = propostaSalva.getDemanda();
 
-        Proposta propostaSalva = (propostaService.save(proposta));
-
-        for (TabelaCustoDTO tabelaCustoDTO : propostaDTO.getTabelasCustoProposta()) {
-            tabelaCustoDTO.setProposta(propostaSalva);
-            TabelaCusto tabelaCustoSalva = (TabelaCusto) tabelaCustoController.save(tabelaCustoDTO).getBody();
-
-            for (LinhaTabelaDTO linhaTabelaDTO : tabelaCustoDTO.getLinhasTabela()) {
-                linhaTabelaDTO.setTabelaCusto(tabelaCustoSalva);
-                linhaTabelaController.save(linhaTabelaDTO).getBody();
-            }
-
-            for (CentroCustoPaganteDTO centroCustoPaganteDTO : tabelaCustoDTO.getCentrosCustoPagantes()) {
-                centroCustoPaganteDTO.setTabelaCusto(tabelaCustoSalva);
-                centroCustoPaganteController.save(centroCustoPaganteDTO);
-            }
+        for(MultipartFile multipartFile : multipartFiles){
+            demandaRelacionada.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, usuarioService.findById(idUsuario).get()));
         }
 
+        demandaService.save(demandaRelacionada);
 
         //encerra o histórico da criação de proposta
         historicoWorkflowService.finishHistoricoByProposta(proposta, Tarefa.CRIARPAUTA);
@@ -85,14 +77,25 @@ public class PropostaController {
     }
 
     @PutMapping("/{idProposta}/{idAnalista}")
-    public ResponseEntity<Object> edit(@RequestBody @Valid PropostaDTO propostaDTO, @PathVariable(name = "idProposta") Integer idProposta, @PathVariable(name = "idAnalista") Integer idAnalista) {
+    public ResponseEntity<Object> edit(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam("files") MultipartFile[] multipartFiles, @PathVariable(name = "idProposta") Integer idProposta, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
         if (!propostaService.existsById(idProposta)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma proposta com o ID informado");
         }
 
-        Proposta proposta = propostaService.findById(idProposta).get();
-        BeanUtils.copyProperties(propostaDTO, proposta);
+        PropostaUtil util = new PropostaUtil();
+        Proposta proposta = util.convertJsonToModel(propostaJSON);
+        Proposta propostaBanco = propostaService.findById(idProposta).get();
+        BeanUtils.copyProperties(propostaBanco, proposta);
         proposta.setIdProposta(idProposta);
+
+        Proposta propostaSalva = propostaService.save(proposta);
+        Demanda demandaRelacionada = propostaSalva.getDemanda();
+
+        for(MultipartFile multipartFile : multipartFiles){
+            demandaRelacionada.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, usuarioService.findById(idAnalista).get()));
+        }
+
+        demandaService.save(demandaRelacionada);
 
         if (proposta.getEmWorkflow() && proposta.getAprovadoWorkflow() == null) {
             //inicia o histórico de aprovação em workflow

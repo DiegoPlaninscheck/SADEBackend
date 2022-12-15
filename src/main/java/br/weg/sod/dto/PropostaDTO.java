@@ -26,11 +26,12 @@ public class PropostaDTO {
     @NotNull
     private Demanda demanda;
 
+    @NotNull
     private Boolean aprovadoWorkflow;
+
+    private Integer payback;
 
     private List<Usuario> responsaveisNegocio;
 
-    private List<ArquivoDemanda> novosArquivos;
-
-    private List<TabelaCustoDTO> tabelasCustoProposta;
+    private List<TabelaCusto> tabelasCustoProposta;
 }

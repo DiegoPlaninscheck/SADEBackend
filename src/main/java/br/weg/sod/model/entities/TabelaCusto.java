@@ -3,6 +3,7 @@ package br.weg.sod.model.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "tabelaCusto")
@@ -31,7 +32,11 @@ public class TabelaCusto {
     @Column(nullable = false)
     private Boolean licenca;
 
-    @ManyToOne
-    @JoinColumn(name = "idProposta", nullable = false)
-    private Proposta proposta;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idTabelaCusto", nullable = false)
+    private List<CentroCustoPagante> centrosCustoPagantes;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idTabelaCusto", nullable = false)
+    private List<LinhaTabela> linhasTabela;
 }

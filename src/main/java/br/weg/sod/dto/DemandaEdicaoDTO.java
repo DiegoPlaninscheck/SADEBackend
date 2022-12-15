@@ -10,6 +10,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
+import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
 
@@ -49,15 +50,13 @@ public class DemandaEdicaoDTO {
     @NotBlank
     private String secaoTIResponsavel;
 
-    private Long miliSegundosPrazoElaboracao;
+    private Date prazoElaboracao;
 
     private Integer codigoPPM;
 
     private String linkJira;
 
-    private List<CentroCusto> centrosCustoDemanda;
+    private List<CentroCusto> centroCustoDemanda;
 
     private List<Beneficio> beneficiosDemanda;
-
-    private List<ArquivoDemanda> arquivosDemanda;
 }

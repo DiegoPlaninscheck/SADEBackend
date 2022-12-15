@@ -6,10 +6,7 @@ import br.weg.sod.model.entities.Proposta;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @Setter
@@ -25,12 +22,12 @@ public class TabelaCustoDTO {
     @Positive
     private Double valorTotal;
 
+    @NotNull
     private Boolean licenca;
 
-    @NotNull
-    private Proposta proposta;
+//    @Size
+    private List<CentroCustoPagante> centrosCustoPagantes;
 
-    private List<CentroCustoPaganteDTO> centrosCustoPagantes;
-
-    private List<LinhaTabelaDTO> linhasTabela;
+//    @Size
+    private List<LinhaTabela> linhasTabela;
 }
