@@ -23,7 +23,4 @@ public class BeneficioDTO {
 
     private Double valor;
 
-//    @NotNull
-//    private Demanda demanda;
-
 }

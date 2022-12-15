@@ -37,8 +37,6 @@ public class DemandaCriacaoDTO {
 
     private List<Beneficio> beneficiosDemanda;
 
-    private List<ArquivoDemanda> arquivosDemanda;
-
     @NotNull
     private Usuario usuario;
 }

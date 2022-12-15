@@ -7,6 +7,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -66,6 +67,14 @@ public class Demanda {
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idDemanda", nullable = false)
+    private List<ArquivoDemanda> arquivosDemanda = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idDemanda", nullable = false)
+    private List<Beneficio> beneficiosDemanda;
 
     @ManyToMany
     @JoinTable(name = "budemanda", joinColumns =

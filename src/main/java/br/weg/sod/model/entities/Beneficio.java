@@ -36,7 +36,4 @@ public class Beneficio {
     @Column
     private Double valor;
 
-    @ManyToOne
-    @JoinColumn(name = "idDemanda", nullable = false)
-    private Demanda demanda;
 }

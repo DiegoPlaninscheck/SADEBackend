@@ -10,5 +10,4 @@ import java.util.List;
 @Repository
 public interface ArquivoDemandaRepository extends JpaRepository<ArquivoDemanda, Integer> {
 
-    public List<ArquivoDemanda> findByDemanda(Demanda demanda);
 }

@@ -35,7 +35,4 @@ public class BeneficioService {
         beneficioRepository.deleteById(integer);
     }
 
-    public List<Beneficio> findByDemanda(Demanda demanda) {
-        return beneficioRepository.findByDemanda(demanda);
-    }
 }

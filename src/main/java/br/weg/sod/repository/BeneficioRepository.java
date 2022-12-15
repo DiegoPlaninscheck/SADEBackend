@@ -10,5 +10,4 @@ import java.util.List;
 @Repository
 public interface BeneficioRepository extends JpaRepository<Beneficio, Integer> {
 
-    public List<Beneficio> findByDemanda(Demanda demanda);
 }

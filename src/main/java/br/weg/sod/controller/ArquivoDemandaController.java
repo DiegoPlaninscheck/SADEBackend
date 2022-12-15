@@ -5,6 +5,7 @@ import br.weg.sod.model.entities.ArquivoDemanda;
 import br.weg.sod.model.service.ArquivoDemandaService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import java.util.List;
 @RequestMapping("/sod/arquivoDemanda")
 public class ArquivoDemandaController {
 
+    @Autowired
     private ArquivoDemandaService arquivoDemandaService;
 
     @GetMapping

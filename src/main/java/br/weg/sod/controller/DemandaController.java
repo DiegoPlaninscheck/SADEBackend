@@ -7,15 +7,20 @@ import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.*;
+import br.weg.sod.util.DemandaUtil;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.Request;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -32,7 +37,6 @@ public class DemandaController {
     private HistoricoWorkflowService historicoWorkflowService;
     private UsuarioService usuarioService;
     private BeneficioService beneficioService;
-    private ArquivoDemandaService arquivoDemandaService;
 
     @GetMapping
     public ResponseEntity<List<Demanda>> findAll() {
@@ -49,19 +53,22 @@ public class DemandaController {
 
     @Transactional
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid DemandaCriacaoDTO demandaCriacaoDTO) {
-        Demanda demanda = new Demanda();
-        BeanUtils.copyProperties(demandaCriacaoDTO, demanda);
+    public ResponseEntity<Object> save(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam("files") MultipartFile[] multipartFiles) throws IOException {
+        DemandaUtil util = new DemandaUtil();
+
+        Demanda demanda = util.convertJsonToModel(demandaJSON);
         demanda.setStatusDemanda(StatusDemanda.BACKLOG);
 
-        Demanda demandaCadastrada = demandaService.save(demanda);
+        for(MultipartFile multipartFile : multipartFiles){
+            demanda.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, demanda.getUsuario() ));
+        }
 
+        Demanda demandaSalva = demandaService.save(demanda);
 
-
-        HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaCadastrada);
+        HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
         historicoWorkflowService.save(historicoWorkflow);
 
-        return ResponseEntity.status(HttpStatus.OK).body(demandaCadastrada);
+        return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
     }
 
     @PutMapping("/{idDemanda}/{idAnalista}")
@@ -107,24 +114,6 @@ public class DemandaController {
         }
 
         Demanda demandaDeletada = demandaService.findById(idDemanda).get();
-
-        List<Beneficio> beneficiosDemanda = beneficioService.findByDemanda(demandaDeletada);
-
-        for(Beneficio beneficio : beneficiosDemanda){
-            beneficioService.deleteById(beneficio.getIdBeneficio());
-        }
-
-        List<HistoricoWorkflow> historicosDemanda = historicoWorkflowService.findByDemanda(demandaDeletada);
-
-        for(HistoricoWorkflow historico : historicosDemanda){
-            historicoWorkflowService.deleteById(historico.getIdHistoricoWorkflow());
-        }
-
-        List<ArquivoDemanda> arquivosDemanda = arquivoDemandaService.findByDemanda(demandaDeletada);
-
-        for(ArquivoDemanda arquivoDemanda : arquivosDemanda){
-            arquivoDemandaService.deleteById(arquivoDemanda.getIdArquivoDemanda());
-        }
 
         demandaService.deleteById(idDemanda);
         return ResponseEntity.status(HttpStatus.OK).body("Demanda deletada com sucesso!");

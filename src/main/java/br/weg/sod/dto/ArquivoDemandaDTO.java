@@ -14,8 +14,5 @@ public class ArquivoDemandaDTO {
     private byte[] arquivo;
 
     @NotNull
-    private Demanda demanda;
-
-    @NotNull
     private Usuario usuario;
 }

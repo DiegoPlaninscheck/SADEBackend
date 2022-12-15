@@ -35,7 +35,4 @@ public class ArquivoDemandaService {
         arquivoDemandaRepository.deleteById(integer);
     }
 
-    public List<ArquivoDemanda> findByDemanda(Demanda demanda) {
-        return arquivoDemandaRepository.findByDemanda(demanda);
-    }
 }

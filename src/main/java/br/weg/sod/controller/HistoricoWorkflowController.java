@@ -111,6 +111,13 @@ public class HistoricoWorkflowController {
                     }
                 }
             } else if (tarefa == Tarefa.CRIARPROPOSTA) {
+                Usuario responsavelTarefa = historicoWorkflowSalvo.getUsuario();
+                String tituloProposta = historicoWorkflowSalvo.getDemanda().getTituloDemanda();
+                linkNotificacao += "/notifications/proposal";
+                tipoNotificacao = TipoNotificacao.PROPOSTA;
+                idComponente = historicoWorkflow.getDemanda().getIdDemanda();
+
+
 
             }
 
