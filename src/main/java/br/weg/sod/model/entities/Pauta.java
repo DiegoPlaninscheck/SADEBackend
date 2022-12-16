@@ -25,6 +25,7 @@ public class Pauta {
     private Date dataReuniao;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idPauta", nullable = false)
     private List<DecisaoProposta> propostasPauta;
 
     @ManyToOne

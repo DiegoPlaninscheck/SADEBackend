@@ -49,16 +49,16 @@ public class PautaController {
         BeanUtils.copyProperties(pautaDTO, pauta);
         Pauta pautaSalva = pautaService.save(pauta);
 
-//        for(DecisaoProposta decisaoProposta : pautaSalva.getPropostasPauta()){
-            //encerrar historico criar pauta
-//            historicoWorkflowService.finishHistoricoByProposta(decisaoProposta.getProposta(), Tarefa.CRIARPAUTA);
-//
-//            //inicio informar parecer da comissao
-//            Timestamp time = new Timestamp(pautaSalva.getDataReuniao().getTime());
-//            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-//
-//            historicoWorkflowService.initializeHistoricoByProposta(time,Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoProposta.getProposta());
-//        }
+        for(DecisaoProposta decisaoProposta : pautaSalva.getPropostasPauta()){
+//            encerrar historico criar pauta
+            historicoWorkflowService.finishHistoricoByProposta(decisaoProposta.getProposta(), Tarefa.CRIARPAUTA);
+
+//            inicio informar parecer da comissao
+            Timestamp time = new Timestamp(pautaSalva.getDataReuniao().getTime());
+            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
+
+            historicoWorkflowService.initializeHistoricoByProposta(time,Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoProposta.getProposta());
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(pautaSalva);
     }

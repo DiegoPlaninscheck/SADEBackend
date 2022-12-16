@@ -20,6 +20,5 @@ public class PautaDTO {
     @NotNull
     private Forum forum;
 
-    @Size
     private List<DecisaoProposta> propostasPauta;
 }
