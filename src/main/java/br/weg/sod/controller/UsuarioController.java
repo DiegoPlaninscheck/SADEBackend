@@ -45,6 +45,10 @@ public class UsuarioController {
         UsuarioUtil usuarioUtil = new UsuarioUtil();
         Usuario usuario = usuarioUtil.convertJsonToModel(usuarioJSON, tipoUsuario);
 
+        if(usuarioService.existsByNumeroCadastro(usuario.getNumeroCadastro())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Esse número de cadastro já existe");
+        }
+
         try {
             usuario.setFoto(foto.getBytes());
         } catch (Exception e) {

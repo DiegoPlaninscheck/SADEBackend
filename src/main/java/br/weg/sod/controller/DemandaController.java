@@ -62,14 +62,16 @@ public class DemandaController {
 
     @Transactional
     @PostMapping
-    public ResponseEntity<Object> save(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam("files") MultipartFile[] multipartFiles) throws IOException {
+    public ResponseEntity<Object> save(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles) throws IOException {
         DemandaUtil util = new DemandaUtil();
 
         Demanda demanda = util.convertJsonToCreationModel(demandaJSON);
         demanda.setStatusDemanda(StatusDemanda.BACKLOG);
 
-        for(MultipartFile multipartFile : multipartFiles){
-            demanda.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, demanda.getUsuario() ));
+        if(multipartFiles != null){
+            for(MultipartFile multipartFile : multipartFiles){
+                demanda.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, demanda.getUsuario() ));
+            }
         }
 
         Demanda demandaSalva = demandaService.save(demanda);
@@ -81,7 +83,7 @@ public class DemandaController {
     }
 
     @PutMapping("/{idDemanda}/{idAnalista}")
-    public ResponseEntity<Object> edit(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam("files") MultipartFile[] multipartFiles, @PathVariable(name = "idDemanda") Integer idDemanda, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException  {
+    public ResponseEntity<Object> edit(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @PathVariable(name = "idDemanda") Integer idDemanda, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException  {
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }

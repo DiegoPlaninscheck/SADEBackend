@@ -4,15 +4,9 @@ import lombok.*;
 
 import javax.persistence.*;
 
-
+@Data
 @Entity
 @Table(name = "linhaTabela")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class LinhaTabela {
 
     @Id

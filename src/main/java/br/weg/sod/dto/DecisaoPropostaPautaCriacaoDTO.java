@@ -7,10 +7,7 @@ import lombok.Getter;
 import javax.validation.constraints.NotNull;
 
 @Getter
-public class DecisaoPropostaCriacaoDTO {
-
-    @NotNull
-    private Pauta pauta;
+public class DecisaoPropostaPautaCriacaoDTO {
 
     @NotNull
     private Proposta proposta;

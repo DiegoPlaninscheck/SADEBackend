@@ -3,18 +3,12 @@ package br.weg.sod.model.entities;
 import lombok.*;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "proposta")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class Proposta {
 
     @Id

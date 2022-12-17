@@ -55,16 +55,7 @@ public class UsuarioService {
         return null;
     }
 
-    public GerenteTI findGerenteTIByAnalista(String departamento) {
-        List<Usuario> usuarioList = findByDepartamento(departamento);
-
-        for (Usuario usuario : usuarioList) {
-            if (usuario instanceof GerenteTI) {
-                return (GerenteTI) usuario;
-            }
-        }
-
-        return null;
-
+    public boolean existsByNumeroCadastro(Integer numeroCadastro) {
+        return usuarioRepository.existsByNumeroCadastro(numeroCadastro);
     }
 }

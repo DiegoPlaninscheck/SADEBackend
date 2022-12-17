@@ -10,28 +10,16 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 
 @Getter
-public class DecisaoPropostaEdicaoDTO {
-
-    @NotNull
-    private Pauta pauta;
+public class DecisaoPropostaPautaEdicaoDTO {
 
     @NotNull
     private Proposta proposta;
-
-    @NotNull
-    private ATA ata;
 
     @NotNull
     private StatusDemanda statusDemandaComissao;
 
     @NotNull
     private Boolean ataPublicada;
-
-    @Digits(integer = 100, fraction = 0)
-    private Integer numeroSequencial;
-
-    @Digits(integer = 10, fraction = 0)
-    private Integer numeroAno;
 
     private String comentario;
 }

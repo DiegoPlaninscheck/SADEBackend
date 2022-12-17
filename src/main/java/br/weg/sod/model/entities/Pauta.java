@@ -6,14 +6,9 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "pauta")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class Pauta {
 
     @Id
@@ -24,9 +19,14 @@ public class Pauta {
     @Column(nullable = false)
     private Date dataReuniao;
 
+    @Column
+    @Lob
+//    @JsonIgnore
+    private byte[] ataReuniao;
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "idPauta", nullable = false)
-    private List<DecisaoProposta> propostasPauta;
+    private List<DecisaoPropostaPauta> propostasPauta;
 
     @ManyToOne
     @JoinColumn(name = "idForum", nullable = false)

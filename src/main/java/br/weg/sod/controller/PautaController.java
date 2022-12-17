@@ -2,7 +2,7 @@ package br.weg.sod.controller;
 
 import br.weg.sod.dto.PautaDTO;
 import br.weg.sod.model.entities.AnalistaTI;
-import br.weg.sod.model.entities.DecisaoProposta;
+import br.weg.sod.model.entities.DecisaoPropostaPauta;
 import br.weg.sod.model.entities.Pauta;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
@@ -49,15 +49,15 @@ public class PautaController {
         BeanUtils.copyProperties(pautaDTO, pauta);
         Pauta pautaSalva = pautaService.save(pauta);
 
-        for(DecisaoProposta decisaoProposta : pautaSalva.getPropostasPauta()){
+        for(DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()){
 //            encerrar historico criar pauta
-            historicoWorkflowService.finishHistoricoByProposta(decisaoProposta.getProposta(), Tarefa.CRIARPAUTA);
+            historicoWorkflowService.finishHistoricoByProposta(decisaoPropostaPauta.getProposta(), Tarefa.CRIARPAUTA);
 
 //            inicio informar parecer da comissao
             Timestamp time = new Timestamp(pautaSalva.getDataReuniao().getTime());
             AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
 
-            historicoWorkflowService.initializeHistoricoByProposta(time,Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoProposta.getProposta());
+            historicoWorkflowService.initializeHistoricoByProposta(time,Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoPropostaPauta.getProposta());
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(pautaSalva);

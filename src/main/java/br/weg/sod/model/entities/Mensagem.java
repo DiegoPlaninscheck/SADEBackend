@@ -5,14 +5,9 @@ import lombok.*;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
+@Data
 @Entity
 @Table(name = "mensagem")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class Mensagem {
 
     @Id

@@ -53,9 +53,14 @@ public class PropostaController {
 
     @Transactional
     @PostMapping("/{idUsuario}")
-    public ResponseEntity<Object> save(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam("files") MultipartFile[] multipartFiles, @PathVariable("idUsuario") Integer idUsuario) throws IOException  {
+    public ResponseEntity<Object> save(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @PathVariable("idUsuario") Integer idUsuario) throws IOException  {
         PropostaUtil util = new PropostaUtil();
         Proposta proposta = util.convertJsonToModel(propostaJSON);
+
+        if(proposta.getPeriodoExecucaoFim().getTime() < proposta.getPeriodoExecucaoInicio().getTime()){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("O período de execução inválido");
+        }
+
         proposta.setIdProposta(proposta.getDemanda().getIdDemanda());
 
         Integer valorPayback = 2; //depois fazer a conta com payback e custo totais e os caralho
@@ -77,7 +82,7 @@ public class PropostaController {
     }
 
     @PutMapping("/{idProposta}/{idAnalista}")
-    public ResponseEntity<Object> edit(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam("files") MultipartFile[] multipartFiles, @PathVariable(name = "idProposta") Integer idProposta, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
+    public ResponseEntity<Object> edit(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @PathVariable(name = "idProposta") Integer idProposta, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
         if (!propostaService.existsById(idProposta)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma proposta com o ID informado");
         }

@@ -1,19 +1,13 @@
 package br.weg.sod.model.entities;
 
-import br.weg.sod.model.entities.enuns.TipoForum;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "forum")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class Forum {
 
     @Id

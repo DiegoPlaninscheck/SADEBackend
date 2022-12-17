@@ -3,16 +3,10 @@ package br.weg.sod.model.entities;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
 
+@Data
 @Entity
 @Table(name = "BU")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class BU {
 
     @Id
@@ -22,10 +16,5 @@ public class BU {
 
     @Column(nullable = false)
     private String nomeBU;
-
-//    @ManyToMany(mappedBy = "BUsBeneficiadas")
-////    @JoinTable(name = "busBeneficiadas", joinColumns = @JoinColumn(name = "idDemanda", nullable = false),
-////            inverseJoinColumns = @JoinColumn(name = "id_bu", nullable = false))
-//    private List<Demanda> demandas;
 
 }

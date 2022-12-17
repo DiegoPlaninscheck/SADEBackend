@@ -5,14 +5,9 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "tabelaCusto")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class TabelaCusto {
 
     @Id

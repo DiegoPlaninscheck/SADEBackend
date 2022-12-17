@@ -19,8 +19,6 @@ public class BeneficioDTO {
 
     private Moeda moeda;
 
-    private String memoriaCalculo;
-
     private Double valor;
 
 }

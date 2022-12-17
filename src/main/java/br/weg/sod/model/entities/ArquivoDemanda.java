@@ -6,14 +6,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.*;
 import java.io.IOException;
 
+@Data
 @Entity
-@Table(name = "arquivoDemanda")
-@AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
+@Table(name = "arquivoDemanda")
 public class ArquivoDemanda {
 
     @Id

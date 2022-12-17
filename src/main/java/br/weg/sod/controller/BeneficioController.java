@@ -2,6 +2,8 @@ package br.weg.sod.controller;
 
 import br.weg.sod.dto.BeneficioDTO;
 import br.weg.sod.model.entities.Beneficio;
+import br.weg.sod.model.entities.enuns.Moeda;
+import br.weg.sod.model.entities.enuns.TipoBeneficio;
 import br.weg.sod.model.service.BeneficioService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -38,7 +40,8 @@ public class BeneficioController {
     public ResponseEntity<Object> save(@RequestBody @Valid BeneficioDTO beneficioDTO) {
         Beneficio beneficio = new Beneficio();
         BeanUtils.copyProperties(beneficioDTO, beneficio);
-        return ResponseEntity.status(HttpStatus.OK).body(beneficioService.save(beneficio));
+
+        return checarBeneficio(beneficio);
     }
 
     @PutMapping("/{id}")
@@ -51,7 +54,7 @@ public class BeneficioController {
         BeanUtils.copyProperties(beneficioDTO, beneficio);
         beneficio.setIdBeneficio(idBeneficio);
 
-        return ResponseEntity.status(HttpStatus.OK).body(beneficioService.save(beneficio));
+        return checarBeneficio(beneficio);
     }
 
     @DeleteMapping("/{id}")
@@ -61,5 +64,19 @@ public class BeneficioController {
         }
         beneficioService.deleteById(idBeneficio);
         return ResponseEntity.status(HttpStatus.OK).body("Beneficio deletado com sucesso!");
+    }
+
+    private ResponseEntity<Object> checarBeneficio(Beneficio beneficio){
+        TipoBeneficio tipoBeneficio = beneficio.getTipoBeneficio();
+        Moeda moedaBeneficio = beneficio.getMoeda();
+        Double valor = beneficio.getValor();
+
+        if(tipoBeneficio == TipoBeneficio.QUALITATIVO && (moedaBeneficio != null || valor != null)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Benefícios do tipo QUALITATIVO não aceitam valores de 'moeda' e 'valor'");
+        } else if((tipoBeneficio == TipoBeneficio.POTENCIAL|| tipoBeneficio == TipoBeneficio.REAL) && (moedaBeneficio == null || valor == null)){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Benefícios do tipo POTENCIAL ou REAL necessitam de ter os campos 'moeda' e 'valor'");
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(beneficioService.save(beneficio));
+        }
     }
 }

@@ -7,14 +7,10 @@ import lombok.*;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
+@Data
 @Entity
-@Table(name = "historicoWorkflow")
-@AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
+@Table(name = "historicoWorkflow")
 public class HistoricoWorkflow {
 
     @Id

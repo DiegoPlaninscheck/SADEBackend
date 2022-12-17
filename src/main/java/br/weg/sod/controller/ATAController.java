@@ -2,13 +2,11 @@ package br.weg.sod.controller;
 
 import br.weg.sod.dto.ATADTO;
 import br.weg.sod.model.entities.ATA;
-import br.weg.sod.model.entities.DecisaoProposta;
-import br.weg.sod.model.entities.HistoricoWorkflow;
+import br.weg.sod.model.entities.DecisaoPropostaPauta;
 import br.weg.sod.model.entities.Proposta;
-import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.ATAService;
-import br.weg.sod.model.service.DecisaoPropostaService;
+import br.weg.sod.model.service.DecisaoPropostaPautaService;
 import br.weg.sod.model.service.HistoricoWorkflowService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.sql.Timestamp;
 import java.util.List;
 
 @CrossOrigin
@@ -29,7 +26,7 @@ public class ATAController {
 
     private ATAService ataService;
     private HistoricoWorkflowService historicoWorkflowService;
-    private DecisaoPropostaService decisaoPropostaService;
+    private DecisaoPropostaPautaService decisaoPropostaPautaService;
 
     @GetMapping
     public ResponseEntity<List<ATA>> findAll() {
@@ -62,9 +59,9 @@ public class ATAController {
         BeanUtils.copyProperties(atadto, ata);
         ata.setIdATA(idATA);
 
-        List<DecisaoProposta> listaDecisaoProposta = decisaoPropostaService.findByATA(ata);
+        List<DecisaoPropostaPauta> listaDecisaoPropostaPauta = ata.getPauta().getPropostasPauta();
 
-        for (DecisaoProposta deicasaoProposta : listaDecisaoProposta) {
+        for (DecisaoPropostaPauta deicasaoProposta : listaDecisaoPropostaPauta) {
             Proposta proposta = deicasaoProposta.getProposta();
             historicoWorkflowService.finishHistoricoByProposta(proposta, Tarefa.INFORMARPARECERDG);
         }

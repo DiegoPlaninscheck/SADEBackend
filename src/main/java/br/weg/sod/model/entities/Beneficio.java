@@ -6,15 +6,9 @@ import lombok.*;
 
 import javax.persistence.*;
 
-
+@Data
 @Entity
 @Table(name = "beneficio")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class Beneficio {
 
     @Id

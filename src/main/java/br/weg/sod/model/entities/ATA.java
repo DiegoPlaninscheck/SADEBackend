@@ -3,15 +3,11 @@ package br.weg.sod.model.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
+@Data
 @Entity
 @Table(name = "ATA")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class ATA {
 
     @Id
@@ -19,11 +15,14 @@ public class ATA {
     @Column
     private Integer idATA;
 
-    @Column(nullable = false)
+    @Column
+    private Integer numeroAno;
+
+    @Column
     @Lob
     private byte[] pdfATAPublicada;
 
-    @Column(nullable = false)
+    @Column
     @Lob
     private byte[] pdfATANaoPublicada;
 
@@ -33,5 +32,13 @@ public class ATA {
     @Column
     @Lob
     private byte[] documentoAprovacao;
+
+    @OneToOne
+    @JoinColumn(name = "idPauta", nullable = false)
+    private Pauta pauta;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idAta", nullable = false)
+    private List<DecisaoPropostaATA> propostasAta;
 
 }

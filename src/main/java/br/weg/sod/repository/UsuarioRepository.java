@@ -10,4 +10,5 @@ import java.util.List;
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     public List<Usuario> findByDepartamento(String departamento);
+    public boolean existsByNumeroCadastro(Integer numeroCadastro);
 }
