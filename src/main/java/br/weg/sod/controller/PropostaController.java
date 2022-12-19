@@ -61,19 +61,21 @@ public class PropostaController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("O período de execução inválido");
         }
 
-        proposta.setIdProposta(proposta.getDemanda().getIdDemanda());
-
         Integer valorPayback = 2; //depois fazer a conta com payback e custo totais e os caralho
 
         proposta.setPayback(valorPayback);
+        proposta.setIdProposta(proposta.getDemanda().getIdDemanda());
         Proposta propostaSalva = propostaService.save(proposta);
-        Demanda demandaRelacionada = propostaSalva.getDemanda();
 
-        for(MultipartFile multipartFile : multipartFiles){
-            demandaRelacionada.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, usuarioService.findById(idUsuario).get()));
+        if(multipartFiles != null){
+            Demanda demandaRelacionada = propostaSalva.getDemanda();
+
+            for(MultipartFile multipartFile : multipartFiles){
+                demandaRelacionada.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, usuarioService.findById(idUsuario).get()));
+            }
+
+            demandaService.save(demandaRelacionada);
         }
-
-        demandaService.save(demandaRelacionada);
 
         //encerra o histórico da criação de proposta
         historicoWorkflowService.finishHistoricoByProposta(proposta, Tarefa.CRIARPAUTA);
@@ -89,8 +91,6 @@ public class PropostaController {
 
         PropostaUtil util = new PropostaUtil();
         Proposta proposta = util.convertJsonToModel(propostaJSON);
-        Proposta propostaBanco = propostaService.findById(idProposta).get();
-        BeanUtils.copyProperties(propostaBanco, proposta);
         proposta.setIdProposta(idProposta);
 
         Proposta propostaSalva = propostaService.save(proposta);

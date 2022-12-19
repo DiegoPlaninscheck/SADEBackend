@@ -6,7 +6,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 
 
-public class DecisaoPropostaATADTO {
+public class DecisaoPropostaATAEdicaoDTO {
 
     @Digits(integer = 15, fraction = 0)
     private Integer numeroSequencial;

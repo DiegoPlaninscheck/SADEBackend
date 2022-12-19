@@ -1,8 +1,6 @@
 package br.weg.sod.dto;
 
-import br.weg.sod.model.entities.DecisaoPropostaPauta;
 import br.weg.sod.model.entities.Forum;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 
 import javax.validation.constraints.Future;
@@ -11,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 @Getter
-public class PautaDTO {
+public class PautaCriacaoDTO {
 
     @Future
     private Date dataReuniao;
@@ -21,5 +19,5 @@ public class PautaDTO {
 
     private byte[] ataReuniao;
 
-    private List<DecisaoPropostaPauta> propostasPauta;
+    private List<DecisaoPropostaPautaCriacaoDTO> propostasPauta;
 }

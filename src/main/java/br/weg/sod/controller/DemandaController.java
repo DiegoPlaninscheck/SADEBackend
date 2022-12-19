@@ -91,12 +91,12 @@ public class DemandaController {
         DemandaUtil util = new DemandaUtil();
 
         Demanda demanda = util.convertJsonToEditionModel(demandaJSON);
-        Demanda demandaBanco = demandaService.findById(idDemanda).get();
-        BeanUtils.copyProperties(demandaBanco, demanda);
         demanda.setIdDemanda(idDemanda);
 
-        for(MultipartFile multipartFile : multipartFiles){
-            demanda.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, demanda.getUsuario() ));
+        if(multipartFiles != null){
+            for(MultipartFile multipartFile : multipartFiles){
+                demanda.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, demanda.getUsuario() ));
+            }
         }
 
         Demanda demandaSalva = demandaService.save(demanda);

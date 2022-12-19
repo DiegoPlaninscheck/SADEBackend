@@ -1,6 +1,7 @@
 package br.weg.sod.controller;
 
-import br.weg.sod.dto.DecisaoPropostaATADTO;
+import br.weg.sod.dto.DecisaoPropostaATACriacaoDTO;
+import br.weg.sod.dto.DecisaoPropostaATAEdicaoDTO;
 import br.weg.sod.model.entities.DecisaoPropostaATA;
 import br.weg.sod.model.service.DecisaoPropostaATAService;
 import lombok.AllArgsConstructor;
@@ -35,21 +36,21 @@ public class DecisaoPropostaATAController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid DecisaoPropostaATADTO decisaoPropostaATADTO) {
+    public ResponseEntity<Object> save(@RequestBody @Valid DecisaoPropostaATACriacaoDTO decisaoPropostaATACriacaoDTO) {
         DecisaoPropostaATA decisaoPropostaATA = new DecisaoPropostaATA();
-        BeanUtils.copyProperties(decisaoPropostaATADTO, decisaoPropostaATA);
+        BeanUtils.copyProperties(decisaoPropostaATACriacaoDTO, decisaoPropostaATA);
 
         return ResponseEntity.status(HttpStatus.OK).body(decisaoPropostaATAService.save(decisaoPropostaATA));
     }
 
     @PutMapping("/{idDecisaoProposta}")
-    public ResponseEntity<Object> edit(@RequestBody @Valid DecisaoPropostaATADTO decisaoPropostaATADTO, @PathVariable(name = "idDecisaoProspota") Integer idDecisaoPropostaATA) {
+    public ResponseEntity<Object> edit(@RequestBody @Valid DecisaoPropostaATAEdicaoDTO decisaoPropostaATAEdicaoDTO, @PathVariable(name = "idDecisaoProspota") Integer idDecisaoPropostaATA) {
         if (!decisaoPropostaATAService.existsById(idDecisaoPropostaATA)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma decisao proposta com o ID informado");
         }
 
         DecisaoPropostaATA decisaoPropostaAta = decisaoPropostaATAService.findById(idDecisaoPropostaATA).get();
-        BeanUtils.copyProperties(decisaoPropostaATADTO, decisaoPropostaAta);
+        BeanUtils.copyProperties(decisaoPropostaATAEdicaoDTO, decisaoPropostaAta);
 
         return ResponseEntity.status(HttpStatus.OK).body(decisaoPropostaATAService.save(decisaoPropostaAta));
     }

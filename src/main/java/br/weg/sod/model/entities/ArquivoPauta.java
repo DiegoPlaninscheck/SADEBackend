@@ -1,6 +1,8 @@
 package br.weg.sod.model.entities;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
@@ -9,13 +11,13 @@ import java.io.IOException;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = "arquivoDemanda")
-public class ArquivoDemanda {
+@Table(name = "arquivoPauta")
+public class ArquivoPauta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private Integer idArquivoDemanda;
+    private Integer idArquivoPauta;
 
     @NonNull
     private String nome;
@@ -31,7 +33,7 @@ public class ArquivoDemanda {
     @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario insersor;
 
-    public ArquivoDemanda(MultipartFile multipartFile, Usuario insersor) throws IOException {
+    public ArquivoPauta(MultipartFile multipartFile, Usuario insersor) throws IOException {
         this.nome = multipartFile.getOriginalFilename();
         this.tipo = multipartFile.getContentType();
         this.arquivo = multipartFile.getBytes();

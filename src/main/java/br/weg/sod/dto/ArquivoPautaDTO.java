@@ -6,7 +6,7 @@ import lombok.Getter;
 import javax.validation.constraints.NotNull;
 
 @Getter
-public class ArquivoDemandaDTO {
+public class ArquivoPautaDTO {
 
     @NotNull
     private byte[] arquivo;

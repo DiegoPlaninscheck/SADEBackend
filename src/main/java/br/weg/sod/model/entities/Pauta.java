@@ -1,8 +1,10 @@
 package br.weg.sod.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,10 +21,10 @@ public class Pauta {
     @Column(nullable = false)
     private Date dataReuniao;
 
-    @Column
-    @Lob
-//    @JsonIgnore
-    private byte[] ataReuniao;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idPauta", nullable = false)
+    private List<ArquivoPauta> arquivosPauta = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "idPauta", nullable = false)
