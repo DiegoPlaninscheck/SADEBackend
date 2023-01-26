@@ -19,19 +19,7 @@ public class ATA {
     private Integer numeroAno;
 
     @Column
-    @Lob
-    private byte[] pdfATAPublicada;
-
-    @Column
-    @Lob
-    private byte[] pdfATANaoPublicada;
-
-    @Column
     private Integer numeroDG;
-
-    @Column
-    @Lob
-    private byte[] documentoAprovacao;
 
     @OneToOne
     @JoinColumn(name = "idPauta", nullable = false)

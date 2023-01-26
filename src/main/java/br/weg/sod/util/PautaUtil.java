@@ -15,7 +15,7 @@ public class PautaUtil {
         return convertDtoToModel(pautaDTO);
     }
 
-    private PautaEdicaoDTO convertJsontoDto(String pautaJSON) {
+    public PautaEdicaoDTO convertJsontoDto(String pautaJSON) {
         try {
             return this.objectMapper.readValue(pautaJSON, PautaEdicaoDTO.class);
         } catch (Exception exception) {

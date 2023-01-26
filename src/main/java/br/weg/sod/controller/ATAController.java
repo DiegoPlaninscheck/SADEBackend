@@ -1,6 +1,7 @@
 package br.weg.sod.controller;
 
-import br.weg.sod.dto.ATADTO;
+import br.weg.sod.dto.ATACriacaoDTO;
+import br.weg.sod.dto.ATAEdicaoDTO;
 import br.weg.sod.model.entities.ATA;
 import br.weg.sod.model.entities.DecisaoPropostaPauta;
 import br.weg.sod.model.entities.Proposta;
@@ -43,20 +44,20 @@ public class ATAController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid ATADTO atadto) {
+    public ResponseEntity<Object> save(@RequestBody @Valid ATACriacaoDTO ATACriacaoDTO) {
         ATA ata = new ATA();
-        BeanUtils.copyProperties(atadto, ata);
+        BeanUtils.copyProperties(ATACriacaoDTO, ata);
         return ResponseEntity.status(HttpStatus.OK).body(ataService.save(ata));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody @Valid ATADTO atadto, @PathVariable(name = "id") Integer idATA) {
+    public ResponseEntity<Object> edit(@RequestBody @Valid ATAEdicaoDTO ATAEdicaoDTO, @PathVariable(name = "id") Integer idATA) {
         if (!ataService.existsById(idATA)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma ATA com o ID informado");
         }
 
         ATA ata = ataService.findById(idATA).get();
-        BeanUtils.copyProperties(atadto, ata);
+        BeanUtils.copyProperties(ATAEdicaoDTO, ata);
         ata.setIdATA(idATA);
 
         List<DecisaoPropostaPauta> listaDecisaoPropostaPauta = ata.getPauta().getPropostasPauta();

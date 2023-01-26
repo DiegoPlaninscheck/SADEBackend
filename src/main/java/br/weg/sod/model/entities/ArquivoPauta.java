@@ -1,5 +1,6 @@
 package br.weg.sod.model.entities;
 
+import br.weg.sod.model.entities.enuns.TipoDocumentoPauta;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -29,14 +30,18 @@ public class ArquivoPauta {
     @Lob
     private byte[] arquivo;
 
+    @Column(nullable = false)
+    private TipoDocumentoPauta tipoDocumentoPauta;
+
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario insersor;
 
-    public ArquivoPauta(MultipartFile multipartFile, Usuario insersor) throws IOException {
+    public ArquivoPauta(MultipartFile multipartFile,TipoDocumentoPauta tipoDocumentoPauta ,Usuario insersor) throws IOException {
         this.nome = multipartFile.getOriginalFilename();
         this.tipo = multipartFile.getContentType();
         this.arquivo = multipartFile.getBytes();
+        this.tipoDocumentoPauta = tipoDocumentoPauta;
         this.insersor = insersor;
     }
 }

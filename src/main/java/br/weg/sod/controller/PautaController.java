@@ -1,17 +1,18 @@
 package br.weg.sod.controller;
 
 import br.weg.sod.dto.DecisaoPropostaPautaCriacaoDTO;
-import br.weg.sod.dto.DecisaoPropostaPautaEdicaoDTO;
 import br.weg.sod.dto.PautaCriacaoDTO;
 import br.weg.sod.dto.PautaEdicaoDTO;
 import br.weg.sod.model.entities.*;
+import br.weg.sod.model.entities.enuns.TipoDocumentoPauta;
 import br.weg.sod.model.service.HistoricoWorkflowService;
 import br.weg.sod.model.service.PautaService;
 import br.weg.sod.model.service.UsuarioService;
-import br.weg.sod.util.DemandaUtil;
 import br.weg.sod.util.PautaUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,9 +20,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @CrossOrigin
 @AllArgsConstructor
@@ -84,34 +88,36 @@ public class PautaController {
         }
 
         PautaUtil util = new PautaUtil();
+        Pauta pauta = pautaService.findById(idPauta).get();
+        PautaEdicaoDTO pautaDTO = util.convertJsontoDto(pautaJSON);
 
-        Pauta pauta = util.convertJsonToModel(pautaJSON);
+        BeanUtils.copyProperties(pautaDTO, pauta, getPropriedadesNulas(pautaDTO));
         pauta.setIdPauta(idPauta);
 
         if (multipartFile != null) {
             AnalistaTI analistaTIresponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
             List<ArquivoPauta> arquivosPauta = new ArrayList<>();
 
-            arquivosPauta.add(new ArquivoPauta(multipartFile, analistaTIresponsavel));
+            arquivosPauta.add(new ArquivoPauta(multipartFile, TipoDocumentoPauta.ATAREUNIAO ,analistaTIresponsavel));
 
             pauta.setArquivosPauta(arquivosPauta);
         }
 
-        //fazer a pauta converter uma lista de DTO de decisao pauta pra uma lista de decisao pauta
-
-//        List<DecisaoPropostaPauta> propostaPautas = new ArrayList<>();
-//
-//        for(DecisaoPropostaPautaEdicaoDTO decisaoPropostaPautaDTO : pautaEdicaoDTO.getPropostasPauta()){
-//            DecisaoPropostaPauta decisaoPropostaPauta = new DecisaoPropostaPauta();
-//            BeanUtils.copyProperties(decisaoPropostaPautaDTO, decisaoPropostaPauta);
-//            propostaPautas.add(decisaoPropostaPauta);
-//        }
-
-//        pauta.setPropostasPauta(propostaPautas);
-
-        //pautaService.save(pauta)
-
         return ResponseEntity.status(HttpStatus.OK).body(pautaService.save(pauta));
+    }
+
+    private static String[] getPropriedadesNulas (Object fonte) {
+        BeanWrapper src = new BeanWrapperImpl(fonte);
+        PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        Set<String> emptyNames = new HashSet();
+        for(PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null) emptyNames.add(pd.getName());
+        }
+
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
     }
 
     @DeleteMapping("/{id}")

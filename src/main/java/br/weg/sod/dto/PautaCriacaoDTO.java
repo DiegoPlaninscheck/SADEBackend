@@ -17,7 +17,5 @@ public class PautaCriacaoDTO {
     @NotNull
     private Forum forum;
 
-    private byte[] ataReuniao;
-
     private List<DecisaoPropostaPautaCriacaoDTO> propostasPauta;
 }

@@ -18,7 +18,7 @@ public class DecisaoPropostaATA {
     @Column(nullable = false)
     private Integer numeroSequencial;
 
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusDemanda statusDemandaComissao;
 

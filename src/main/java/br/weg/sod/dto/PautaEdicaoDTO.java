@@ -14,7 +14,5 @@ public class PautaEdicaoDTO {
 
     private Forum forum;
 
-    private List<ArquivoPauta> arquivosPauta;
-
     private List<DecisaoPropostaPautaEdicaoDTO> propostasPauta;
 }
