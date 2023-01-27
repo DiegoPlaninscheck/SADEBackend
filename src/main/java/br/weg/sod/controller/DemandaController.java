@@ -76,8 +76,8 @@ public class DemandaController {
 
         Demanda demandaSalva = demandaService.save(demanda);
 
-        HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
-        historicoWorkflowService.save(historicoWorkflow);
+//        HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
+//        historicoWorkflowService.save(historicoWorkflow);
 
         return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
     }
@@ -101,25 +101,25 @@ public class DemandaController {
 
         Demanda demandaSalva = demandaService.save(demanda);
 
-        if (demanda.getLinkJira() == null) {
-            //concluindo histórico da classificacao do analista de TI
-            historicoWorkflowService.finishHistoricoByDemanda(demanda, Tarefa.CLASSIFICAR);
-
-            Usuario solicitante = usuarioService.findById(demanda.getUsuario().getIdUsuario()).get();
-
-            //iniciando o histórico de avaliacao do gerente de negócio
-            GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
-            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demandaSalva);
-
-        } else {
-            //conclui o histórico de adicionar informações
-            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOES);
-
-            //inicia o histórico de criar proposta
-            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPROPOSTA, StatusHistorico.EMANDAMENTO, analistaResponsavel, demandaSalva);
-
-        }
+//        if (demanda.getLinkJira() == null) {
+//            //concluindo histórico da classificacao do analista de TI
+//            historicoWorkflowService.finishHistoricoByDemanda(demanda, Tarefa.CLASSIFICAR);
+//
+//            Usuario solicitante = usuarioService.findById(demanda.getUsuario().getIdUsuario()).get();
+//
+//            //iniciando o histórico de avaliacao do gerente de negócio
+//            GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
+//            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demandaSalva);
+//
+//        } else {
+//            //conclui o histórico de adicionar informações
+//            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOES);
+//
+//            //inicia o histórico de criar proposta
+//            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
+//            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPROPOSTA, StatusHistorico.EMANDAMENTO, analistaResponsavel, demandaSalva);
+//
+//        }
 
         return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
     }

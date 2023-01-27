@@ -19,7 +19,7 @@ public class ATA {
     private Integer numeroAno;
 
     @Column
-    private Integer numeroDG;
+    private Long numeroDG;
 
     @OneToOne
     @JoinColumn(name = "idPauta", nullable = false)

@@ -1,6 +1,6 @@
 package br.weg.sod.dto;
 
-import br.weg.sod.model.entities.ArquivoPauta;
+import br.weg.sod.model.entities.enuns.TipoDocumento;
 import lombok.Getter;
 
 import java.util.List;
@@ -10,9 +10,9 @@ public class ATAEdicaoDTO {
 
     private Integer numeroAno;
 
-    private Integer numeroDG;
+    private Long numeroDG;
 
-    private List<ArquivoPauta> arquivosPauta;
+    private List<TipoDocumento> tipoDocumentos;
 
     private List<DecisaoPropostaATADTO> propostasAta;
 }

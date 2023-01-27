@@ -4,7 +4,7 @@ import br.weg.sod.dto.DecisaoPropostaPautaCriacaoDTO;
 import br.weg.sod.dto.PautaCriacaoDTO;
 import br.weg.sod.dto.PautaEdicaoDTO;
 import br.weg.sod.model.entities.*;
-import br.weg.sod.model.entities.enuns.TipoDocumentoPauta;
+import br.weg.sod.model.entities.enuns.TipoDocumento;
 import br.weg.sod.model.service.HistoricoWorkflowService;
 import br.weg.sod.model.service.PautaService;
 import br.weg.sod.model.service.UsuarioService;
@@ -55,15 +55,11 @@ public class PautaController {
         Pauta pauta = new Pauta();
         BeanUtils.copyProperties(pautaCriacaoDTO, pauta);
 
-        List<DecisaoPropostaPauta> propostaPautas = new ArrayList<>();
-
         for (DecisaoPropostaPautaCriacaoDTO decisaoPropostaPautaDTO : pautaCriacaoDTO.getPropostasPauta()) {
             DecisaoPropostaPauta decisaoPropostaPauta = new DecisaoPropostaPauta();
             BeanUtils.copyProperties(decisaoPropostaPautaDTO, decisaoPropostaPauta);
-            propostaPautas.add(decisaoPropostaPauta);
+            pauta.getPropostasPauta().add(decisaoPropostaPauta);
         }
-
-        pauta.setPropostasPauta(propostaPautas);
 
         Pauta pautaSalva = pautaService.save(pauta);
 
@@ -98,7 +94,7 @@ public class PautaController {
             AnalistaTI analistaTIresponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
             List<ArquivoPauta> arquivosPauta = new ArrayList<>();
 
-            arquivosPauta.add(new ArquivoPauta(multipartFile, TipoDocumentoPauta.ATAREUNIAO ,analistaTIresponsavel));
+            arquivosPauta.add(new ArquivoPauta(multipartFile, TipoDocumento.ATAREUNIAO ,analistaTIresponsavel));
 
             pauta.setArquivosPauta(arquivosPauta);
         }

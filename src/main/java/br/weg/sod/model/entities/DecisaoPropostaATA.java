@@ -15,8 +15,8 @@ public class DecisaoPropostaATA {
     @Column
     private Integer idDecisaoPropostaAta;
 
-    @Column(nullable = false)
-    private Integer numeroSequencial;
+    @Column(nullable = false, unique = true)
+    private Long numeroSequencial;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -24,4 +24,8 @@ public class DecisaoPropostaATA {
 
     @Column
     private String comentario;
+
+    @ManyToOne
+    @JoinColumn(name = "idProposta", nullable = false)
+    private Proposta proposta;
 }

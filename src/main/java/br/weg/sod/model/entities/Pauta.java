@@ -28,7 +28,7 @@ public class Pauta {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "idPauta", nullable = false)
-    private List<DecisaoPropostaPauta> propostasPauta;
+    private List<DecisaoPropostaPauta> propostasPauta = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "idForum", nullable = false)

@@ -61,13 +61,13 @@ public class DecisaoPropostaPautaController {
         DecisaoPropostaPauta decisaoPropostaPauta = decisaoPropostaPautaService.findById(idDecisaoPropostaPauta).get();
         BeanUtils.copyProperties(decisaoPropostaPautaEdicaoDTO, decisaoPropostaPauta);
 
-        // Encerrando historico infomar parecer comissao
-        historicoWorkflowService.finishHistoricoByProposta(decisaoPropostaPauta.getProposta(), Tarefa.INFORMARPARECERFORUM);
-
-        // iniciando historico informar parecer DG
-        AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-
-        historicoWorkflowService.initializeHistoricoByProposta(new Timestamp(new Date().getTime()), Tarefa.INFORMARPARECERDG, StatusHistorico.EMANDAMENTO, analistaResponsavel, decisaoPropostaPauta.getProposta());
+//        // Encerrando historico infomar parecer comissao
+//        historicoWorkflowService.finishHistoricoByProposta(decisaoPropostaPauta.getProposta(), Tarefa.INFORMARPARECERFORUM);
+//
+//        // iniciando historico informar parecer DG
+//        AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
+//
+//        historicoWorkflowService.initializeHistoricoByProposta(new Timestamp(new Date().getTime()), Tarefa.INFORMARPARECERDG, StatusHistorico.EMANDAMENTO, analistaResponsavel, decisaoPropostaPauta.getProposta());
 
         return ResponseEntity.status(HttpStatus.OK).body(decisaoPropostaPautaService.save(decisaoPropostaPauta));
     }

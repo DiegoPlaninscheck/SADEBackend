@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum TipoDocumentoPauta {
+public enum TipoDocumento {
 
     ATAREUNIAO("ATA da reunião"),
     ATAPUBLICADA("ATA publicada"),

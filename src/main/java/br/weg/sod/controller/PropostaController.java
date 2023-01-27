@@ -78,7 +78,7 @@ public class PropostaController {
         }
 
         //encerra o histórico da criação de proposta
-        historicoWorkflowService.finishHistoricoByProposta(proposta, Tarefa.CRIARPAUTA);
+//        historicoWorkflowService.finishHistoricoByProposta(proposta, Tarefa.CRIARPAUTA);
 
         return ResponseEntity.status(HttpStatus.OK).body(propostaSalva);
     }
@@ -102,15 +102,15 @@ public class PropostaController {
 
         demandaService.save(demandaRelacionada);
 
-        if (proposta.getEmWorkflow() && proposta.getAprovadoWorkflow() == null) {
-            //inicia o histórico de aprovação em workflow
-            Demanda demandaVinculada = demandaService.findById(proposta.getIdProposta()).get();
-            Usuario solicitanteDemanda = usuarioService.findById(demandaVinculada.getUsuario().getIdUsuario()).get();
-            GerenteNegocio gerenteDoSolicitante = usuarioService.findGerenteByDepartamento(solicitanteDemanda.getDepartamento());
-
-
-            historicoWorkflowService.initializeHistoricoByProposta(new Timestamp(new Date().getTime()), Tarefa.AVALIARWORKFLOW, StatusHistorico.EMANDAMENTO, gerenteDoSolicitante, proposta);
-        }
+//        if (proposta.getEmWorkflow() && proposta.getAprovadoWorkflow() == null) {
+//            //inicia o histórico de aprovação em workflow
+//            Demanda demandaVinculada = demandaService.findById(proposta.getIdProposta()).get();
+//            Usuario solicitanteDemanda = usuarioService.findById(demandaVinculada.getUsuario().getIdUsuario()).get();
+//            GerenteNegocio gerenteDoSolicitante = usuarioService.findGerenteByDepartamento(solicitanteDemanda.getDepartamento());
+//
+//
+//            historicoWorkflowService.initializeHistoricoByProposta(new Timestamp(new Date().getTime()), Tarefa.AVALIARWORKFLOW, StatusHistorico.EMANDAMENTO, gerenteDoSolicitante, proposta);
+//        }
 
         return ResponseEntity.status(HttpStatus.OK).body(propostaService.save(proposta));
     }

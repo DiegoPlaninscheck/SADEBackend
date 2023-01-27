@@ -23,7 +23,7 @@ public class PautaUtil {
         }
     }
 
-    private Pauta convertDtoToModel(@Valid PautaEdicaoDTO propostaDTO) {
-        return this.objectMapper.convertValue(propostaDTO, Pauta.class);
+    private Pauta convertDtoToModel(@Valid PautaEdicaoDTO pautaDTO) {
+        return this.objectMapper.convertValue(pautaDTO, Pauta.class);
     }
 }
