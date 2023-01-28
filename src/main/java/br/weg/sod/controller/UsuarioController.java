@@ -41,7 +41,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/{tipoUsuario}")
-    public ResponseEntity<Object> save(@RequestParam("usuario") String usuarioJSON, @RequestParam("foto") MultipartFile foto, @PathVariable("tipoUsuario") Integer tipoUsuario) {
+    public ResponseEntity<Object> save(@RequestParam("usuario") String usuarioJSON, @RequestParam(value = "foto", required = false) MultipartFile foto, @PathVariable("tipoUsuario") Integer tipoUsuario) {
         UsuarioUtil usuarioUtil = new UsuarioUtil();
         Usuario usuario = usuarioUtil.convertJsonToModel(usuarioJSON, tipoUsuario);
 

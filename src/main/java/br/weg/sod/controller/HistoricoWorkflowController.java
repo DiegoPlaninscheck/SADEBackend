@@ -3,12 +3,10 @@ package br.weg.sod.controller;
 import br.weg.sod.dto.HistoricoWorkflowCriacaoDTO;
 import br.weg.sod.dto.HistoricoWorkflowEdicaoDTO;
 import br.weg.sod.dto.NotificacaoDTO;
-import br.weg.sod.dto.NotificacaoUsuarioDTO;
 import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.entities.enuns.TipoNotificacao;
 import br.weg.sod.model.service.HistoricoWorkflowService;
-import br.weg.sod.model.service.NotificacaoService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -46,6 +44,10 @@ public class HistoricoWorkflowController {
     public ResponseEntity<Object> save(@RequestBody @Valid HistoricoWorkflowCriacaoDTO historicoWorkflowCriacaoDTO) {
         HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow();
         BeanUtils.copyProperties(historicoWorkflowCriacaoDTO, historicoWorkflow);
+
+        //encerra o histórico anterior
+        historicoWorkflowService.finishHistoricoByDemanda(historicoWorkflowCriacaoDTO.getDemanda(), historicoWorkflowCriacaoDTO.getAcaoFeitaHistoricoAnterior());
+
         return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowService.save(historicoWorkflow));
     }
 

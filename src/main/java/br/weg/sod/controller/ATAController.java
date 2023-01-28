@@ -57,7 +57,7 @@ public class ATAController {
     }
 
     @PutMapping("/{idATA}/{idAnalista}")
-    public ResponseEntity<Object> edit(@RequestParam("ata") @Valid String ataJSON, @RequestParam(value = "arquivos", required = false) MultipartFile[] multipartFiles, @PathVariable(name = "idATA") Integer idATA, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
+    public ResponseEntity<Object> edit(@RequestParam("ata") @Valid String ataJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @PathVariable(name = "idATA") Integer idATA, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
         if (!ataService.existsById(idATA)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma ATA com o ID informado");
         }

@@ -1,18 +1,11 @@
 package br.weg.sod.controller;
 
-import br.weg.sod.dto.CentroCustoPaganteDTO;
-import br.weg.sod.dto.LinhaTabelaDTO;
-import br.weg.sod.dto.PropostaDTO;
-import br.weg.sod.dto.TabelaCustoDTO;
 import br.weg.sod.model.entities.*;
-import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.*;
-import br.weg.sod.util.DemandaUtil;
 import br.weg.sod.util.PropostaUtil;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -36,7 +29,6 @@ public class PropostaController {
     private HistoricoWorkflowService historicoWorkflowService;
     private UsuarioService usuarioService;
     private DemandaService demandaService;
-    private ArquivoDemandaService arquivoDemandaService;
 
     @GetMapping
     public ResponseEntity<List<Proposta>> findAll() {
@@ -52,8 +44,8 @@ public class PropostaController {
     }
 
     @Transactional
-    @PostMapping("/{idUsuario}")
-    public ResponseEntity<Object> save(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @PathVariable("idUsuario") Integer idUsuario) throws IOException  {
+    @PostMapping("/{idAnalista}")
+    public ResponseEntity<Object> save(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @PathVariable("idAnalista") Integer idAnalista) throws IOException  {
         PropostaUtil util = new PropostaUtil();
         Proposta proposta = util.convertJsonToModel(propostaJSON);
 
@@ -61,17 +53,22 @@ public class PropostaController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("O período de execução inválido");
         }
 
+        if(!(usuarioService.findById(idAnalista).get() instanceof AnalistaTI)){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de usuário informado inválido para essa ação");
+        }
+
         Integer valorPayback = 2; //depois fazer a conta com payback e custo totais e os caralho
 
         proposta.setPayback(valorPayback);
         proposta.setIdProposta(proposta.getDemanda().getIdDemanda());
         Proposta propostaSalva = propostaService.save(proposta);
+        AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
 
         if(multipartFiles != null){
             Demanda demandaRelacionada = propostaSalva.getDemanda();
 
             for(MultipartFile multipartFile : multipartFiles){
-                demandaRelacionada.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, usuarioService.findById(idUsuario).get()));
+                demandaRelacionada.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, analistaResponsavel ));
             }
 
             demandaService.save(demandaRelacionada);
@@ -80,6 +77,9 @@ public class PropostaController {
         //encerra o histórico da criação de proposta
 //        historicoWorkflowService.finishHistoricoByProposta(proposta, Tarefa.CRIARPAUTA);
 
+        //inicia o histórico de criar pauta
+//        historicoWorkflowService.initializeHistoricoByProposta(new Timestamp(new Date().getTime()),Tarefa.CRIARPAUTA, StatusHistorico.EMANDAMENTO, analistaResponsavel, propostaSalva);
+
         return ResponseEntity.status(HttpStatus.OK).body(propostaSalva);
     }
 
@@ -87,6 +87,10 @@ public class PropostaController {
     public ResponseEntity<Object> edit(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @PathVariable(name = "idProposta") Integer idProposta, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
         if (!propostaService.existsById(idProposta)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma proposta com o ID informado");
+        }
+
+        if(!(usuarioService.findById(idAnalista).get() instanceof AnalistaTI)){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de usuário informado inválido para essa ação");
         }
 
         PropostaUtil util = new PropostaUtil();
@@ -107,7 +111,6 @@ public class PropostaController {
 //            Demanda demandaVinculada = demandaService.findById(proposta.getIdProposta()).get();
 //            Usuario solicitanteDemanda = usuarioService.findById(demandaVinculada.getUsuario().getIdUsuario()).get();
 //            GerenteNegocio gerenteDoSolicitante = usuarioService.findGerenteByDepartamento(solicitanteDemanda.getDepartamento());
-//
 //
 //            historicoWorkflowService.initializeHistoricoByProposta(new Timestamp(new Date().getTime()), Tarefa.AVALIARWORKFLOW, StatusHistorico.EMANDAMENTO, gerenteDoSolicitante, proposta);
 //        }

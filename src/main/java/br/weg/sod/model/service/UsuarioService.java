@@ -1,10 +1,13 @@
 package br.weg.sod.model.service;
 
+import br.weg.sod.model.entities.AnalistaTI;
 import br.weg.sod.model.entities.GerenteNegocio;
 import br.weg.sod.model.entities.GerenteTI;
 import br.weg.sod.model.entities.Usuario;
 import br.weg.sod.repository.UsuarioRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

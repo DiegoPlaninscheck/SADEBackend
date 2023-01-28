@@ -41,7 +41,11 @@ public class BeneficioController {
         Beneficio beneficio = new Beneficio();
         BeanUtils.copyProperties(beneficioDTO, beneficio);
 
-        return checarBeneficio(beneficio);
+        try {
+            return checarBeneficio(beneficio);
+        } catch (Exception exception){
+            return ResponseEntity.status(HttpStatus.OK).body(exception.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
@@ -54,7 +58,11 @@ public class BeneficioController {
         BeanUtils.copyProperties(beneficioDTO, beneficio);
         beneficio.setIdBeneficio(idBeneficio);
 
-        return checarBeneficio(beneficio);
+        try {
+            return checarBeneficio(beneficio);
+        } catch (Exception exception){
+            return ResponseEntity.status(HttpStatus.OK).body(exception.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -66,17 +74,16 @@ public class BeneficioController {
         return ResponseEntity.status(HttpStatus.OK).body("Beneficio deletado com sucesso!");
     }
 
-    private ResponseEntity<Object> checarBeneficio(Beneficio beneficio){
-        TipoBeneficio tipoBeneficio = beneficio.getTipoBeneficio();
-        Moeda moedaBeneficio = beneficio.getMoeda();
-        Double valor = beneficio.getValor();
+    /**
+     * Retorna o ResponseEntity de acordo com o estado das propriedades do Benefício passado
+     * Ver a função beneficioValido() em BeneficioService para mais informações
+     *
+     * @param beneficio
+     * @return
+     */
+    public ResponseEntity<Object> checarBeneficio(Beneficio beneficio){
+        beneficioService.beneficioValido(beneficio);
 
-        if(tipoBeneficio == TipoBeneficio.QUALITATIVO && (moedaBeneficio != null || valor != null)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Benefícios do tipo QUALITATIVO não aceitam valores de 'moeda' e 'valor'");
-        } else if((tipoBeneficio == TipoBeneficio.POTENCIAL|| tipoBeneficio == TipoBeneficio.REAL) && (moedaBeneficio == null || valor == null)){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Benefícios do tipo POTENCIAL ou REAL necessitam de ter os campos 'moeda' e 'valor'");
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(beneficioService.save(beneficio));
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(beneficioService.save(beneficio));
     }
 }

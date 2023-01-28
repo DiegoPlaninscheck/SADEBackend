@@ -1,17 +1,12 @@
 package br.weg.sod.controller;
 
-import br.weg.sod.dto.DemandaCriacaoDTO;
-import br.weg.sod.dto.DemandaEdicaoDTO;
 import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.DemandaUtil;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.Request;
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,9 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -66,6 +59,17 @@ public class DemandaController {
         DemandaUtil util = new DemandaUtil();
 
         Demanda demanda = util.convertJsonToCreationModel(demandaJSON);
+
+        List<Beneficio> beneficiosDemanda = demanda.getBeneficiosDemanda();
+
+        if(beneficiosDemanda != null && beneficiosDemanda.size() != 0){
+          try{
+              beneficioService.checarBeneficios(beneficiosDemanda);
+          } catch (RuntimeException exception){
+              return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Um dos benefícios passados está com inconformidades em seus dados");
+          }
+        }
+
         demanda.setStatusDemanda(StatusDemanda.BACKLOG);
 
         if(multipartFiles != null){
@@ -88,9 +92,22 @@ public class DemandaController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }
 
-        DemandaUtil util = new DemandaUtil();
+        if(!(usuarioService.findById(idAnalista).get() instanceof AnalistaTI)){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de usuário informado inválido para essa ação");
+        }
 
+        DemandaUtil util = new DemandaUtil();
         Demanda demanda = util.convertJsonToEditionModel(demandaJSON);
+        List<Beneficio> beneficiosDemanda = demanda.getBeneficiosDemanda();
+
+        if(beneficiosDemanda != null && beneficiosDemanda.size() != 0){
+            try{
+                beneficioService.checarBeneficios(beneficiosDemanda);
+            } catch (RuntimeException exception){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Um dos benefícios passados está com inconformidades em seus dados");
+            }
+        }
+
         demanda.setIdDemanda(idDemanda);
 
         if(multipartFiles != null){
@@ -118,7 +135,6 @@ public class DemandaController {
 //            //inicia o histórico de criar proposta
 //            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
 //            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPROPOSTA, StatusHistorico.EMANDAMENTO, analistaResponsavel, demandaSalva);
-//
 //        }
 
         return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
@@ -129,8 +145,6 @@ public class DemandaController {
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }
-
-        Demanda demandaDeletada = demandaService.findById(idDemanda).get();
 
         demandaService.deleteById(idDemanda);
         return ResponseEntity.status(HttpStatus.OK).body("Demanda deletada com sucesso!");

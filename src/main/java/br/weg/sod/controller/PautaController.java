@@ -4,6 +4,8 @@ import br.weg.sod.dto.DecisaoPropostaPautaCriacaoDTO;
 import br.weg.sod.dto.PautaCriacaoDTO;
 import br.weg.sod.dto.PautaEdicaoDTO;
 import br.weg.sod.model.entities.*;
+import br.weg.sod.model.entities.enuns.StatusHistorico;
+import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.entities.enuns.TipoDocumento;
 import br.weg.sod.model.service.HistoricoWorkflowService;
 import br.weg.sod.model.service.PautaService;
@@ -22,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -89,9 +93,9 @@ public class PautaController {
 
         BeanUtils.copyProperties(pautaDTO, pauta, getPropriedadesNulas(pautaDTO));
         pauta.setIdPauta(idPauta);
+        AnalistaTI analistaTIresponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
 
         if (multipartFile != null) {
-            AnalistaTI analistaTIresponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
             List<ArquivoPauta> arquivosPauta = new ArrayList<>();
 
             arquivosPauta.add(new ArquivoPauta(multipartFile, TipoDocumento.ATAREUNIAO ,analistaTIresponsavel));
@@ -99,7 +103,17 @@ public class PautaController {
             pauta.setArquivosPauta(arquivosPauta);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(pautaService.save(pauta));
+        Pauta pautaSalva = pautaService.save(pauta);
+
+//        for(DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()){
+////            encerrar historico de informar o parecer
+//            historicoWorkflowService.finishHistoricoByProposta(decisaoPropostaPauta.getProposta(), Tarefa.INFORMARPARECERFORUM);
+//
+////            inicio informar parecer da DG
+//            historicoWorkflowService.initializeHistoricoByProposta(new Timestamp(new Date().getTime()),Tarefa.INFORMARPARECERDG, StatusHistorico.EMAGUARDO, analistaTIresponsavel, decisaoPropostaPauta.getProposta());
+//        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(pautaSalva);
     }
 
     private static String[] getPropriedadesNulas (Object fonte) {

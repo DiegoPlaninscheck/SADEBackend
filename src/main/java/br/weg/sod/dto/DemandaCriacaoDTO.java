@@ -30,7 +30,7 @@ public class DemandaCriacaoDTO {
     @Size
     private List<CentroCusto> centroCustoDemanda;
 
-    private List<Beneficio> beneficiosDemanda;
+    private List<BeneficioDTO> beneficiosDemanda;
 
     @NotNull
     private Usuario usuario;
