@@ -29,4 +29,13 @@ public class DecisaoPropostaPauta {
     @JoinColumn(name = "idProposta", nullable = false)
     private Proposta proposta;
 
+    @Override
+    public String toString() {
+        return "DecisaoPropostaPauta{" +
+                "idDecisaoPropostaPauta=" + idDecisaoPropostaPauta +
+                ", statusDemandaComissao=" + statusDemandaComissao +
+                ", ataPublicada=" + ataPublicada +
+                ", comentario='" + comentario + '\'' +
+                '}';
+    }
 }

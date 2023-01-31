@@ -1,12 +1,14 @@
 package br.weg.sod.controller;
 
 import br.weg.sod.dto.DecisaoPropostaPautaCriacaoDTO;
+import br.weg.sod.dto.DecisaoPropostaPautaEdicaoDTO;
 import br.weg.sod.dto.PautaCriacaoDTO;
 import br.weg.sod.dto.PautaEdicaoDTO;
 import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.entities.enuns.TipoDocumento;
+import br.weg.sod.model.service.DecisaoPropostaPautaService;
 import br.weg.sod.model.service.HistoricoWorkflowService;
 import br.weg.sod.model.service.PautaService;
 import br.weg.sod.model.service.UsuarioService;
@@ -40,6 +42,7 @@ public class PautaController {
     private PautaService pautaService;
     private HistoricoWorkflowService historicoWorkflowService;
     private UsuarioService usuarioService;
+    private DecisaoPropostaPautaService decisaoPropostaPautaService;
 
     @GetMapping
     public ResponseEntity<List<Pauta>> findAll() {
@@ -102,6 +105,23 @@ public class PautaController {
 
             pauta.setArquivosPauta(arquivosPauta);
         }
+
+        List<DecisaoPropostaPauta> decisoesPauta = new ArrayList<>();
+
+        for(DecisaoPropostaPautaEdicaoDTO decisaoDTO : pautaDTO.getPropostasPauta()){
+            DecisaoPropostaPauta decisaoPropostaPautaNova = decisaoPropostaPautaService.findById(decisaoDTO.getIdDecisaoPropostaPauta()).get();
+            Proposta propostaDaDecisao = decisaoPropostaPautaNova.getProposta();
+
+            BeanUtils.copyProperties(decisaoDTO, decisaoPropostaPautaNova);
+
+            if(decisaoPropostaPautaNova.getProposta() == null){
+                decisaoPropostaPautaNova.setProposta(propostaDaDecisao);
+            }
+
+            decisoesPauta.add(decisaoPropostaPautaNova);
+        }
+
+        pauta.setPropostasPauta(decisoesPauta);
 
         Pauta pautaSalva = pautaService.save(pauta);
 

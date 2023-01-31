@@ -1,5 +1,6 @@
 package br.weg.sod.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,7 @@ public class ArquivoDemanda {
     @NonNull
     private String tipo;
 
+    @JsonIgnore
     @Column(nullable = false)
     @Lob
     private byte[] arquivo;
