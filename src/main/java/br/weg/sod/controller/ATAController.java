@@ -6,11 +6,9 @@ import br.weg.sod.dto.DecisaoPropostaATADTO;
 import br.weg.sod.dto.DecisaoPropostaPautaCriacaoDTO;
 import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.TipoDocumento;
-import br.weg.sod.model.service.ATAService;
-import br.weg.sod.model.service.DecisaoPropostaPautaService;
-import br.weg.sod.model.service.HistoricoWorkflowService;
-import br.weg.sod.model.service.UsuarioService;
+import br.weg.sod.model.service.*;
 import br.weg.sod.util.ATAUtil;
+import br.weg.sod.util.PautaUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -32,7 +30,7 @@ public class ATAController {
 
     private ATAService ataService;
     private HistoricoWorkflowService historicoWorkflowService;
-    private DecisaoPropostaPautaService decisaoPropostaPautaService;
+    private DecisaoPropostaATAService decisaoPropostaATAService;
     private UsuarioService usuarioService;
 
     @GetMapping
@@ -57,25 +55,40 @@ public class ATAController {
     }
 
     @PutMapping("/{idATA}/{idAnalista}")
-    public ResponseEntity<Object> edit(@RequestParam("ata") @Valid String ataJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @PathVariable(name = "idATA") Integer idATA, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
+    public ResponseEntity<Object> edit(@RequestParam("ata") @Valid String ataJSON, @RequestParam(value = "arquivos", required = false) MultipartFile[] multipartFiles, @PathVariable(name = "idATA") Integer idATA, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
         if (!ataService.existsById(idATA)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma ATA com o ID informado");
         }
 
         ATAUtil util = new ATAUtil();
-
-        ATAEdicaoDTO ataDTO = util.convertJsontoDto(ataJSON);
         ATA ata = ataService.findById(idATA).get();
-        BeanUtils.copyProperties(ataDTO, ata);
+        ATAEdicaoDTO ataDTO = util.convertJsontoDto(ataJSON);
+
+        if(multipartFiles.length != ataDTO.getTipoDocumentos().size()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Os documentos passados não são coesos com as informações passadas sobre eles");
+        }
+
+        if(ata.getPauta().getPropostasPauta().size() != ataDTO.getPropostasAta().size()){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("A quantidade de decisões de ata informada é inválida");
+        }
+
+        if(!decisoesValidas(ata.getPauta().getPropostasPauta(), ataDTO.getPropostasAta())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Decisões da ata contém número de id de proposta inválido");
+        }
+
+        BeanUtils.copyProperties(ataDTO, ata, util.getPropriedadesNulas(ataDTO));
         ata.setIdATA(idATA);
+        AnalistaTI analistaTIresponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
 
         if(multipartFiles != null){
-            AnalistaTI analistaTIresponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
             List<TipoDocumento> tipoDocumentos = ataDTO.getTipoDocumentos();
+            List<ArquivoPauta> arquivosAta = ata.getPauta().getArquivosPauta();
 
             for(int i = 0; i < multipartFiles.length; i++){
-                ata.getPauta().getArquivosPauta().add(new ArquivoPauta(multipartFiles[i], tipoDocumentos.get(i), analistaTIresponsavel));
+                arquivosAta.add(new ArquivoPauta(multipartFiles[i], tipoDocumentos.get(i), analistaTIresponsavel));
             }
+
+            ata.getPauta().setArquivosPauta(arquivosAta);
         }
 
         for (DecisaoPropostaATADTO decisaoPropostaATADTO : ataDTO.getPropostasAta()) {
@@ -86,7 +99,6 @@ public class ATAController {
 
         ATA ataSalva = ataService.save(ata);
 
-
 //        List<DecisaoPropostaPauta> listaDecisaoPropostaPauta = ata.getPauta().getPropostasPauta();
 //
 //        for (DecisaoPropostaPauta deicasaoProposta : listaDecisaoPropostaPauta) {
@@ -95,6 +107,24 @@ public class ATAController {
 //        }
 
         return ResponseEntity.status(HttpStatus.OK).body(ataSalva);
+    }
+
+    private boolean decisoesValidas(List<DecisaoPropostaPauta> propostasPauta, List<DecisaoPropostaATADTO> propostasAta) {
+        for(DecisaoPropostaATADTO decisaoATADTO : propostasAta){
+            boolean existe = false;
+
+            for(DecisaoPropostaPauta decisaoPauta : propostasPauta){
+                if(decisaoPauta.getProposta().getIdProposta() == decisaoATADTO.getProposta().getIdProposta()){
+                    existe = true;
+                }
+            }
+
+            if(!existe){
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @DeleteMapping("/{id}")

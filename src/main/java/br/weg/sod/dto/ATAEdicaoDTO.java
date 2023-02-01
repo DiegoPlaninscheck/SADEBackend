@@ -1,11 +1,11 @@
 package br.weg.sod.dto;
 
 import br.weg.sod.model.entities.enuns.TipoDocumento;
-import lombok.Getter;
+import lombok.Data;
 
 import java.util.List;
 
-@Getter
+@Data
 public class ATAEdicaoDTO {
 
     private Integer numeroAno;

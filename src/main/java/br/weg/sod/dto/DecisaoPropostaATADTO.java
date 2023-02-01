@@ -8,7 +8,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class  DecisaoPropostaATADTO {
+public class DecisaoPropostaATADTO {
 
     @Digits(integer = 15, fraction = 0)
     private Long numeroSequencial;

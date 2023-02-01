@@ -94,7 +94,7 @@ public class PautaController {
         Pauta pauta = pautaService.findById(idPauta).get();
         PautaEdicaoDTO pautaDTO = util.convertJsontoDto(pautaJSON);
 
-        BeanUtils.copyProperties(pautaDTO, pauta, getPropriedadesNulas(pautaDTO));
+        BeanUtils.copyProperties(pautaDTO, pauta, util.getPropriedadesNulas(pautaDTO));
         pauta.setIdPauta(idPauta);
         AnalistaTI analistaTIresponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
 
@@ -134,20 +134,6 @@ public class PautaController {
 //        }
 
         return ResponseEntity.status(HttpStatus.OK).body(pautaSalva);
-    }
-
-    private static String[] getPropriedadesNulas (Object fonte) {
-        BeanWrapper src = new BeanWrapperImpl(fonte);
-        PropertyDescriptor[] pds = src.getPropertyDescriptors();
-
-        Set<String> emptyNames = new HashSet();
-        for(PropertyDescriptor pd : pds) {
-            Object srcValue = src.getPropertyValue(pd.getName());
-            if (srcValue == null) emptyNames.add(pd.getName());
-        }
-
-        String[] result = new String[emptyNames.size()];
-        return emptyNames.toArray(result);
     }
 
     @DeleteMapping("/{id}")
