@@ -49,8 +49,6 @@ public class DecisaoPropostaPautaController {
         DecisaoPropostaPauta decisaoPropostaPauta = new DecisaoPropostaPauta();
         BeanUtils.copyProperties(decisaoPropostaPautaCriacaoDTO, decisaoPropostaPauta);
 
-
-
         return ResponseEntity.status(HttpStatus.OK).body(decisaoPropostaPautaService.save(decisaoPropostaPauta));
     }
 

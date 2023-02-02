@@ -58,7 +58,7 @@ public class PautaController {
 
     @PostMapping("/{idAnalista}")
     public ResponseEntity<Object> save(@RequestBody @Valid PautaCriacaoDTO pautaCriacaoDTO, @PathVariable(name = "idAnalista") Integer idAnalista) {
-        if(!propostasValidas(pautaCriacaoDTO.getPropostasPauta())){
+        if(!validacaoPropostasCriacao(pautaCriacaoDTO.getPropostasPauta())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Uma das propostas informadas já está em uma pauta ou o id informado não existe");
         }
         if(!forumService.existsById(pautaCriacaoDTO.getForum().getIdForum())){
@@ -90,33 +90,6 @@ public class PautaController {
         return ResponseEntity.status(HttpStatus.OK).body(pauta);
     }
 
-    private boolean propostasValidas(List<DecisaoPropostaPautaCriacaoDTO> propostasPauta) {
-        //ver se as propostas existem
-        for(DecisaoPropostaPautaCriacaoDTO decisaoPropostaDTO : propostasPauta){
-            Proposta propostaDaDecisao = decisaoPropostaDTO.getProposta();
-
-            if(!propostaService.existsById(propostaDaDecisao.getIdProposta())){
-                return false;
-            }
-        }
-
-        //ver se as propostas estão em algum processo de aprovação em aberto
-        for(DecisaoPropostaPautaCriacaoDTO decisaoPropostaDTO : propostasPauta){
-            Proposta propostaDaDecisao = decisaoPropostaDTO.getProposta();
-
-            if(decisaoPropostaPautaService.existsByProposta(propostaDaDecisao)){
-                for(Pauta pautaContemProposta : pautaService.findByProposta(decisaoPropostaDTO.getProposta())){
-
-                    if(!pautaService.pautaFinalizada(pautaContemProposta)){
-                        return false;
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-
     @PutMapping("/{idPauta}/{idAnalista}")
     public ResponseEntity<Object> edit(@RequestParam("pauta") @Valid String pautaJSON, @RequestParam(value = "ata", required = false) MultipartFile multipartFile, @PathVariable(name = "idPauta") Integer idPauta, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
         if (!pautaService.existsById(idPauta)) {
@@ -131,7 +104,7 @@ public class PautaController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Data de reunião informada inválida");
         }
         //fazer ele validar com a DTO de edição tbm
-        if(!propostasValidas(pautaDTO.getPropostasPauta())){
+        if(!validacaoPropostasEdicao(pautaDTO.getPropostasPauta(), pauta)){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Uma das propostas informadas já está em uma pauta ou o id informado não existe");
         }
 
@@ -177,10 +150,6 @@ public class PautaController {
         return ResponseEntity.status(HttpStatus.OK).body(pauta);
     }
 
-    private boolean dataFutura(Date dataReuniao) {
-        return dataReuniao.getTime() > new Date().getTime();
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteById(@PathVariable(name = "id") Integer idPauta) {
         if (!pautaService.existsById(idPauta)) {
@@ -188,5 +157,84 @@ public class PautaController {
         }
         pautaService.deleteById(idPauta);
         return ResponseEntity.status(HttpStatus.OK).body("Pauta deletada com sucesso!");
+    }
+
+    private boolean validacaoPropostasCriacao(List<DecisaoPropostaPautaCriacaoDTO> propostasPauta) {
+        List<Proposta> propostasDaDecisao = new ArrayList<>();
+
+        for(DecisaoPropostaPautaCriacaoDTO decisaoPropostaDTO : propostasPauta){
+            propostasDaDecisao.add(decisaoPropostaDTO.getProposta());
+        }
+
+        //ver se as propostas estão em algum processo de aprovação em aberto
+        if(!propostaService.propostasExistem(propostasDaDecisao)){
+            return false;
+        }
+
+        //ver se as propostas existem
+        if(!propostasLivres(propostasDaDecisao)){
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validacaoPropostasEdicao(List<DecisaoPropostaPautaEdicaoDTO> propostasPauta, Pauta pautaBancoDados) {
+        List<Proposta> propostasDaDecisao = new ArrayList<>();
+        List<DecisaoPropostaPauta> decisoesPauta =  pautaBancoDados.getPropostasPauta();
+
+        for(DecisaoPropostaPautaEdicaoDTO decisaoPropostaDTO : propostasPauta){
+            if(decisaoPropostaDTO.getProposta() != null){
+                propostasDaDecisao.add(decisaoPropostaDTO.getProposta());
+            }
+
+            //ver se o id de decisaoPropostaPauta informado já tá vinculado àquela pauta
+            boolean existe = false;
+
+            for(DecisaoPropostaPauta decisaoPauta : decisoesPauta){
+                if(decisaoPauta.getIdDecisaoPropostaPauta() == decisaoPropostaDTO.getIdDecisaoPropostaPauta()){
+                    existe = true;
+                    break;
+                }
+            }
+
+            if(!existe){
+                return false;
+            }
+        }
+
+        //ver se existem propostas para serem avaliadas
+        if(propostasDaDecisao.size() != 0) {
+
+            //ver se as propostas existem
+            if (!propostaService.propostasExistem(propostasDaDecisao)) {
+                return false;
+            }
+
+            //ver se as propostas já não estão em outra pauta
+            if(!propostasLivres(propostasDaDecisao)){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean propostasLivres(List<Proposta> propostasPauta){
+        for(Proposta proposta : propostasPauta){
+            if(decisaoPropostaPautaService.existsByProposta(proposta)){
+                for(Pauta pautaContemProposta : pautaService.findByProposta(proposta)){
+                    if(!pautaService.pautaFinalizada(pautaContemProposta)){
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean dataFutura(Date dataReuniao) {
+        return dataReuniao.getTime() > new Date().getTime();
     }
 }

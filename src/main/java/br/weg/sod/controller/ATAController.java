@@ -81,7 +81,7 @@ public class ATAController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("A quantidade de decisões de ata informada é inválida");
         }
 
-        if(!decisoesValidas(ata.getPauta().getPropostasPauta(), ataDTO.getPropostasAta())){
+        if(!decisaoPropostaATAService.decisoesValidas(ata.getPauta().getPropostasPauta(), ataDTO.getPropostasAta())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Decisões da ata contém número de id de proposta inválido ou número sequencial já registrado/repetido");
         }
 
@@ -118,39 +118,6 @@ public class ATAController {
         return ResponseEntity.status(HttpStatus.OK).body(ataSalva);
     }
 
-    private boolean decisoesValidas(List<DecisaoPropostaPauta> propostasPauta, List<DecisaoPropostaATADTO> propostasAta) {
-
-        //vê se o número sequencial informado já existe ou está repetido na lista
-        for(DecisaoPropostaATADTO decisaoATADTO : propostasAta){
-            if(decisaoPropostaATAService.existsByNumeroSequencial(decisaoATADTO.getNumeroSequencial())){
-                return false;
-            }
-
-            for(DecisaoPropostaATADTO decisaoATADTOconferir : propostasAta){
-                if(decisaoATADTOconferir.getNumeroSequencial() == decisaoATADTO.getNumeroSequencial() && decisaoATADTOconferir.getProposta().equals(decisaoATADTO.getProposta())){
-                    return false;
-                }
-            }
-        }
-
-        //vê se as propostas informadas são as mesmas apreciadas pela pauta conectada a ata
-        for(DecisaoPropostaATADTO decisaoATADTO : propostasAta){
-            boolean existe = false;
-
-            for(DecisaoPropostaPauta decisaoPauta : propostasPauta){
-                if(decisaoPauta.getProposta().getIdProposta() == decisaoATADTO.getProposta().getIdProposta()){
-                    existe = true;
-                }
-            }
-
-            if(!existe){
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteById(@PathVariable(name = "id") Integer idATA) {
         if (!ataService.existsById(idATA)) {
@@ -159,4 +126,6 @@ public class ATAController {
         ataService.deleteById(idATA);
         return ResponseEntity.status(HttpStatus.OK).body("ATA deletada com sucesso!");
     }
+
+
 }

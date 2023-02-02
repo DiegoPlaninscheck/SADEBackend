@@ -61,4 +61,14 @@ public class UsuarioService {
     public boolean existsByNumeroCadastro(Integer numeroCadastro) {
         return usuarioRepository.existsByNumeroCadastro(numeroCadastro);
     }
+
+    public boolean responsaveisValidos(List<Usuario> responsaveisNegocio) {
+        for(Usuario usuario : responsaveisNegocio){
+            if(!existsById(usuario.getIdUsuario())){
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

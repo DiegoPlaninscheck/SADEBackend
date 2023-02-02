@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-public class PropostaDTO {
+public class PropostaEdicaoDTO {
 
     @NotBlank
     private String escopo;
@@ -20,13 +20,8 @@ public class PropostaDTO {
     @Future
     private Date periodoExecucaoFim;
 
-    @NotNull
     private Boolean emWorkflow;
 
-    @NotNull
-    private Demanda demanda;
-
-    @NotNull
     private Boolean aprovadoWorkflow;
 
     private Integer payback;

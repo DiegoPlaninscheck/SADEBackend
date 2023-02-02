@@ -1,8 +1,5 @@
 package br.weg.sod.dto;
 
-import br.weg.sod.model.entities.CentroCustoPagante;
-import br.weg.sod.model.entities.LinhaTabela;
-import br.weg.sod.model.entities.Proposta;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,9 +22,9 @@ public class TabelaCustoDTO {
     @NotNull
     private Boolean licenca;
 
-//    @Size
-    private List<CentroCustoPagante> centrosCustoPagantes;
+    @Size
+    private List<CentroCustoPaganteDTO> centrosCustoPagantes;
 
-//    @Size
-    private List<LinhaTabela> linhasTabela;
+    @Size
+    private List<LinhaTabelaDTO> linhasTabela;
 }

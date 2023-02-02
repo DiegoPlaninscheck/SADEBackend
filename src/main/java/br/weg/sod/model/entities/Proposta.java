@@ -3,6 +3,7 @@ package br.weg.sod.model.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,10 +29,10 @@ public class Proposta {
     private Date periodoExecucaoFim;
 
     @Column(nullable = false)
-    private Boolean aprovadoWorkflow;
+    private Boolean aprovadoWorkflow = false;
 
     @Column(nullable = false)
-    private Boolean emWorkflow;
+    private Boolean emWorkflow = false;
 
     @OneToOne
     @JoinColumn(name = "idDemanda", nullable = false)
@@ -39,11 +40,11 @@ public class Proposta {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "idProposta", nullable = false)
-    private List<TabelaCusto> tabelasCustoProposta;
+    private List<TabelaCusto> tabelasCustoProposta = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "responsaveisNegocio", joinColumns = @JoinColumn(name = "idProposta", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "idUsuario", nullable = false))
-    private List<Usuario> responsaveisNegocio;
+    private List<Usuario> responsaveisNegocio = new ArrayList<>();
 
 }

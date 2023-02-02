@@ -45,34 +45,27 @@ public class PropostaController {
 
     @Transactional
     @PostMapping("/{idAnalista}")
-    public ResponseEntity<Object> save(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @PathVariable("idAnalista") Integer idAnalista) throws IOException  {
+    public ResponseEntity<Object> save(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @PathVariable("idAnalista") Integer idAnalista) throws IOException {
         PropostaUtil util = new PropostaUtil();
-        Proposta proposta = util.convertJsonToModel(propostaJSON);
+        Proposta proposta = util.convertJsonToModel(propostaJSON, 1);
 
-        if(proposta.getPeriodoExecucaoFim().getTime() < proposta.getPeriodoExecucaoInicio().getTime()){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("O período de execução inválido");
-        }
+        Object validacao = validacoesProposta(proposta, idAnalista);
 
-        if(!(usuarioService.findById(idAnalista).get() instanceof AnalistaTI)){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de usuário informado inválido para essa ação");
-        }
+        
 
         Integer valorPayback = 2; //depois fazer a conta com payback e custo totais e os caralho
 
         proposta.setPayback(valorPayback);
         proposta.setIdProposta(proposta.getDemanda().getIdDemanda());
-        Proposta propostaSalva = propostaService.save(proposta);
         AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
 
-        if(multipartFiles != null){
-            Demanda demandaRelacionada = propostaSalva.getDemanda();
-
-            for(MultipartFile multipartFile : multipartFiles){
-                demandaRelacionada.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, analistaResponsavel ));
+        if (multipartFiles != null) {
+            for (MultipartFile multipartFile : multipartFiles) {
+                proposta.getDemanda().getArquivosDemanda().add(new ArquivoDemanda(multipartFile, analistaResponsavel));
             }
-
-            demandaService.save(demandaRelacionada);
         }
+
+        Proposta propostaSalva = propostaService.save(proposta);
 
         //encerra o histórico da criação de proposta
 //        historicoWorkflowService.finishHistoricoByProposta(proposta, Tarefa.CRIARPAUTA);
@@ -89,18 +82,18 @@ public class PropostaController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma proposta com o ID informado");
         }
 
-        if(!(usuarioService.findById(idAnalista).get() instanceof AnalistaTI)){
+        if (!(usuarioService.findById(idAnalista).get() instanceof AnalistaTI)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de usuário informado inválido para essa ação");
         }
 
         PropostaUtil util = new PropostaUtil();
-        Proposta proposta = util.convertJsonToModel(propostaJSON);
+        Proposta proposta = util.convertJsonToModel(propostaJSON, 2);
         proposta.setIdProposta(idProposta);
 
         Proposta propostaSalva = propostaService.save(proposta);
         Demanda demandaRelacionada = propostaSalva.getDemanda();
 
-        for(MultipartFile multipartFile : multipartFiles){
+        for (MultipartFile multipartFile : multipartFiles) {
             demandaRelacionada.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, usuarioService.findById(idAnalista).get()));
         }
 
@@ -126,4 +119,33 @@ public class PropostaController {
         propostaService.deleteById(idProposta);
         return ResponseEntity.status(HttpStatus.OK).body("Proposta deletada com sucesso!");
     }
+
+    private Object validacoesProposta(Proposta proposta, Integer idAnalista){
+        if (proposta.getPeriodoExecucaoFim().getTime() < proposta.getPeriodoExecucaoInicio().getTime()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("O período de execução inválido");
+        }
+
+        if (!(usuarioService.findById(idAnalista).get() instanceof AnalistaTI)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de usuário informado inválido para essa ação");
+        }
+
+        List<Usuario> responsaveisNegocio = proposta.getResponsaveisNegocio();
+
+        if (responsaveisNegocio != null && responsaveisNegocio.size() != 0) {
+            if (!usuarioService.responsaveisValidos(responsaveisNegocio)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID de álgum responsável pela proposta informado inválido");
+            }
+        }
+
+        List<TabelaCusto> tabelasCustoProposta = proposta.getTabelasCustoProposta();
+
+        if (tabelasCustoProposta != null & tabelasCustoProposta.size() != 0) {
+            if (!propostaService.tabelasvalidas(tabelasCustoProposta)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tabelas de custo contém informações inválidas");
+            }
+        }
+
+        return null;
+    }
+
 }
