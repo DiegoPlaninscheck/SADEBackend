@@ -32,6 +32,7 @@ public class ATAController {
     private HistoricoWorkflowService historicoWorkflowService;
     private DecisaoPropostaATAService decisaoPropostaATAService;
     private UsuarioService usuarioService;
+    private PautaService pautaService;
 
     @GetMapping
     public ResponseEntity<List<ATA>> findAll() {
@@ -49,6 +50,10 @@ public class ATAController {
 
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody @Valid ATACriacaoDTO ATACriacaoDTO) {
+        if(!pautaService.existsById(ATACriacaoDTO.getPauta().getIdPauta())){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id de pauta informado inválido");
+        }
+
         ATA ata = new ATA();
         BeanUtils.copyProperties(ATACriacaoDTO, ata);
         return ResponseEntity.status(HttpStatus.OK).body(ataService.save(ata));
@@ -64,8 +69,12 @@ public class ATAController {
         ATA ata = ataService.findById(idATA).get();
         ATAEdicaoDTO ataDTO = util.convertJsontoDto(ataJSON);
 
+        if(ataService.existsByNumeroDG(ataDTO.getNumeroDG())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Número da DG já registrado em ourta ATA");
+        }
+
         if(multipartFiles.length != ataDTO.getTipoDocumentos().size()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Os documentos passados não são coesos com as informações passadas sobre eles");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Os documentos passados não são coesos com as informações passadas sobre eles");
         }
 
         if(ata.getPauta().getPropostasPauta().size() != ataDTO.getPropostasAta().size()){
@@ -73,7 +82,7 @@ public class ATAController {
         }
 
         if(!decisoesValidas(ata.getPauta().getPropostasPauta(), ataDTO.getPropostasAta())){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Decisões da ata contém número de id de proposta inválido");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Decisões da ata contém número de id de proposta inválido ou número sequencial já registrado/repetido");
         }
 
         BeanUtils.copyProperties(ataDTO, ata, util.getPropriedadesNulas(ataDTO));
@@ -110,6 +119,21 @@ public class ATAController {
     }
 
     private boolean decisoesValidas(List<DecisaoPropostaPauta> propostasPauta, List<DecisaoPropostaATADTO> propostasAta) {
+
+        //vê se o número sequencial informado já existe ou está repetido na lista
+        for(DecisaoPropostaATADTO decisaoATADTO : propostasAta){
+            if(decisaoPropostaATAService.existsByNumeroSequencial(decisaoATADTO.getNumeroSequencial())){
+                return false;
+            }
+
+            for(DecisaoPropostaATADTO decisaoATADTOconferir : propostasAta){
+                if(decisaoATADTOconferir.getNumeroSequencial() == decisaoATADTO.getNumeroSequencial() && decisaoATADTOconferir.getProposta().equals(decisaoATADTO.getProposta())){
+                    return false;
+                }
+            }
+        }
+
+        //vê se as propostas informadas são as mesmas apreciadas pela pauta conectada a ata
         for(DecisaoPropostaATADTO decisaoATADTO : propostasAta){
             boolean existe = false;
 

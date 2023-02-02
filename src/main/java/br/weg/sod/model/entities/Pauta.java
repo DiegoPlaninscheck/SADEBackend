@@ -34,4 +34,11 @@ public class Pauta {
     @JoinColumn(name = "idForum", nullable = false)
     private Forum forum;
 
+    @Override
+    public String toString() {
+        return "Pauta{" +
+                "idPauta=" + idPauta +
+                ", dataReuniao=" + dataReuniao +
+                '}';
+    }
 }

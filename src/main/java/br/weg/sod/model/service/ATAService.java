@@ -33,4 +33,8 @@ public class ATAService {
     public void deleteById(Integer integer) {
         ataRepository.deleteById(integer);
     }
+
+    public boolean existsByNumeroDG(Long numeroDG) {
+        return ataRepository.existsByNumeroDG(numeroDG);
+    }
 }

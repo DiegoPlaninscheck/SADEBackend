@@ -8,10 +8,7 @@ import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.entities.enuns.TipoDocumento;
-import br.weg.sod.model.service.DecisaoPropostaPautaService;
-import br.weg.sod.model.service.HistoricoWorkflowService;
-import br.weg.sod.model.service.PautaService;
-import br.weg.sod.model.service.UsuarioService;
+import br.weg.sod.model.service.*;
 import br.weg.sod.util.PautaUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -43,6 +40,8 @@ public class PautaController {
     private HistoricoWorkflowService historicoWorkflowService;
     private UsuarioService usuarioService;
     private DecisaoPropostaPautaService decisaoPropostaPautaService;
+    private PropostaService propostaService;
+    private ForumService forumService;
 
     @GetMapping
     public ResponseEntity<List<Pauta>> findAll() {
@@ -59,6 +58,13 @@ public class PautaController {
 
     @PostMapping("/{idAnalista}")
     public ResponseEntity<Object> save(@RequestBody @Valid PautaCriacaoDTO pautaCriacaoDTO, @PathVariable(name = "idAnalista") Integer idAnalista) {
+        if(!propostasValidas(pautaCriacaoDTO.getPropostasPauta())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Uma das propostas informadas já está em uma pauta ou o id informado não existe");
+        }
+        if(!forumService.existsById(pautaCriacaoDTO.getForum().getIdForum())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("O id do fórum informado não existe");
+        }
+
         Pauta pauta = new Pauta();
         BeanUtils.copyProperties(pautaCriacaoDTO, pauta);
 
@@ -68,7 +74,7 @@ public class PautaController {
             pauta.getPropostasPauta().add(decisaoPropostaPauta);
         }
 
-        Pauta pautaSalva = pautaService.save(pauta);
+//        Pauta pautaSalva = pautaService.save(pauta);
 
 //        for(DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()){
 ////            encerrar historico criar pauta
@@ -81,7 +87,34 @@ public class PautaController {
 //            historicoWorkflowService.initializeHistoricoByProposta(time,Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoPropostaPauta.getProposta());
 //        }
 
-        return ResponseEntity.status(HttpStatus.OK).body(pautaSalva);
+        return ResponseEntity.status(HttpStatus.OK).body(pauta);
+    }
+
+    private boolean propostasValidas(List<DecisaoPropostaPautaCriacaoDTO> propostasPauta) {
+        //ver se as propostas existem
+        for(DecisaoPropostaPautaCriacaoDTO decisaoPropostaDTO : propostasPauta){
+            Proposta propostaDaDecisao = decisaoPropostaDTO.getProposta();
+
+            if(!propostaService.existsById(propostaDaDecisao.getIdProposta())){
+                return false;
+            }
+        }
+
+        //ver se as propostas estão em algum processo de aprovação em aberto
+        for(DecisaoPropostaPautaCriacaoDTO decisaoPropostaDTO : propostasPauta){
+            Proposta propostaDaDecisao = decisaoPropostaDTO.getProposta();
+
+            if(decisaoPropostaPautaService.existsByProposta(propostaDaDecisao)){
+                for(Pauta pautaContemProposta : pautaService.findByProposta(decisaoPropostaDTO.getProposta())){
+
+                    if(!pautaService.pautaFinalizada(pautaContemProposta)){
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     @PutMapping("/{idPauta}/{idAnalista}")
@@ -93,6 +126,14 @@ public class PautaController {
         PautaUtil util = new PautaUtil();
         Pauta pauta = pautaService.findById(idPauta).get();
         PautaEdicaoDTO pautaDTO = util.convertJsontoDto(pautaJSON);
+
+        if (!dataFutura(pautaDTO.getDataReuniao())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Data de reunião informada inválida");
+        }
+        //fazer ele validar com a DTO de edição tbm
+        if(!propostasValidas(pautaDTO.getPropostasPauta())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Uma das propostas informadas já está em uma pauta ou o id informado não existe");
+        }
 
         BeanUtils.copyProperties(pautaDTO, pauta, util.getPropriedadesNulas(pautaDTO));
         pauta.setIdPauta(idPauta);
@@ -123,7 +164,7 @@ public class PautaController {
 
         pauta.setPropostasPauta(decisoesPauta);
 
-        Pauta pautaSalva = pautaService.save(pauta);
+//        Pauta pautaSalva = pautaService.save(pauta);
 
 //        for(DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()){
 ////            encerrar historico de informar o parecer
@@ -133,7 +174,11 @@ public class PautaController {
 //            historicoWorkflowService.initializeHistoricoByProposta(new Timestamp(new Date().getTime()),Tarefa.INFORMARPARECERDG, StatusHistorico.EMAGUARDO, analistaTIresponsavel, decisaoPropostaPauta.getProposta());
 //        }
 
-        return ResponseEntity.status(HttpStatus.OK).body(pautaSalva);
+        return ResponseEntity.status(HttpStatus.OK).body(pauta);
+    }
+
+    private boolean dataFutura(Date dataReuniao) {
+        return dataReuniao.getTime() > new Date().getTime();
     }
 
     @DeleteMapping("/{id}")

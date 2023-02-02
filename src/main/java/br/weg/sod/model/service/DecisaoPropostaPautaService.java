@@ -2,6 +2,7 @@ package br.weg.sod.model.service;
 
 import br.weg.sod.model.entities.ATA;
 import br.weg.sod.model.entities.DecisaoPropostaPauta;
+import br.weg.sod.model.entities.Proposta;
 import br.weg.sod.repository.DecisaoPropostaPautaRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,4 +36,11 @@ public class DecisaoPropostaPautaService {
         decisaoPropostaPautaRepository.deleteById(integer);
     }
 
+    public boolean existsByProposta(Proposta proposta) {
+        return decisaoPropostaPautaRepository.existsByProposta(proposta);
+    }
+
+    public List<DecisaoPropostaPauta> findByProposta(Proposta proposta) {
+        return decisaoPropostaPautaRepository.findByProposta(proposta);
+    }
 }

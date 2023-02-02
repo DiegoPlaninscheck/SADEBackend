@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DecisaoPropostaATARepository extends JpaRepository<DecisaoPropostaATA, Integer> {
+
+    boolean existsByNumeroSequencial(Long numeroSequencial);
 }
