@@ -51,7 +51,7 @@ public class PropostaController {
 
         Object validacao = validacoesProposta(proposta, idAnalista);
 
-        
+
 
         Integer valorPayback = 2; //depois fazer a conta com payback e custo totais e os caralho
 
