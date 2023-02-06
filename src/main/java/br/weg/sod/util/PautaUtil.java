@@ -33,7 +33,7 @@ public class PautaUtil {
         return this.objectMapper.convertValue(pautaDTO, Pauta.class);
     }
 
-    public static String[] getPropriedadesNulas (Object fonte) {
+    public String[] getPropriedadesNulas (Object fonte) {
         BeanWrapper src = new BeanWrapperImpl(fonte);
         PropertyDescriptor[] pds = src.getPropertyDescriptors();
 

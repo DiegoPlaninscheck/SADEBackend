@@ -4,8 +4,13 @@ import br.weg.sod.dto.PropostaCriacaoDTO;
 import br.weg.sod.dto.PropostaEdicaoDTO;
 import br.weg.sod.model.entities.Proposta;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 
 import javax.validation.Valid;
+import java.beans.PropertyDescriptor;
+import java.util.HashSet;
+import java.util.Set;
 
 public class PropostaUtil {
 

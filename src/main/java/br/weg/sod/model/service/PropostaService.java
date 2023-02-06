@@ -53,11 +53,11 @@ public class PropostaService {
             Integer quantidadeTotal = 0;
 
             for(LinhaTabela linhaTabela : tabela.getLinhasTabela()){
-                valorTotal += linhaTabela.getValorQuantidade();
+                valorTotal += linhaTabela.getValorQuantidade() * linhaTabela.getQuantidade();
                 quantidadeTotal += linhaTabela.getQuantidade();
             }
 
-            if(quantidadeTotal != tabela.getQuantidadeTotal() || valorTotal != tabela.getValorTotal()){
+            if(quantidadeTotal != tabela.getQuantidadeTotal() || !valorTotal.equals(tabela.getValorTotal())){
                 return false;
             }
 

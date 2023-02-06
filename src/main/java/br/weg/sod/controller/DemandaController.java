@@ -30,6 +30,7 @@ public class DemandaController {
     private HistoricoWorkflowService historicoWorkflowService;
     private UsuarioService usuarioService;
     private BeneficioService beneficioService;
+    private CentroCustoService centroCustoService;
 
     @GetMapping
     public ResponseEntity<List<Demanda>> findAll() {
@@ -57,17 +58,11 @@ public class DemandaController {
     @PostMapping
     public ResponseEntity<Object> save(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles) throws IOException {
         DemandaUtil util = new DemandaUtil();
-
         Demanda demanda = util.convertJsonToCreationModel(demandaJSON);
+        ResponseEntity<Object> demandaValidada = validarDemanda(demanda);
 
-        List<Beneficio> beneficiosDemanda = demanda.getBeneficiosDemanda();
-
-        if(beneficiosDemanda != null && beneficiosDemanda.size() != 0){
-          try{
-              beneficioService.checarBeneficios(beneficiosDemanda);
-          } catch (RuntimeException exception){
-              return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Um dos benefícios passados está com inconformidades em seus dados");
-          }
+        if(demandaValidada != null){
+            return demandaValidada;
         }
 
         demanda.setStatusDemanda(StatusDemanda.BACKLOG);
@@ -80,8 +75,8 @@ public class DemandaController {
 
         Demanda demandaSalva = demandaService.save(demanda);
 
-//        HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
-//        historicoWorkflowService.save(historicoWorkflow);
+        HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
+        historicoWorkflowService.save(historicoWorkflow);
 
         return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
     }
@@ -98,14 +93,11 @@ public class DemandaController {
 
         DemandaUtil util = new DemandaUtil();
         Demanda demanda = util.convertJsonToEditionModel(demandaJSON);
-        List<Beneficio> beneficiosDemanda = demanda.getBeneficiosDemanda();
 
-        if(beneficiosDemanda != null && beneficiosDemanda.size() != 0){
-            try{
-                beneficioService.checarBeneficios(beneficiosDemanda);
-            } catch (RuntimeException exception){
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Um dos benefícios passados está com inconformidades em seus dados");
-            }
+        ResponseEntity<Object> demandaValidada = validarDemanda(demanda);
+
+        if(demandaValidada != null){
+            return demandaValidada;
         }
 
         demanda.setIdDemanda(idDemanda);
@@ -148,5 +140,27 @@ public class DemandaController {
 
         demandaService.deleteById(idDemanda);
         return ResponseEntity.status(HttpStatus.OK).body("Demanda deletada com sucesso!");
+    }
+
+    private ResponseEntity<Object> validarDemanda(Demanda demanda) {
+        List<Beneficio> beneficiosDemanda = demanda.getBeneficiosDemanda();
+
+        if(beneficiosDemanda != null && beneficiosDemanda.size() != 0){
+            try{
+                beneficioService.checarBeneficios(beneficiosDemanda);
+            } catch (RuntimeException exception){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Um dos benefícios passados está com inconformidades em seus dados");
+            }
+        }
+
+        if(!centroCustoService.validarCentrosCusto(demanda.getCentroCustoDemanda())){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Um dos centros de custo é inválido");
+        }
+
+        if(!usuarioService.existsById(demanda.getUsuario().getIdUsuario())){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("ID de usuário inválido");
+        }
+
+        return null;
     }
 }

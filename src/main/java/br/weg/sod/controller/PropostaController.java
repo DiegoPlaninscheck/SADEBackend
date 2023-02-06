@@ -6,6 +6,7 @@ import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.PropostaUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,10 @@ public class PropostaController {
     private HistoricoWorkflowService historicoWorkflowService;
     private UsuarioService usuarioService;
     private DemandaService demandaService;
+    private TabelaCustoService tabelaCustoService;
+    private LinhaTabelaSevice linhaTabelaSevice;
+    private CentroCustoPaganteService centroCustoPaganteService;
+    private CentroCustoService centroCustoService;
 
     @GetMapping
     public ResponseEntity<List<Proposta>> findAll() {
@@ -49,9 +54,11 @@ public class PropostaController {
         PropostaUtil util = new PropostaUtil();
         Proposta proposta = util.convertJsonToModel(propostaJSON, 1);
 
-        Object validacao = validacoesProposta(proposta, idAnalista);
+        ResponseEntity<Object> validacao = validacoesProposta(proposta, idAnalista);
 
-
+        if (validacao != null) {
+            return validacao;
+        }
 
         Integer valorPayback = 2; //depois fazer a conta com payback e custo totais e os caralho
 
@@ -89,15 +96,23 @@ public class PropostaController {
         PropostaUtil util = new PropostaUtil();
         Proposta proposta = util.convertJsonToModel(propostaJSON, 2);
         proposta.setIdProposta(idProposta);
+        Proposta propostaDB = propostaService.findById(idProposta).get();
+        proposta.setDemanda(propostaDB.getDemanda());
+        proposta.setPayback(propostaDB.getPayback());
 
-        Proposta propostaSalva = propostaService.save(proposta);
-        Demanda demandaRelacionada = propostaSalva.getDemanda();
+        ResponseEntity<Object> validacaoEdicao = validacoesItensProposta(proposta, idAnalista);
 
-        for (MultipartFile multipartFile : multipartFiles) {
-            demandaRelacionada.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, usuarioService.findById(idAnalista).get()));
+        if (validacaoEdicao != null) {
+            return validacaoEdicao;
         }
 
-        demandaService.save(demandaRelacionada);
+        if (multipartFiles != null) {
+            for (MultipartFile multipartFile : multipartFiles) {
+                proposta.getDemanda().getArquivosDemanda().add(new ArquivoDemanda(multipartFile, usuarioService.findById(idAnalista).get()));
+            }
+        }
+
+        Proposta propostaSalva = propostaService.save(proposta);
 
 //        if (proposta.getEmWorkflow() && proposta.getAprovadoWorkflow() == null) {
 //            //inicia o histórico de aprovação em workflow
@@ -108,7 +123,7 @@ public class PropostaController {
 //            historicoWorkflowService.initializeHistoricoByProposta(new Timestamp(new Date().getTime()), Tarefa.AVALIARWORKFLOW, StatusHistorico.EMANDAMENTO, gerenteDoSolicitante, proposta);
 //        }
 
-        return ResponseEntity.status(HttpStatus.OK).body(propostaService.save(proposta));
+        return ResponseEntity.status(HttpStatus.OK).body(propostaSalva);
     }
 
     @DeleteMapping("/{id}")
@@ -120,7 +135,7 @@ public class PropostaController {
         return ResponseEntity.status(HttpStatus.OK).body("Proposta deletada com sucesso!");
     }
 
-    private Object validacoesProposta(Proposta proposta, Integer idAnalista){
+    private ResponseEntity<Object> validacoesProposta(Proposta proposta, Integer idAnalista) {
         if (proposta.getPeriodoExecucaoFim().getTime() < proposta.getPeriodoExecucaoInicio().getTime()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("O período de execução inválido");
         }
@@ -139,13 +154,63 @@ public class PropostaController {
 
         List<TabelaCusto> tabelasCustoProposta = proposta.getTabelasCustoProposta();
 
-        if (tabelasCustoProposta != null & tabelasCustoProposta.size() != 0) {
-            if (!propostaService.tabelasvalidas(tabelasCustoProposta)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tabelas de custo contém informações inválidas");
+        if (tabelasCustoProposta != null) {
+            if (tabelasCustoProposta.size() != 0) {
+                if (!propostaService.tabelasvalidas(tabelasCustoProposta)) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tabelas de custo contém informações inválidas");
+                }
+
+                for (TabelaCusto tabelaCusto : tabelasCustoProposta) {
+                    List<CentroCustoPagante> centroDeCustos = tabelaCusto.getCentrosCustoPagantes();
+
+                    if (centroDeCustos != null && centroDeCustos.size() != 0) {
+                        for (CentroCustoPagante centroCustoPagante : centroDeCustos) {
+
+                            if (!centroCustoService.existsById(centroCustoPagante.getCentroCusto().getIdCentroCusto())) {
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID de centro de custo informado inválido");
+                            }
+                        }
+                    }
+                }
             }
         }
 
         return null;
     }
+
+    private ResponseEntity<Object> validacoesItensProposta(Proposta proposta, Integer idAnalista) {
+        ResponseEntity<Object> validacaoProposta = validacoesProposta(proposta, idAnalista);
+
+        if (validacaoProposta != null) {
+            return validacaoProposta;
+        }
+
+        List<TabelaCusto> tabelasCustoProposta = proposta.getTabelasCustoProposta();
+
+        if (tabelasCustoProposta != null) {
+            if (tabelasCustoProposta.size() != 0) {
+                for (TabelaCusto tabelaCusto : proposta.getTabelasCustoProposta()) {
+                    if (!tabelaCustoService.existsById(tabelaCusto.getIdTabelaCusto())) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de tabela de custo inválido");
+                    }
+
+                    List<CentroCustoPagante> centroDeCustos = tabelaCusto.getCentrosCustoPagantes();
+
+                    if (centroDeCustos != null && centroDeCustos.size() != 0) {
+                        for (CentroCustoPagante centroCustoPagante : centroDeCustos) {
+                            if (centroCustoPagante.getIdCentroCustoPagante() == null) {
+                                if (centroDeCustos.size() != tabelaCustoService.findById(tabelaCusto.getIdTabelaCusto()).get().getCentrosCustoPagantes().size() + 1) {
+                                    return ResponseEntity.status(HttpStatus.CONFLICT).body("Se for adicionar um centro de custo pagante deverá atualizar as porcentagens das despesas de todos relacionados áquela proposta");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
 
 }

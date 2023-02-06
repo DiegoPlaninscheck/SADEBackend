@@ -33,4 +33,14 @@ public class CentroCustoService {
     public void deleteById(Integer integer) {
         centroCustoRepository.deleteById(integer);
     }
+
+    public boolean validarCentrosCusto(List<CentroCusto> centroCustoDemanda) {
+        for(CentroCusto centroCusto : centroCustoDemanda){
+            if(!existsById(centroCusto.getIdCentroCusto())){
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

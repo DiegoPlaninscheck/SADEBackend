@@ -19,7 +19,8 @@ public enum Tarefa {
     AVALIARWORKFLOW("Avaliar Workflow"),
     CRIARPAUTA("Criar Pauta"),
     INFORMARPARECERFORUM("Informar Parecer Fórum"),
-    INFORMARPARECERDG("Informar Parecer DG");
+    INFORMARPARECERDG("Informar Parecer DG"),
+    FINALIZAR("Finalizar histórico da demanda");
 
 
     String nome;
