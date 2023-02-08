@@ -8,6 +8,7 @@ import lombok.Getter;
 
 import javax.validation.constraints.*;
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Getter
 public class HistoricoWorkflowCriacaoDTO {
@@ -16,21 +17,14 @@ public class HistoricoWorkflowCriacaoDTO {
     private Tarefa tarefa;
 
     @NotNull
-    private StatusHistorico statusHistorico;
-
-    @NotNull
     private Demanda demanda;
 
     @NotNull
     private Tarefa acaoFeitaHistoricoAnterior;
 
-    //ver como vai fazer pdf
-//    @NotNull
-//    private byte[] pdfHistorico;
+    private Timestamp recebimento = new Timestamp(new Date().getTime());
 
-    private Timestamp recebimento;
-
-    private Timestamp prazo;
+    private Timestamp prazo = new Timestamp(new Date().getTime() + 86400000 * 5);
 
     private Usuario usuario;
 

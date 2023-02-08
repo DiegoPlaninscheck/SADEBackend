@@ -4,18 +4,28 @@ import br.weg.sod.dto.HistoricoWorkflowCriacaoDTO;
 import br.weg.sod.dto.HistoricoWorkflowEdicaoDTO;
 import br.weg.sod.dto.NotificacaoDTO;
 import br.weg.sod.model.entities.*;
+import br.weg.sod.model.entities.enuns.StatusDemanda;
+import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.entities.enuns.TipoNotificacao;
 import br.weg.sod.model.service.HistoricoWorkflowService;
+import br.weg.sod.model.service.UsuarioService;
+import br.weg.sod.util.DemandaUtil;
+import br.weg.sod.util.HistoricoWorkflowUtil;
+import br.weg.sod.util.UtilFunctions;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin
@@ -25,7 +35,7 @@ import java.util.List;
 public class HistoricoWorkflowController {
 
     private HistoricoWorkflowService historicoWorkflowService;
-    private NotificacaoController notificacaoController;
+    private UsuarioService usuarioService;
 
     @GetMapping
     public ResponseEntity<List<HistoricoWorkflow>> findAll() {
@@ -40,26 +50,49 @@ public class HistoricoWorkflowController {
         return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowService.findById(idHistoricoWorkflow));
     }
 
-    @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid HistoricoWorkflowCriacaoDTO historicoWorkflowCriacaoDTO) {
+    @PostMapping("/{idUsuario}")
+    public ResponseEntity<Object> save(@RequestParam("historico") @Valid String historicoJSON, @RequestParam(value = "pdf", required = false) MultipartFile versaoPDF, @PathVariable(name = "idUsuario") Integer idUsuario) throws IOException {
+        if(!usuarioService.existsById(idUsuario)){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID de usuário não encontrado");
+        }
+        Usuario usuarioResponsavel = usuarioService.findById(idUsuario).get();
+
+        HistoricoWorkflowUtil util = new HistoricoWorkflowUtil();
+        HistoricoWorkflowCriacaoDTO historicoWorkflowDTO = util.convertJsontoDtoCriacao(historicoJSON);
         HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow();
-        BeanUtils.copyProperties(historicoWorkflowCriacaoDTO, historicoWorkflow);
+        BeanUtils.copyProperties(historicoWorkflowDTO, historicoWorkflow);
+        historicoWorkflow.setStatus(StatusHistorico.EMANDAMENTO);
+
+        if(versaoPDF != null && versaoPDF.isEmpty()){
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
+        }
 
         //encerra o histórico anterior
-        historicoWorkflowService.finishHistoricoByDemanda(historicoWorkflowCriacaoDTO.getDemanda(), historicoWorkflowCriacaoDTO.getAcaoFeitaHistoricoAnterior());
+        encerrarHistoricoAnterior(historicoWorkflowDTO.getDemanda(), historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), usuarioResponsavel, versaoPDF);
 
-        return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowService.save(historicoWorkflow));
+        HistoricoWorkflow historicoWorkflowSalvo = historicoWorkflowService.save(historicoWorkflow);
+
+        return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowSalvo);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody @Valid HistoricoWorkflowEdicaoDTO historicoWorkflowCriacaoDTO, @PathVariable(name = "id") Integer idHistoricoWorkflow) {
+    public ResponseEntity<Object> edit(@RequestParam("historico") @Valid String historicoJSON, @RequestParam(value = "pdf", required = false) MultipartFile versaoPDF, @PathVariable(name = "id") Integer idHistoricoWorkflow) throws IOException {
         if (!historicoWorkflowService.existsById(idHistoricoWorkflow)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum historico workflow com o ID informado");
         }
 
+        HistoricoWorkflowUtil util = new HistoricoWorkflowUtil();
+        HistoricoWorkflowEdicaoDTO historicoWorkflowDTO = util.convertJsontoDtoEdicao(historicoJSON);
+
         HistoricoWorkflow historicoWorkflow = historicoWorkflowService.findById(idHistoricoWorkflow).get();
-        BeanUtils.copyProperties(historicoWorkflowCriacaoDTO, historicoWorkflow);
+        BeanUtils.copyProperties(historicoWorkflowDTO, historicoWorkflow, UtilFunctions.getPropriedadesNulas(historicoWorkflowDTO));
+
         historicoWorkflow.setIdHistoricoWorkflow(idHistoricoWorkflow);
+
+        if(versaoPDF != null){
+            historicoWorkflow.setArquivoHistoricoWorkflow(new ArquivoHistoricoWorkflow(versaoPDF));
+        }
+
         HistoricoWorkflow historicoWorkflowSalvo = historicoWorkflowService.save(historicoWorkflow);
 
 //        Tarefa acaoFeita = historicoWorkflowSalvo.getAcaoFeita();
@@ -136,6 +169,14 @@ public class HistoricoWorkflowController {
         }
         historicoWorkflowService.deleteById(idHistoricoWorkflow);
         return ResponseEntity.status(HttpStatus.OK).body("Historico Workflow deletado com sucesso!");
+    }
+
+    private void encerrarHistoricoAnterior(Demanda demanda, Tarefa acaoFeitaHistoricoAnterior, Usuario usuarioResponsavel, MultipartFile versaoPDF) throws IOException {
+        if(versaoPDF == null){
+            historicoWorkflowService.finishHistoricoByDemanda(demanda, acaoFeitaHistoricoAnterior,usuarioResponsavel, null);
+        } else {
+            historicoWorkflowService.finishHistoricoByDemanda(demanda, acaoFeitaHistoricoAnterior, usuarioResponsavel,new ArquivoHistoricoWorkflow(versaoPDF));
+        }
     }
 
 }

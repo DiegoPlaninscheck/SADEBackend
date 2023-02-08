@@ -10,6 +10,7 @@ import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.entities.enuns.TipoDocumento;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.PautaUtil;
+import br.weg.sod.util.UtilFunctions;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
@@ -108,7 +109,7 @@ public class PautaController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Uma das propostas informadas já está em uma pauta ou o id informado não existe");
         }
 
-        BeanUtils.copyProperties(pautaDTO, pauta, util.getPropriedadesNulas(pautaDTO));
+        BeanUtils.copyProperties(pautaDTO, pauta, UtilFunctions.getPropriedadesNulas(pautaDTO));
         pauta.setIdPauta(idPauta);
         AnalistaTI analistaTIresponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
 

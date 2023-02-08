@@ -29,9 +29,6 @@ public class HistoricoWorkflowEdicaoDTO {
     @NotNull
     private Demanda demanda;
 
-    //ver como vai fazer pdf
-//    @NotNull
-//    private byte[] pdfHistorico;
 
     private String motivoDevolucao;
 

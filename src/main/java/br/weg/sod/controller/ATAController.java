@@ -9,6 +9,7 @@ import br.weg.sod.model.entities.enuns.TipoDocumento;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.ATAUtil;
 import br.weg.sod.util.PautaUtil;
+import br.weg.sod.util.UtilFunctions;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -85,7 +86,7 @@ public class ATAController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Decisões da ata contém número de id de proposta inválido ou número sequencial já registrado/repetido");
         }
 
-        BeanUtils.copyProperties(ataDTO, ata, util.getPropriedadesNulas(ataDTO));
+        BeanUtils.copyProperties(ataDTO, ata, UtilFunctions.getPropriedadesNulas(ataDTO));
         ata.setIdATA(idATA);
         AnalistaTI analistaTIresponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
 

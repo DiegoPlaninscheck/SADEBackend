@@ -32,9 +32,9 @@ public class HistoricoWorkflow {
     @Enumerated(EnumType.STRING)
     private StatusHistorico status;
 
-    @Column
-    @Lob
-    private byte[] pdfHistorico;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idArquivoHistorico")
+    private ArquivoHistoricoWorkflow arquivoHistoricoWorkflow;
 
     @Column
     private String motivoDevolucao;
@@ -54,8 +54,6 @@ public class HistoricoWorkflow {
     @JoinColumn(name = "idDemanda", nullable = false)
     private Demanda demanda;
 
-
-    //ainda checar pdf_historico para as criações
     /**
      * Construtor para início de workflow
      *
@@ -68,6 +66,7 @@ public class HistoricoWorkflow {
         this.status = status;
         this.demanda = demanda;
     }
+
 
     /**
      * Construtor para histórico no meio do workflow
@@ -88,4 +87,21 @@ public class HistoricoWorkflow {
         this.demanda = demanda;
     }
 
+    /**
+     * Primeira instância de um histórico da demanda
+     *
+     * @param status
+     * @param arquivoHistoricoWorkflow
+     * @param conclusaoTarefa
+     * @param acaoFeita
+     * @param demanda
+     */
+    public HistoricoWorkflow(Tarefa tarefa, StatusHistorico status, ArquivoHistoricoWorkflow arquivoHistoricoWorkflow, Timestamp conclusaoTarefa, Tarefa acaoFeita, Demanda demanda) {
+        this.tarefa = tarefa;
+        this.status = status;
+        this.arquivoHistoricoWorkflow = arquivoHistoricoWorkflow;
+        this.conclusaoTarefa = conclusaoTarefa;
+        this.acaoFeita = acaoFeita;
+        this.demanda = demanda;
+    }
 }

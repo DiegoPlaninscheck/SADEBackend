@@ -1,5 +1,6 @@
 package br.weg.sod.controller;
 
+import br.weg.sod.dto.DemandaCriacaoDTO;
 import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
@@ -7,6 +8,7 @@ import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.DemandaUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -56,9 +58,16 @@ public class DemandaController {
 
     @Transactional
     @PostMapping
-    public ResponseEntity<Object> save(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles) throws IOException {
+    public ResponseEntity<Object> save(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF) throws IOException {
+        if(versaoPDF.isEmpty()){
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
+        }
+
         DemandaUtil util = new DemandaUtil();
-        Demanda demanda = util.convertJsonToCreationModel(demandaJSON);
+        DemandaCriacaoDTO demandaCriacaoDTO = util.convertJsontoDtoCriacao(demandaJSON);
+        Demanda demanda = new Demanda();
+        BeanUtils.copyProperties(demandaCriacaoDTO, demanda);
+
         ResponseEntity<Object> demandaValidada = validarDemanda(demanda);
 
         if(demandaValidada != null){
@@ -74,9 +83,11 @@ public class DemandaController {
         }
 
         Demanda demandaSalva = demandaService.save(demanda);
-
-        HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
-        historicoWorkflowService.save(historicoWorkflow);
+        Timestamp momento = new Timestamp(new Date().getTime());
+        HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(Tarefa.CRIARDEMANDA, StatusHistorico.CONCLUIDO, new ArquivoHistoricoWorkflow(versaoPDF), momento, Tarefa.CRIARDEMANDA, demandaSalva);
+        HistoricoWorkflow historicoWorkflowAvaliacao = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
+        historicoWorkflowService.save(historicoWorkflowCriacao);
+        historicoWorkflowService.save(historicoWorkflowAvaliacao);
 
         return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
     }
@@ -92,7 +103,7 @@ public class DemandaController {
         }
 
         DemandaUtil util = new DemandaUtil();
-        Demanda demanda = util.convertJsonToEditionModel(demandaJSON);
+        Demanda demanda = util.convertJsonToModel(demandaJSON, 2);
 
         ResponseEntity<Object> demandaValidada = validarDemanda(demanda);
 
@@ -158,7 +169,7 @@ public class DemandaController {
         }
 
         if(!usuarioService.existsById(demanda.getUsuario().getIdUsuario())){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("ID de usuário inválido");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID de usuário inválido");
         }
 
         return null;

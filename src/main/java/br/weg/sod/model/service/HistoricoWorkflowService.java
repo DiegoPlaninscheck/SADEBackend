@@ -1,9 +1,6 @@
 package br.weg.sod.model.service;
 
-import br.weg.sod.model.entities.Demanda;
-import br.weg.sod.model.entities.HistoricoWorkflow;
-import br.weg.sod.model.entities.Proposta;
-import br.weg.sod.model.entities.Usuario;
+import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.repository.HistoricoWorkflowRepository;
@@ -50,50 +47,56 @@ public class HistoricoWorkflowService {
         return listHistorico.get(listHistorico.size() - 1);
     }
 
-    public List<HistoricoWorkflow> findByProposta(Proposta proposta) {
-        return findByDemanda(proposta.getDemanda());
-    }
-
-    public HistoricoWorkflow findLastHistoricoByProposta(Proposta proposta) {
-        List<HistoricoWorkflow> listHistorico = findByProposta(proposta);
-        return listHistorico.get(listHistorico.size() - 1);
-    }
-
-    public void initializeHistoricoByDemanda(Timestamp recebimento, Tarefa tarefa, StatusHistorico statusHistorico, Usuario usuario, Demanda demanda) {
-        Timestamp prazo = new Timestamp(recebimento.getTime() + 86400000 * 5);
-
-        save(new HistoricoWorkflow(recebimento, prazo, tarefa, statusHistorico, usuario, demanda));
-    }
-
-    public void finishHistoricoByDemanda(Demanda demanda, Tarefa acaoFeita) {
+    public void finishHistoricoByDemanda(Demanda demanda, Tarefa acaoFeita, Usuario usuarioResponsavel ,ArquivoHistoricoWorkflow arquivoHistoricoWorkflow) {
         HistoricoWorkflow historicoWorkflowVelho = findLastHistoricoByDemanda(demanda);
 
         historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(new Date().getTime()));
         historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
         historicoWorkflowVelho.setAcaoFeita(acaoFeita);
-        //dar um jeito no pdf
+        historicoWorkflowVelho.setUsuario(usuarioResponsavel);
+        if(arquivoHistoricoWorkflow != null){
+            historicoWorkflowVelho.setArquivoHistoricoWorkflow(arquivoHistoricoWorkflow);
+        }
 
         save(historicoWorkflowVelho);
     }
 
-    public void finishHistoricoByDemanda(Demanda demanda, Tarefa acaoFeita,Usuario usuario) {
-        HistoricoWorkflow historicoWorkflowVelho = findLastHistoricoByDemanda(demanda);
+//
+//    public List<HistoricoWorkflow> findByProposta(Proposta proposta) {
+//        return findByDemanda(proposta.getDemanda());
+//    }
+//
+//    public HistoricoWorkflow findLastHistoricoByProposta(Proposta proposta) {
+//        List<HistoricoWorkflow> listHistorico = findByProposta(proposta);
+//        return listHistorico.get(listHistorico.size() - 1);
+//    }
+//
+//    public void initializeHistoricoByDemanda(Timestamp recebimento, Tarefa tarefa, StatusHistorico statusHistorico, Usuario usuario, Demanda demanda) {
+//        Timestamp prazo = new Timestamp(recebimento.getTime() + 86400000 * 5);
+//
+//        save(new HistoricoWorkflow(recebimento, prazo, tarefa, statusHistorico, usuario, demanda));
+//    }
+//
 
-        historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(new Date().getTime()));
-        historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
-        historicoWorkflowVelho.setAcaoFeita(acaoFeita);
-        historicoWorkflowVelho.setUsuario(usuario);
-        //dar um jeito no pdf
-
-        save(historicoWorkflowVelho);
-    }
-
-    public void initializeHistoricoByProposta(Timestamp recebimento, Tarefa tarefa, StatusHistorico statusHistorico, Usuario usuario, Proposta proposta) {
-        initializeHistoricoByDemanda(recebimento, tarefa, statusHistorico, usuario, proposta.getDemanda());
-    }
-
-    public void finishHistoricoByProposta(Proposta proposta, Tarefa acaoFeita){
-        finishHistoricoByDemanda(proposta.getDemanda(), acaoFeita);
-    }
+//
+//    public void finishHistoricoByDemanda(Demanda demanda, Tarefa acaoFeita,Usuario usuario) {
+//        HistoricoWorkflow historicoWorkflowVelho = findLastHistoricoByDemanda(demanda);
+//
+//        historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(new Date().getTime()));
+//        historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
+//        historicoWorkflowVelho.setAcaoFeita(acaoFeita);
+//        historicoWorkflowVelho.setUsuario(usuario);
+//        //dar um jeito no pdf
+//
+//        save(historicoWorkflowVelho);
+//    }
+//
+//    public void initializeHistoricoByProposta(Timestamp recebimento, Tarefa tarefa, StatusHistorico statusHistorico, Usuario usuario, Proposta proposta) {
+//        initializeHistoricoByDemanda(recebimento, tarefa, statusHistorico, usuario, proposta.getDemanda());
+//    }
+//
+//    public void finishHistoricoByProposta(Proposta proposta, Tarefa acaoFeita){
+//        finishHistoricoByDemanda(proposta.getDemanda(), acaoFeita, (ArquivoHistoricoWorkflow) null);
+//    }
 
 }

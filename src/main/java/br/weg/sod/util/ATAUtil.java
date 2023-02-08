@@ -34,18 +34,4 @@ public class ATAUtil {
         return this.objectMapper.convertValue(ataDTO, ATA.class);
     }
 
-    public static String[] getPropriedadesNulas (Object fonte) {
-        BeanWrapper src = new BeanWrapperImpl(fonte);
-        PropertyDescriptor[] pds = src.getPropertyDescriptors();
-
-        Set<String> emptyNames = new HashSet();
-        for(PropertyDescriptor pd : pds) {
-            Object srcValue = src.getPropertyValue(pd.getName());
-            if (srcValue == null) emptyNames.add(pd.getName());
-        }
-
-        String[] result = new String[emptyNames.size()];
-        return emptyNames.toArray(result);
-    }
-
 }

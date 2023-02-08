@@ -17,15 +17,15 @@ public class PropostaUtil {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     public Proposta convertJsonToModel(String propostaJSON, int tipoDTO) {
-        Object propostaEdicaoDTO;
+        Object propostaDTO;
 
         if(tipoDTO == 1){
-            propostaEdicaoDTO = convertJsontoDtoCriacao(propostaJSON);
+            propostaDTO = convertJsontoDtoCriacao(propostaJSON);
         } else {
-            propostaEdicaoDTO = convertJsontoDtoEdicao(propostaJSON);
+            propostaDTO = convertJsontoDtoEdicao(propostaJSON);
         }
 
-        return convertDtoToModel(propostaEdicaoDTO);
+        return convertDtoToModel(propostaDTO);
     }
 
     private PropostaCriacaoDTO convertJsontoDtoCriacao(String propostaJSON) {

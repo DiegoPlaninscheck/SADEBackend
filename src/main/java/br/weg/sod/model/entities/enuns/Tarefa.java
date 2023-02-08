@@ -7,12 +7,13 @@ import lombok.Getter;
 @Getter
 public enum Tarefa {
 
+    CRIARDEMANDA("Criar Demanda"),
     AVALIARDEMANDA("Avaliar Demanda"),
     CLASSIFICAR("Classificar Demanda"),
-    APROVAR("Aprovar"),
-    REPROVAR("Reprovar"),
-    DEVOLVER("Devolver"),
-    REENVIAR("Reenviar"),
+    APROVARDEMANDA("Aprovar Demanda"),
+    REPROVARDEMANDA("Reprovar Demanda"),
+    DEVOLVERDEMANDA("Devolver Demanda"),
+    REENVIARDEMANDA("Reenviar Demanda"),
     ADICIONARINFORMACOES("Adicionar Informações"),
     CRIARPROPOSTA("Criar Proposta"),
     INICIARWORKFLOW("Iniciar Workflow"),
@@ -21,7 +22,6 @@ public enum Tarefa {
     INFORMARPARECERFORUM("Informar Parecer Fórum"),
     INFORMARPARECERDG("Informar Parecer DG"),
     FINALIZAR("Finalizar histórico da demanda");
-
 
     String nome;
 }
