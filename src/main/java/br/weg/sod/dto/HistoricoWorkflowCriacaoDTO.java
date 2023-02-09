@@ -20,12 +20,16 @@ public class HistoricoWorkflowCriacaoDTO {
     private Demanda demanda;
 
     @NotNull
+    private Usuario usuario;
+
+    @NotNull
     private Tarefa acaoFeitaHistoricoAnterior;
+
+    private String motivoDevolucaoAnterior;
 
     private Timestamp recebimento = new Timestamp(new Date().getTime());
 
     private Timestamp prazo = new Timestamp(new Date().getTime() + 86400000 * 5);
 
-    private Usuario usuario;
 
 }

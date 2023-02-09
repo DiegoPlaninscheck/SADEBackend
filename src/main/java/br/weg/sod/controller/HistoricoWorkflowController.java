@@ -8,6 +8,7 @@ import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.entities.enuns.TipoNotificacao;
+import br.weg.sod.model.service.DemandaService;
 import br.weg.sod.model.service.HistoricoWorkflowService;
 import br.weg.sod.model.service.UsuarioService;
 import br.weg.sod.util.DemandaUtil;
@@ -36,6 +37,7 @@ public class HistoricoWorkflowController {
 
     private HistoricoWorkflowService historicoWorkflowService;
     private UsuarioService usuarioService;
+    private DemandaService demandaService;
 
     @GetMapping
     public ResponseEntity<List<HistoricoWorkflow>> findAll() {
@@ -59,6 +61,13 @@ public class HistoricoWorkflowController {
 
         HistoricoWorkflowUtil util = new HistoricoWorkflowUtil();
         HistoricoWorkflowCriacaoDTO historicoWorkflowDTO = util.convertJsontoDtoCriacao(historicoJSON);
+
+        ResponseEntity<Object> historicoValido = validaCriacaoHistorico(historicoWorkflowDTO, versaoPDF);
+
+        if(historicoValido != null){
+            return historicoValido;
+        }
+
         HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow();
         BeanUtils.copyProperties(historicoWorkflowDTO, historicoWorkflow);
         historicoWorkflow.setStatus(StatusHistorico.EMANDAMENTO);
@@ -68,11 +77,11 @@ public class HistoricoWorkflowController {
         }
 
         //encerra o histórico anterior
-        encerrarHistoricoAnterior(historicoWorkflowDTO.getDemanda(), historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), usuarioResponsavel, versaoPDF);
+//        encerrarHistoricoAnterior(historicoWorkflowDTO.getDemanda(), historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), usuarioResponsavel, historicoWorkflowDTO.getMotivoDevolucaoAnterior(), versaoPDF);
+//
+//        HistoricoWorkflow historicoWorkflowSalvo = historicoWorkflowService.save(historicoWorkflow);
 
-        HistoricoWorkflow historicoWorkflowSalvo = historicoWorkflowService.save(historicoWorkflow);
-
-        return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowSalvo);
+        return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflow);
     }
 
     @PutMapping("/{id}")
@@ -162,6 +171,27 @@ public class HistoricoWorkflowController {
         return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowSalvo);
     }
 
+    @PutMapping("/demanda/{idDemanda}")
+    public ResponseEntity<Object> editLastByDemanda(@RequestParam("historico") @Valid String historicoJSON, @RequestParam(value = "pdf", required = false) MultipartFile versaoPDF, @PathVariable(name = "idDemanda") Integer idDemanda) throws IOException {
+        if (!demandaService.existsById(idDemanda)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
+        }
+
+        HistoricoWorkflowUtil util = new HistoricoWorkflowUtil();
+        HistoricoWorkflowEdicaoDTO historicoWorkflowDTO = util.convertJsontoDtoEdicao(historicoJSON);
+
+        HistoricoWorkflow historicoWorkflow = historicoWorkflowService.findLastHistoricoByDemanda(demandaService.findById(idDemanda).get());
+        BeanUtils.copyProperties(historicoWorkflowDTO, historicoWorkflow, UtilFunctions.getPropriedadesNulas(historicoWorkflowDTO));
+
+        if(versaoPDF != null){
+            historicoWorkflow.setArquivoHistoricoWorkflow(new ArquivoHistoricoWorkflow(versaoPDF));
+        }
+
+        HistoricoWorkflow historicoWorkflowSalvo = historicoWorkflowService.save(historicoWorkflow);
+
+        return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowSalvo);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteById(@PathVariable(name = "id") Integer idHistoricoWorkflow) {
         if (!historicoWorkflowService.existsById(idHistoricoWorkflow)) {
@@ -171,12 +201,74 @@ public class HistoricoWorkflowController {
         return ResponseEntity.status(HttpStatus.OK).body("Historico Workflow deletado com sucesso!");
     }
 
-    private void encerrarHistoricoAnterior(Demanda demanda, Tarefa acaoFeitaHistoricoAnterior, Usuario usuarioResponsavel, MultipartFile versaoPDF) throws IOException {
+    private void encerrarHistoricoAnterior(Demanda demanda, Tarefa acaoFeitaHistoricoAnterior, Usuario usuarioResponsavel, String motivoDevolucaoAnterior, MultipartFile versaoPDF) throws IOException {
         if(versaoPDF == null){
-            historicoWorkflowService.finishHistoricoByDemanda(demanda, acaoFeitaHistoricoAnterior,usuarioResponsavel, null);
+            historicoWorkflowService.finishHistoricoByDemanda(demanda, acaoFeitaHistoricoAnterior,usuarioResponsavel,motivoDevolucaoAnterior, null);
         } else {
-            historicoWorkflowService.finishHistoricoByDemanda(demanda, acaoFeitaHistoricoAnterior, usuarioResponsavel,new ArquivoHistoricoWorkflow(versaoPDF));
+            historicoWorkflowService.finishHistoricoByDemanda(demanda, acaoFeitaHistoricoAnterior, usuarioResponsavel,motivoDevolucaoAnterior, new ArquivoHistoricoWorkflow(versaoPDF));
         }
     }
+
+    private ResponseEntity<Object> validaCriacaoHistorico(HistoricoWorkflowCriacaoDTO historicoWorkflowDTO, MultipartFile versaoPDF){
+        Tarefa tarefaNova = historicoWorkflowDTO.getTarefa();
+        ResponseEntity<Object> historicoValido = null;
+
+        if(tarefaNova == Tarefa.REENVIARDEMANDA){
+            historicoValido = validaHistoricoDevolucao(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), historicoWorkflowDTO.getMotivoDevolucaoAnterior());
+        }
+
+        if(tarefaNova == Tarefa.CLASSIFICARDEMANDA){
+            historicoValido = validarHistoricoAprovado(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior());
+        }
+
+        if(tarefaNova == Tarefa.AVALIARDEMANDA ){
+            historicoValido = validarAvaliarDemandaGerente(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), historicoWorkflowDTO.getUsuario(), historicoWorkflowDTO.getDemanda() ,versaoPDF);
+        }
+
+        return historicoValido;
+    }
+
+    private ResponseEntity<Object> validaHistoricoDevolucao(Tarefa acaoHistorico, String motivoDevolucao){
+        if(acaoHistorico != Tarefa.DEVOLVERDEMANDA){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Ação de histórico anterior inválida");
+        }
+
+        if (motivoDevolucao == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Status da ação anterior não necessita de um motivo de devolução");
+        }
+
+        return null;
+    }
+
+    private ResponseEntity<Object> validarHistoricoAprovado(Tarefa acaoFeitaHistoricoAnterior) {
+        if (acaoFeitaHistoricoAnterior != Tarefa.APROVARDEMANDA){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Status da ação anterior inválido para ação do próximo histórico");
+        }
+
+        return null;
+    }
+
+    private ResponseEntity<Object> validarAvaliarDemandaGerente(Tarefa acaoHistorico, Usuario usuarioHistorico, Demanda demandaHistorico, MultipartFile versaoPDF) {
+        if(acaoHistorico != Tarefa.CLASSIFICARDEMANDA){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Status da ação anterior inválido para ação do próximo histórico");
+        }
+
+        if(usuarioHistorico.getIdUsuario() == historicoWorkflowService.findLastHistoricoByDemanda(demandaHistorico).getUsuario().getIdUsuario()){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário informado inválido");
+        }
+
+        if(!(usuarioService.findById(usuarioHistorico.getIdUsuario()).get() instanceof GerenteNegocio)){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário informado inválido");
+        }
+
+        if (versaoPDF == null){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("PDF da nova versão não informado");
+        } else if(versaoPDF.isEmpty()){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("PDF da nova versão não informado");
+        }
+
+        return null;
+    }
+
 
 }

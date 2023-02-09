@@ -9,6 +9,8 @@ import java.util.List;
 @Data
 public class PautaEdicaoDTO {
 
+    private String tituloReuniaoPauta;
+
     private Date dataReuniao;
 
     private Forum forum;

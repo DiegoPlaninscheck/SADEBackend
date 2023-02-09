@@ -18,6 +18,9 @@ public class Pauta {
     @Column
     private Integer idPauta;
 
+    @Column
+    private String tituloReuniaoPauta;
+
     @Column(nullable = false)
     private Date dataReuniao;
 

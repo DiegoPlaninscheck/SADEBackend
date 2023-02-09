@@ -47,13 +47,14 @@ public class HistoricoWorkflowService {
         return listHistorico.get(listHistorico.size() - 1);
     }
 
-    public void finishHistoricoByDemanda(Demanda demanda, Tarefa acaoFeita, Usuario usuarioResponsavel ,ArquivoHistoricoWorkflow arquivoHistoricoWorkflow) {
+    public void finishHistoricoByDemanda(Demanda demanda, Tarefa acaoFeita, Usuario usuarioResponsavel , String motivoDevolucao,ArquivoHistoricoWorkflow arquivoHistoricoWorkflow) {
         HistoricoWorkflow historicoWorkflowVelho = findLastHistoricoByDemanda(demanda);
 
         historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(new Date().getTime()));
         historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
         historicoWorkflowVelho.setAcaoFeita(acaoFeita);
         historicoWorkflowVelho.setUsuario(usuarioResponsavel);
+        historicoWorkflowVelho.setMotivoDevolucao(motivoDevolucao);
         if(arquivoHistoricoWorkflow != null){
             historicoWorkflowVelho.setArquivoHistoricoWorkflow(arquivoHistoricoWorkflow);
         }

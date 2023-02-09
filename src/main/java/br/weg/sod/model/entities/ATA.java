@@ -3,6 +3,7 @@ package br.weg.sod.model.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -21,6 +22,12 @@ public class ATA {
     @Column
     private Long numeroDG;
 
+    @Column
+    private String tituloReuniaoATA;
+
+    @Column(nullable = false)
+    private Date dataReuniao;
+
     @OneToOne
     @JoinColumn(name = "idPauta", nullable = false)
     private Pauta pauta;
@@ -28,5 +35,10 @@ public class ATA {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "idAta", nullable = false)
     private List<DecisaoPropostaATA> propostasAta;
+
+    @ManyToMany
+    @JoinTable(name = "usuariosReuniaoATA", joinColumns = @JoinColumn(name = "idATA", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "idUsuario", nullable = false))
+    private List<Usuario> usuariosReuniaoATA;
 
 }
