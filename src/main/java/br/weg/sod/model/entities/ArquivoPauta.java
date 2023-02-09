@@ -3,7 +3,6 @@ package br.weg.sod.model.entities;
 import br.weg.sod.model.entities.enuns.TipoDocumento;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
@@ -20,10 +19,10 @@ public class ArquivoPauta {
     @Column
     private Integer idArquivoPauta;
 
-    @NonNull
+    @Column(nullable = false)
     private String nome;
 
-    @NonNull
+    @Column(nullable = false)
     private String tipo;
 
     @Column(nullable = false)

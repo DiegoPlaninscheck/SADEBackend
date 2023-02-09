@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 
@@ -19,8 +20,14 @@ public class ATACriacaoDTO {
     @NotBlank
     private String tituloReuniaoATA;
 
-    @NotBlank
+    @NotNull
     private Date dataReuniao;
+
+    @NotNull
+    private Time inicioReuniao;
+
+    @NotNull
+    private Time finalReuniao;
 
     @NotNull
     private List<Usuario> usuariosReuniaoATA;

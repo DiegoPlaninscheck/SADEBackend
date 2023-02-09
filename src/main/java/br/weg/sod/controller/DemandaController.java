@@ -1,12 +1,16 @@
 package br.weg.sod.controller;
 
 import br.weg.sod.dto.DemandaCriacaoDTO;
+import br.weg.sod.dto.DemandaEdicaoDTO;
+import br.weg.sod.dto.HistoricoWorkflowCriacaoDTO;
 import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.DemandaUtil;
+import br.weg.sod.util.HistoricoWorkflowUtil;
+import br.weg.sod.util.UtilFunctions;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -48,7 +52,7 @@ public class DemandaController {
     }
 
     @GetMapping("/{id}/arquivos")
-    public ResponseEntity<Object> findArquivosDemanda(@PathVariable(name = "id") Integer idDemanda){
+    public ResponseEntity<Object> findArquivosDemanda(@PathVariable(name = "id") Integer idDemanda) {
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }
@@ -59,7 +63,7 @@ public class DemandaController {
     @Transactional
     @PostMapping
     public ResponseEntity<Object> save(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF) throws IOException {
-        if(versaoPDF.isEmpty()){
+        if (versaoPDF.isEmpty()) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
         }
 
@@ -70,15 +74,15 @@ public class DemandaController {
 
         ResponseEntity<Object> demandaValidada = validarDemanda(demanda);
 
-        if(demandaValidada != null){
+        if (demandaValidada != null) {
             return demandaValidada;
         }
 
         demanda.setStatusDemanda(StatusDemanda.BACKLOG);
 
-        if(multipartFiles != null){
-            for(MultipartFile multipartFile : multipartFiles){
-                demanda.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, demanda.getUsuario() ));
+        if (multipartFiles != null) {
+            for (MultipartFile multipartFile : multipartFiles) {
+                demanda.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, demanda.getUsuario()));
             }
         }
 
@@ -93,52 +97,63 @@ public class DemandaController {
     }
 
     @PutMapping("/{idDemanda}/{idAnalista}")
-    public ResponseEntity<Object> edit(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @PathVariable(name = "idDemanda") Integer idDemanda, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException  {
+    public ResponseEntity<Object> edit(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF, @PathVariable(name = "idDemanda") Integer idDemanda, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }
 
-        if(!(usuarioService.findById(idAnalista).get() instanceof AnalistaTI)){
+        if (!(usuarioService.findById(idAnalista).get() instanceof AnalistaTI)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de usuário informado inválido para essa ação");
         }
 
         DemandaUtil util = new DemandaUtil();
-        Demanda demanda = util.convertJsonToModel(demandaJSON, 2);
+        DemandaEdicaoDTO demandaDTO = util.convertJsontoDtoEdicao(demandaJSON);
+        Demanda demanda = demandaService.findById(idDemanda).get();
+        demanda.setIdDemanda(idDemanda);
 
-        ResponseEntity<Object> demandaValidada = validarDemanda(demanda);
+        BeanUtils.copyProperties(demandaDTO, demanda, UtilFunctions.getPropriedadesNulas(demandaDTO));
 
-        if(demandaValidada != null){
+        ResponseEntity<Object> demandaValidada = validarEdicaoDemanda(demanda, demandaDTO.getClassificando(), demandaDTO.getAdicionandoInformacoes());
+
+        if (demandaValidada != null) {
             return demandaValidada;
         }
 
-        demanda.setIdDemanda(idDemanda);
+        if (multipartFiles != null) {
+            for (MultipartFile multipartFile : multipartFiles) {
+                if(multipartFile.isEmpty()){
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Arquivo não informado");
+                }
 
-        if(multipartFiles != null){
-            for(MultipartFile multipartFile : multipartFiles){
-                demanda.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, demanda.getUsuario() ));
+                demanda.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, demanda.getUsuario()));
             }
         }
 
-        Demanda demandaSalva = demandaService.save(demanda);
+        if(versaoPDF.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Arquivo de versionamento da demanda não informado");
+        }
 
-//        if (demanda.getLinkJira() == null) {
-//            //concluindo histórico da classificacao do analista de TI
-//            historicoWorkflowService.finishHistoricoByDemanda(demanda, Tarefa.CLASSIFICAR);
-//
-//            Usuario solicitante = usuarioService.findById(demanda.getUsuario().getIdUsuario()).get();
-//
-//            //iniciando o histórico de avaliacao do gerente de negócio
-//            GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
-//            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demandaSalva);
-//
-//        } else {
-//            //conclui o histórico de adicionar informações
-//            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOES);
-//
-//            //inicia o histórico de criar proposta
-//            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-//            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPROPOSTA, StatusHistorico.EMANDAMENTO, analistaResponsavel, demandaSalva);
-//        }
+        Demanda demandaSalva = demandaService.save(demanda);
+        AnalistaTI analistaTI = (AnalistaTI) usuarioService.findById(idAnalista).get();
+
+        if (demandaDTO.getClassificando()) {
+            //concluindo histórico da classificacao do analista de TI
+            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, new ArquivoHistoricoWorkflow(versaoPDF));
+
+            //iniciando o histórico de avaliacao do gerente de negócio
+            Usuario solicitante = usuarioService.findById(demanda.getUsuario().getIdUsuario()).get();
+            GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
+            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demandaSalva);
+        }
+
+        if (demandaDTO.getAdicionandoInformacoes()) {
+            //conclui o histórico de adicionar informações
+            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOES, analistaTI, null, new ArquivoHistoricoWorkflow(versaoPDF));
+
+            //inicia o histórico de criar proposta
+            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPROPOSTA, StatusHistorico.EMANDAMENTO, analistaTI, demandaSalva);
+
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
     }
@@ -156,20 +171,76 @@ public class DemandaController {
     private ResponseEntity<Object> validarDemanda(Demanda demanda) {
         List<Beneficio> beneficiosDemanda = demanda.getBeneficiosDemanda();
 
-        if(beneficiosDemanda != null && beneficiosDemanda.size() != 0){
-            try{
+        if (beneficiosDemanda != null && beneficiosDemanda.size() != 0) {
+            try {
                 beneficioService.checarBeneficios(beneficiosDemanda);
-            } catch (RuntimeException exception){
+            } catch (RuntimeException exception) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Um dos benefícios passados está com inconformidades em seus dados");
             }
         }
 
-        if(!centroCustoService.validarCentrosCusto(demanda.getCentroCustoDemanda())){
+        if (!centroCustoService.validarCentrosCusto(demanda.getCentroCustoDemanda())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Um dos centros de custo é inválido");
         }
 
-        if(!usuarioService.existsById(demanda.getUsuario().getIdUsuario())){
+        if (!usuarioService.existsById(demanda.getUsuario().getIdUsuario())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID de usuário inválido");
+        }
+
+        return null;
+    }
+
+    private ResponseEntity<Object> validarEdicaoDemanda(Demanda demanda, Boolean classificando, Boolean adicionandoInformacoes) {
+        ResponseEntity<Object> demandaValidada = validarDemanda(demanda);
+
+        if (demandaValidada != null) {
+            return demandaValidada;
+        }
+
+        if(classificando){
+            return validarClassificando(demanda);
+        }
+
+        if(adicionandoInformacoes){
+            return validarAdicionandoInformacoes(demanda);
+        }
+
+        return null;
+    }
+
+    private ResponseEntity<Object> validarClassificando(Demanda demanda) {
+        if(demanda.getTamanho() == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tamanho da demanda não informado");
+        }
+
+        if(demanda.getBUSolicitante() == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("BU solicitante não informada");
+        }
+
+        if(demanda.getBUsBeneficiadas() == null){
+            if(demanda.getBUsBeneficiadas().size() == 0){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("BUs beneficiadas não foi informado");
+            }
+        }
+
+        if(demanda.getSecaoTIResponsavel() == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sessão de TI responsável não informada");
+        }
+
+        return null;
+    }
+
+    private ResponseEntity<Object> validarAdicionandoInformacoes(Demanda demanda) {
+        if(demanda.getPrazoElaboracao() == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Prazo de elaboração da demanda não informado");
+        }
+
+        if(demanda.getCodigoPPM() == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Código PPM não informado");
+        }
+
+        if(demanda.getLinkJira() == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Link para o Jira não informado");
         }
 
         return null;

@@ -18,10 +18,10 @@ public class ArquivoDemanda {
     @Column
     private Integer idArquivoDemanda;
 
-    @NonNull
+    @Column(nullable = false)
     private String nome;
 
-    @NonNull
+    @Column(nullable = false)
     private String tipo;
 
     @JsonIgnore

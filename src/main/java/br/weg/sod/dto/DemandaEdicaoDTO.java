@@ -42,4 +42,8 @@ public class DemandaEdicaoDTO {
     private List<CentroCusto> centroCustoDemanda;
 
     private List<Beneficio> beneficiosDemanda;
+
+    private Boolean classificando = false;
+
+    private Boolean adicionandoInformacoes = false;
 }

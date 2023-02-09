@@ -3,7 +3,6 @@ package br.weg.sod.model.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
@@ -20,10 +19,10 @@ public class ArquivoHistoricoWorkflow {
     @Column
     private Integer idArquivoDemanda;
 
-    @NonNull
+    @Column(nullable = false)
     private String nome;
 
-    @NonNull
+    @Column(nullable = false)
     private String tipo;
 
     @JsonIgnore

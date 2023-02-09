@@ -2,14 +2,10 @@ package br.weg.sod.util;
 
 import br.weg.sod.dto.DemandaCriacaoDTO;
 import br.weg.sod.dto.DemandaEdicaoDTO;
-import br.weg.sod.dto.HistoricoWorkflowCriacaoDTO;
-import br.weg.sod.dto.HistoricoWorkflowEdicaoDTO;
 import br.weg.sod.model.entities.Demanda;
-import br.weg.sod.model.entities.HistoricoWorkflow;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.validation.Valid;
-import java.sql.Time;
 
 public class DemandaUtil {
 

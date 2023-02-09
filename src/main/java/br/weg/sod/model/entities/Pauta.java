@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,11 +19,17 @@ public class Pauta {
     @Column
     private Integer idPauta;
 
-    @Column
+    @Column(nullable = false)
     private String tituloReuniaoPauta;
 
     @Column(nullable = false)
     private Date dataReuniao;
+
+    @Column(nullable = false)
+    private Time inicioReuniao;
+
+    @Column(nullable = false)
+    private Time finalReuniao;
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL)

@@ -3,6 +3,7 @@ package br.weg.sod.model.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 
@@ -22,11 +23,17 @@ public class ATA {
     @Column
     private Long numeroDG;
 
-    @Column
+    @Column(nullable = false)
     private String tituloReuniaoATA;
 
     @Column(nullable = false)
     private Date dataReuniao;
+
+    @Column(nullable = false)
+    private Time inicioReuniao;
+
+    @Column(nullable = false)
+    private Time finalReuniao;
 
     @OneToOne
     @JoinColumn(name = "idPauta", nullable = false)

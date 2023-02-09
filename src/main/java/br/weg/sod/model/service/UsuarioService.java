@@ -46,11 +46,8 @@ public class UsuarioService {
     public GerenteNegocio findGerenteByDepartamento(String departamento) {
         List<Usuario> usuarioList = findByDepartamento(departamento);
 
-        System.out.println(usuarioList);
-
         for (Usuario usuario : usuarioList) {
             if (usuario instanceof GerenteNegocio) {
-                System.out.println("achou");
                 return (GerenteNegocio) usuario;
             }
         }
