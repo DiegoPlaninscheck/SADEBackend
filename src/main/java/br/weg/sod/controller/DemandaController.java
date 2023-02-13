@@ -67,11 +67,7 @@ public class DemandaController {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
         }
 
-        DemandaUtil util = new DemandaUtil();
-        DemandaCriacaoDTO demandaCriacaoDTO = util.convertJsontoDtoCriacao(demandaJSON);
-        Demanda demanda = new Demanda();
-        BeanUtils.copyProperties(demandaCriacaoDTO, demanda);
-
+        Demanda demanda = new DemandaUtil().convertJsonToModel(demandaJSON, 1);
         ResponseEntity<Object> demandaValidada = validarDemanda(demanda);
 
         if (demandaValidada != null) {
@@ -121,7 +117,7 @@ public class DemandaController {
 
         if (multipartFiles != null) {
             for (MultipartFile multipartFile : multipartFiles) {
-                if(multipartFile.isEmpty()){
+                if (multipartFile.isEmpty()) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Arquivo não informado");
                 }
 
@@ -129,7 +125,7 @@ public class DemandaController {
             }
         }
 
-        if(versaoPDF.isEmpty()){
+        if (versaoPDF.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Arquivo de versionamento da demanda não informado");
         }
 
@@ -138,21 +134,22 @@ public class DemandaController {
 
         if (demandaDTO.getClassificando()) {
             //concluindo histórico da classificacao do analista de TI
-            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, new ArquivoHistoricoWorkflow(versaoPDF));
+            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, versaoPDF);
 
             //iniciando o histórico de avaliacao do gerente de negócio
             Usuario solicitante = usuarioService.findById(demanda.getUsuario().getIdUsuario()).get();
             GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
             historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demandaSalva);
-        }
-
-        if (demandaDTO.getAdicionandoInformacoes()) {
+        } else if (demandaDTO.getAdicionandoInformacoes()) {
             //conclui o histórico de adicionar informações
-            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOES, analistaTI, null, new ArquivoHistoricoWorkflow(versaoPDF));
+            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOESDEMANDA, analistaTI, null, versaoPDF);
 
             //inicia o histórico de criar proposta
             historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPROPOSTA, StatusHistorico.EMANDAMENTO, analistaTI, demandaSalva);
-
+        } else {
+            HistoricoWorkflow ultimoHistoricoConcluido = historicoWorkflowService.findLastHistoricoCompletedByDemanda(demandaSalva);
+            ultimoHistoricoConcluido.setArquivoHistoricoWorkflow(new ArquivoHistoricoWorkflow(versaoPDF));
+            historicoWorkflowService.save(ultimoHistoricoConcluido);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
@@ -197,11 +194,11 @@ public class DemandaController {
             return demandaValidada;
         }
 
-        if(classificando){
+        if (classificando) {
             return validarClassificando(demanda);
         }
 
-        if(adicionandoInformacoes){
+        if (adicionandoInformacoes) {
             return validarAdicionandoInformacoes(demanda);
         }
 
@@ -209,21 +206,21 @@ public class DemandaController {
     }
 
     private ResponseEntity<Object> validarClassificando(Demanda demanda) {
-        if(demanda.getTamanho() == null){
+        if (demanda.getTamanho() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tamanho da demanda não informado");
         }
 
-        if(demanda.getBUSolicitante() == null){
+        if (demanda.getBUSolicitante() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("BU solicitante não informada");
         }
 
-        if(demanda.getBUsBeneficiadas() == null){
-            if(demanda.getBUsBeneficiadas().size() == 0){
+        if (demanda.getBUsBeneficiadas() == null) {
+            if (demanda.getBUsBeneficiadas().size() == 0) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("BUs beneficiadas não foi informado");
             }
         }
 
-        if(demanda.getSecaoTIResponsavel() == null){
+        if (demanda.getSecaoTIResponsavel() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sessão de TI responsável não informada");
         }
 
@@ -231,15 +228,15 @@ public class DemandaController {
     }
 
     private ResponseEntity<Object> validarAdicionandoInformacoes(Demanda demanda) {
-        if(demanda.getPrazoElaboracao() == null){
+        if (demanda.getPrazoElaboracao() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Prazo de elaboração da demanda não informado");
         }
 
-        if(demanda.getCodigoPPM() == null){
+        if (demanda.getCodigoPPM() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Código PPM não informado");
         }
 
-        if(demanda.getLinkJira() == null){
+        if (demanda.getLinkJira() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Link para o Jira não informado");
         }
 

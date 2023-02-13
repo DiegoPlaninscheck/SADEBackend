@@ -46,7 +46,7 @@ public class HistoricoWorkflowController {
     }
 
     @PostMapping("/{idUsuario}")
-    public ResponseEntity<Object> save(@RequestParam("historico") @Valid String historicoJSON, @PathVariable(name = "idUsuario") Integer idUsuario) {
+    public ResponseEntity<Object> save(@RequestParam("historico") @Valid String historicoJSON, @PathVariable(name = "idUsuario") Integer idUsuario) throws IOException {
         if (!usuarioService.existsById(idUsuario)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID de usuário não encontrado");
         }
@@ -65,9 +65,10 @@ public class HistoricoWorkflowController {
         BeanUtils.copyProperties(historicoWorkflowDTO, historicoWorkflow);
         historicoWorkflow.setStatus(StatusHistorico.EMANDAMENTO);
 
-        historicoWorkflowService.finishHistoricoByDemanda(historicoWorkflowDTO.getDemanda(), historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), usuarioResponsavel, historicoWorkflowDTO.getMotivoDevolucaoAnterior(), null);
+//        historicoWorkflowService.finishHistoricoByDemanda(historicoWorkflowDTO.getDemanda(), historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), usuarioResponsavel, historicoWorkflowDTO.getMotivoDevolucaoAnterior(), null);
 
-        return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowService.save(historicoWorkflow));
+        //historicoWorkflowService.save(historicoWorkflow)
+        return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflow);
     }
 
     @PutMapping("/{id}")

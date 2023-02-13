@@ -11,13 +11,10 @@ import java.util.List;
 @Data
 public class PropostaEdicaoDTO {
 
-    @NotBlank
     private String escopo;
 
-    @FutureOrPresent
     private Date periodoExecucaoInicio;
 
-    @Future
     private Date periodoExecucaoFim;
 
     private Boolean emWorkflow;

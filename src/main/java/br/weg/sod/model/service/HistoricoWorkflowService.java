@@ -10,7 +10,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -52,6 +54,17 @@ public class HistoricoWorkflowService {
         return listHistorico.get(listHistorico.size() - 1);
     }
 
+    public HistoricoWorkflow findLastHistoricoCompletedByDemanda(Demanda demanda) {
+        List<HistoricoWorkflow> listHistorico = findByDemanda(demanda);
+        for (int i = listHistorico.size() - 1; i >= 0; i--) {
+            if (listHistorico.get(i).getStatus() == StatusHistorico.CONCLUIDO) {
+                return listHistorico.get(i);
+            }
+        }
+
+        return null;
+    }
+
 
     //validações
     public ResponseEntity<Object> validaCriacaoHistorico(HistoricoWorkflowCriacaoDTO historicoWorkflowDTO) {
@@ -66,8 +79,16 @@ public class HistoricoWorkflowService {
             historicoValido = validarHistoricoAprovado(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior());
         }
 
-        if (tarefaNova == Tarefa.ADICIONARINFORMACOES) {
+        if (tarefaNova == Tarefa.ADICIONARINFORMACOESDEMANDA) {
             historicoValido = validarHistoricoAprovado(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior());
+        }
+
+        if (tarefaNova == Tarefa.AVALIARWORKFLOW) {
+            historicoValido = validarHistoricoWorkflowAprovado(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), historicoWorkflowDTO.getUsuario());
+        }
+
+        if (tarefaNova == Tarefa.CRIARPAUTA) {
+            historicoValido = validarHistoricoWorkflowReprovado(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), historicoWorkflowDTO.getMotivoDevolucaoAnterior(), historicoWorkflowDTO.getUsuario());
         }
 
         return historicoValido;
@@ -78,7 +99,7 @@ public class HistoricoWorkflowService {
         ResponseEntity<Object> historicoValido = null;
 
         if (tarefaFeita == Tarefa.REPROVARDEMANDA) {
-            historicoValido = validaHistoricoReprovado(historicoWorkflowBD.getUsuario(), historicoWorkflowDTO.getMotivoDevolucao());
+            historicoValido = validarHistoricoReprovado(historicoWorkflowBD.getUsuario(), historicoWorkflowDTO.getMotivoDevolucao());
         }
 
         return historicoValido;
@@ -96,7 +117,7 @@ public class HistoricoWorkflowService {
         return null;
     }
 
-    private ResponseEntity<Object> validaHistoricoReprovado(Usuario usuario, String motivoDevolucao) {
+    private ResponseEntity<Object> validarHistoricoReprovado(Usuario usuario, String motivoDevolucao) {
         if (usuario instanceof GerenteNegocio) {
             if (motivoDevolucao == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Essa ação necessita de um motivo de devolução");
@@ -114,9 +135,37 @@ public class HistoricoWorkflowService {
         return null;
     }
 
+    private ResponseEntity<Object> validarHistoricoWorkflowAprovado(Tarefa acaoFeitaHistoricoAnterior, Usuario usuario) {
+        if (acaoFeitaHistoricoAnterior != Tarefa.APROVARWORKFLOW) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Status da ação anterior inválido para ação do próximo histórico");
+        }
+
+        if (!(usuario instanceof GerenteTI)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário responsável não pode ser encarregado dessa ação");
+        }
+
+        return null;
+    }
+
+    private ResponseEntity<Object> validarHistoricoWorkflowReprovado(Tarefa acaoFeitaHistoricoAnterior, String motivoDevolucaoAnterior, Usuario usuario) {
+        if (acaoFeitaHistoricoAnterior != Tarefa.REPROVARWORKFLOW) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Status da ação anterior inválido para ação do próximo histórico");
+        }
+
+         if (motivoDevolucaoAnterior == null) {
+             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Essa ação necessita de um motivo de devolução");
+         }
+
+        if (!(usuario instanceof GerenteTI)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário responsável não pode ser encarregado dessa ação");
+        }
+
+        return null;
+    }
+
 
     //processos
-    public void finishHistoricoByDemanda(Demanda demanda, Tarefa acaoFeita, Usuario usuarioResponsavel , String motivoDevolucao,ArquivoHistoricoWorkflow arquivoHistoricoWorkflow) {
+    public void finishHistoricoByDemanda(Demanda demanda, Tarefa acaoFeita, Usuario usuarioResponsavel, String motivoDevolucao, MultipartFile versaoPDF) throws IOException {
         HistoricoWorkflow historicoWorkflowVelho = findLastHistoricoByDemanda(demanda);
 
         historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(new Date().getTime()));
@@ -124,8 +173,8 @@ public class HistoricoWorkflowService {
         historicoWorkflowVelho.setAcaoFeita(acaoFeita);
         historicoWorkflowVelho.setUsuario(usuarioResponsavel);
         historicoWorkflowVelho.setMotivoDevolucao(motivoDevolucao);
-        if(arquivoHistoricoWorkflow != null){
-            historicoWorkflowVelho.setArquivoHistoricoWorkflow(arquivoHistoricoWorkflow);
+        if (versaoPDF != null) {
+            historicoWorkflowVelho.setArquivoHistoricoWorkflow(new ArquivoHistoricoWorkflow(versaoPDF));
         }
 
         save(historicoWorkflowVelho);
