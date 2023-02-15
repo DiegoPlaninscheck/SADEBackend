@@ -33,8 +33,6 @@ public class PropostaController {
     private UsuarioService usuarioService;
     private DemandaService demandaService;
     private TabelaCustoService tabelaCustoService;
-    private LinhaTabelaSevice linhaTabelaSevice;
-    private CentroCustoPaganteService centroCustoPaganteService;
     private CentroCustoService centroCustoService;
 
     @GetMapping
@@ -129,16 +127,16 @@ public class PropostaController {
             GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
             historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()),Tarefa.AVALIARWORKFLOW, StatusHistorico.EMANDAMENTO, gerenteNegocio, propostaSalva.getDemanda());
         }
-//        if(proposta.getAprovadoWorkflow()){
-//            //encerra historico de criar pauta
-//            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-//            historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.CRIARPAUTA, analistaResponsavel, null, null);
-//
-//            //inicia histórico de em workflow
+        if(proposta.getAprovadoWorkflow()){
+            //encerra historico de criar pauta
+            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
+            historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.CRIARPAUTA, analistaResponsavel, null, null);
+
+            //inicia histórico de em workflow
 //            Usuario solicitante = usuarioService.findById(propostaSalva.getDemanda().getUsuario().getIdUsuario()).get();
 //            GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
 //            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()),Tarefa.EMWORKFLOW, StatusHistorico.EMANDAMENTO, gerenteNegocio, propostaSalva.getDemanda());
-//        }
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(propostaSalva);
     }

@@ -54,8 +54,14 @@ public class HistoricoWorkflowController {
 
         HistoricoWorkflowUtil util = new HistoricoWorkflowUtil();
         HistoricoWorkflowCriacaoDTO historicoWorkflowDTO = util.convertJsontoDtoCriacao(historicoJSON);
+        ResponseEntity<Object> historicoValido;
 
-        ResponseEntity<Object> historicoValido = historicoWorkflowService.validaCriacaoHistorico(historicoWorkflowDTO);
+        if(historicoWorkflowDTO.getUsuario() != null) {
+            Usuario usuarioProximoHistorico = usuarioService.findById(historicoWorkflowDTO.getUsuario().getIdUsuario()).get();
+             historicoValido = historicoWorkflowService.validaCriacaoHistorico(historicoWorkflowDTO, usuarioProximoHistorico);
+        } else {
+            historicoValido = historicoWorkflowService.validaCriacaoHistorico(historicoWorkflowDTO, null);
+        }
 
         if (historicoValido != null) {
             return historicoValido;
@@ -65,10 +71,9 @@ public class HistoricoWorkflowController {
         BeanUtils.copyProperties(historicoWorkflowDTO, historicoWorkflow);
         historicoWorkflow.setStatus(StatusHistorico.EMANDAMENTO);
 
-//        historicoWorkflowService.finishHistoricoByDemanda(historicoWorkflowDTO.getDemanda(), historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), usuarioResponsavel, historicoWorkflowDTO.getMotivoDevolucaoAnterior(), null);
+        historicoWorkflowService.finishHistoricoByDemanda(demandaService.findById(historicoWorkflowDTO.getDemanda().getIdDemanda()).get(), historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), usuarioResponsavel, historicoWorkflowDTO.getMotivoDevolucaoAnterior(), null);
 
-        //historicoWorkflowService.save(historicoWorkflow)
-        return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflow);
+        return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowService.save(historicoWorkflow));
     }
 
     @PutMapping("/{id}")

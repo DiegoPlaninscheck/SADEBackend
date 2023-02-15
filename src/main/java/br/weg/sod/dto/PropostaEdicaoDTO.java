@@ -2,9 +2,7 @@ package br.weg.sod.dto;
 
 import br.weg.sod.model.entities.*;
 import lombok.Data;
-import lombok.Getter;
 
-import javax.validation.constraints.*;
 import java.util.Date;
 import java.util.List;
 

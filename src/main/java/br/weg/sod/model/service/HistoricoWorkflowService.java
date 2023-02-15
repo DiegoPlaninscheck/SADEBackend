@@ -67,7 +67,7 @@ public class HistoricoWorkflowService {
 
 
     //validações
-    public ResponseEntity<Object> validaCriacaoHistorico(HistoricoWorkflowCriacaoDTO historicoWorkflowDTO) {
+    public ResponseEntity<Object> validaCriacaoHistorico(HistoricoWorkflowCriacaoDTO historicoWorkflowDTO, Usuario usuarioProximoHistorico) {
         Tarefa tarefaNova = historicoWorkflowDTO.getTarefa();
         ResponseEntity<Object> historicoValido = null;
 
@@ -84,11 +84,11 @@ public class HistoricoWorkflowService {
         }
 
         if (tarefaNova == Tarefa.AVALIARWORKFLOW) {
-            historicoValido = validarHistoricoWorkflowAprovado(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), historicoWorkflowDTO.getUsuario());
+            historicoValido = validarHistoricoWorkflowAprovado(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), usuarioProximoHistorico);
         }
 
         if (tarefaNova == Tarefa.CRIARPAUTA) {
-            historicoValido = validarHistoricoWorkflowReprovado(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), historicoWorkflowDTO.getMotivoDevolucaoAnterior(), historicoWorkflowDTO.getUsuario());
+            historicoValido = validarHistoricoWorkflowReprovado(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), historicoWorkflowDTO.getMotivoDevolucaoAnterior(), usuarioProximoHistorico);
         }
 
         return historicoValido;
@@ -156,7 +156,7 @@ public class HistoricoWorkflowService {
              return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Essa ação necessita de um motivo de devolução");
          }
 
-        if (!(usuario instanceof GerenteTI)) {
+        if (!(usuario instanceof AnalistaTI)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário responsável não pode ser encarregado dessa ação");
         }
 
