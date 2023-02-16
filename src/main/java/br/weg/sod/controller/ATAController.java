@@ -57,6 +57,8 @@ public class ATAController {
 
         ATA ata = new ATA();
         BeanUtils.copyProperties(ATACriacaoDTO, ata);
+
+
         return ResponseEntity.status(HttpStatus.OK).body(ataService.save(ata));
     }
 
@@ -70,20 +72,10 @@ public class ATAController {
         ATA ata = ataService.findById(idATA).get();
         ATAEdicaoDTO ataDTO = util.convertJsontoDto(ataJSON);
 
-        if(ataService.existsByNumeroDG(ataDTO.getNumeroDG())){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Número da DG já registrado em ourta ATA");
-        }
+        ResponseEntity<Object> validacaoEdicao = validacoesEdicaoATA(ataDTO, ata, multipartFiles);
 
-        if(multipartFiles.length != ataDTO.getTipoDocumentos().size()){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Os documentos passados não são coesos com as informações passadas sobre eles");
-        }
-
-        if(ata.getPauta().getPropostasPauta().size() != ataDTO.getPropostasAta().size()){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("A quantidade de decisões de ata informada é inválida");
-        }
-
-        if(!decisaoPropostaATAService.decisoesValidas(ata.getPauta().getPropostasPauta(), ataDTO.getPropostasAta())){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Decisões da ata contém número de id de proposta inválido ou número sequencial já registrado/repetido");
+        if (validacaoEdicao != null) {
+            return validacaoEdicao;
         }
 
         BeanUtils.copyProperties(ataDTO, ata, UtilFunctions.getPropriedadesNulas(ataDTO));
@@ -128,5 +120,24 @@ public class ATAController {
         return ResponseEntity.status(HttpStatus.OK).body("ATA deletada com sucesso!");
     }
 
+    private ResponseEntity<Object> validacoesEdicaoATA(ATAEdicaoDTO ataDTO, ATA ata, MultipartFile multipartFiles[]) {
+        if(ataService.existsByNumeroDG(ataDTO.getNumeroDG())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Número da DG já registrado em ourta ATA");
+        }
+
+        if(multipartFiles.length != ataDTO.getTipoDocumentos().size()){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Os documentos passados não são coesos com as informações passadas sobre eles");
+        }
+
+        if(ata.getPauta().getPropostasPauta().size() != ataDTO.getPropostasAta().size()){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("A quantidade de decisões de ata informada é inválida");
+        }
+
+        if(!decisaoPropostaATAService.decisoesValidas(ata.getPauta().getPropostasPauta(), ataDTO.getPropostasAta())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Decisões da ata contém número de id de proposta inválido ou número sequencial já registrado/repetido");
+        }
+
+        return null;
+    }
 
 }

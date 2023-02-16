@@ -51,7 +51,7 @@ public class PropostaController {
     @Transactional
     @PostMapping("/{idAnalista}")
     public ResponseEntity<Object> save(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF, @PathVariable("idAnalista") Integer idAnalista) throws IOException {
-        if(versaoPDF.isEmpty()){
+        if (versaoPDF.isEmpty()) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
         }
 
@@ -64,7 +64,7 @@ public class PropostaController {
             return validacao;
         }
 
-        if(proposta.getPayback() == null) {
+        if (proposta.getPayback() == null) {
             Integer valorPayback = 2; //depois fazer a conta com payback e custo totais e os caralho
             proposta.setPayback(valorPayback);
         }
@@ -83,7 +83,7 @@ public class PropostaController {
         historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.CRIARPROPOSTA, analistaResponsavel, null, versaoPDF);
 
         //inicia o histórico de criar pauta
-        historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()),Tarefa.CRIARPAUTA, StatusHistorico.EMANDAMENTO, analistaResponsavel, propostaSalva.getDemanda());
+        historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPAUTA, StatusHistorico.EMANDAMENTO, analistaResponsavel, propostaSalva.getDemanda());
 
         return ResponseEntity.status(HttpStatus.OK).body(propostaSalva);
     }
@@ -92,10 +92,6 @@ public class PropostaController {
     public ResponseEntity<Object> edit(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @RequestParam(value = "pdfVersaoHistorico", required = false) MultipartFile versaoPDF, @PathVariable(name = "idProposta") Integer idProposta, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
         if (!propostaService.existsById(idProposta)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma proposta com o ID informado");
-        }
-
-        if (!(usuarioService.findById(idAnalista).get() instanceof AnalistaTI)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de usuário informado inválido para essa ação");
         }
 
         PropostaUtil util = new PropostaUtil();
@@ -117,27 +113,34 @@ public class PropostaController {
 
         Proposta propostaSalva = propostaService.save(propostaDB);
 
-        if(proposta.getEmWorkflow()){
-            //encerra historico de criar pauta
-            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-            historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.INICIARWORKFLOW, analistaResponsavel, null, null);
+        if(proposta.getEmWorkflow() != null){
+            if (proposta.getEmWorkflow()) {
+                //encerra historico de criar pauta
+                AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
+                historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.INICIARWORKFLOW, analistaResponsavel, null, null);
 
-            //inicia histórico de em workflow
-            Usuario solicitante = usuarioService.findById(propostaSalva.getDemanda().getUsuario().getIdUsuario()).get();
-            GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
-            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()),Tarefa.AVALIARWORKFLOW, StatusHistorico.EMANDAMENTO, gerenteNegocio, propostaSalva.getDemanda());
-        }
-        if(proposta.getAprovadoWorkflow()){
-            //encerra historico de criar pauta
-            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-            historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.CRIARPAUTA, analistaResponsavel, null, null);
-
-            //inicia histórico de em workflow
-//            Usuario solicitante = usuarioService.findById(propostaSalva.getDemanda().getUsuario().getIdUsuario()).get();
-//            GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
-//            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()),Tarefa.EMWORKFLOW, StatusHistorico.EMANDAMENTO, gerenteNegocio, propostaSalva.getDemanda());
+                //inicia histórico de em workflow
+                Usuario solicitante = usuarioService.findById(propostaSalva.getDemanda().getUsuario().getIdUsuario()).get();
+                GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
+                historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARWORKFLOW, StatusHistorico.EMANDAMENTO, gerenteNegocio, propostaSalva.getDemanda());
+            }
         }
 
+        Usuario usuarioAprovacao = usuarioService.findById(idAnalista).get();
+
+        if (usuarioAprovacao instanceof GerenteTI) {
+            //encerra historico de avaliação do gerente de TI
+            if (proposta.getAprovadoWorkflow()) {
+                historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.APROVARWORKFLOW, usuarioAprovacao, null, null);
+            } else {
+                historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.REPROVARWORKFLOW, usuarioAprovacao, null, null);
+            }
+
+            //inicia histórico de criação de pauta
+            AnalistaTI analistaResponsavel = historicoWorkflowService.findLastHistoricoAnalistaByDemanda(propostaDB.getDemanda());
+            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPAUTA, StatusHistorico.EMANDAMENTO, analistaResponsavel, propostaSalva.getDemanda());
+        }
+//
         return ResponseEntity.status(HttpStatus.OK).body(propostaSalva);
     }
 
@@ -151,13 +154,13 @@ public class PropostaController {
     }
 
     private ResponseEntity<Object> validacoesProposta(Proposta proposta, Integer idAnalista) {
-        if(proposta.getPeriodoExecucaoFim() != null) {
+        if (proposta.getPeriodoExecucaoFim() != null) {
             if (proposta.getPeriodoExecucaoFim().getTime() < proposta.getPeriodoExecucaoInicio().getTime()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("O período de execução inválido");
             }
         }
 
-        if (!(usuarioService.findById(idAnalista).get() instanceof AnalistaTI)) {
+        if (usuarioService.findById(idAnalista).get() instanceof Solicitante || usuarioService.findById(idAnalista).get() instanceof GerenteNegocio) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de usuário informado inválido para essa ação");
         }
 
@@ -198,11 +201,17 @@ public class PropostaController {
     private ResponseEntity<Object> validacoesItensProposta(Proposta proposta, Integer idAnalista, MultipartFile versaoPDF) {
         ResponseEntity<Object> validacaoProposta = validacoesProposta(proposta, idAnalista);
 
-        if(propostaAtualizou(proposta)){
-            if(versaoPDF == null){
+        if (propostaAtualizou(proposta)) {
+            if (versaoPDF == null) {
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
-            } else if(versaoPDF.isEmpty()){
+            } else if (versaoPDF.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
+            }
+        }
+
+        if(proposta.getAprovadoWorkflow() != null){
+            if(! (usuarioService.findById(idAnalista).get() instanceof GerenteTI)){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário responsável não pode ser encarregado dessa ação");
             }
         }
 
@@ -238,23 +247,23 @@ public class PropostaController {
     }
 
     private boolean propostaAtualizou(Proposta proposta) {
-        if(proposta.getPayback() != null){
+        if (proposta.getPayback() != null) {
             return true;
         }
 
-        if(proposta.getTabelasCustoProposta() != null){
+        if (proposta.getTabelasCustoProposta() != null) {
             return true;
         }
 
-        if(proposta.getResponsaveisNegocio() != null){
+        if (proposta.getResponsaveisNegocio() != null) {
             return true;
         }
 
-        if(proposta.getPeriodoExecucaoInicio() != null){
+        if (proposta.getPeriodoExecucaoInicio() != null) {
             return true;
         }
 
-        if(proposta.getPeriodoExecucaoFim() != null){
+        if (proposta.getPeriodoExecucaoFim() != null) {
             return true;
         }
 

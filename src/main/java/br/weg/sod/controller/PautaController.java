@@ -58,7 +58,7 @@ public class PautaController {
     }
 
     @PostMapping("/{idAnalista}")
-    public ResponseEntity<Object> save(@RequestBody @Valid PautaCriacaoDTO pautaCriacaoDTO, @PathVariable(name = "idAnalista") Integer idAnalista) {
+    public ResponseEntity<Object> save(@RequestBody @Valid PautaCriacaoDTO pautaCriacaoDTO, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
         if(!validacaoPropostasCriacao(pautaCriacaoDTO.getPropostasPauta())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Uma das propostas informadas já está em uma pauta ou o id informado não existe");
         }
@@ -79,13 +79,12 @@ public class PautaController {
 
 //        for(DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()){
 ////            encerrar historico criar pauta
-//            historicoWorkflowService.finishHistoricoByProposta(decisaoPropostaPauta.getProposta(), Tarefa.CRIARPAUTA);
+//            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
+//            historicoWorkflowService.finishHistoricoByDemanda(decisaoPropostaPauta.getProposta().getDemanda(), Tarefa.CRIARPAUTA,analistaResponsavel, null, null );
 //
 ////            inicio informar parecer da comissao
 //            Timestamp time = new Timestamp(pautaSalva.getDataReuniao().getTime());
-//            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-//
-//            historicoWorkflowService.initializeHistoricoByProposta(time,Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoPropostaPauta.getProposta());
+//            historicoWorkflowService.initializeHistoricoByDemanda(time,Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoPropostaPauta.getProposta().getDemanda());
 //        }
 
         return ResponseEntity.status(HttpStatus.OK).body(pauta);
@@ -104,7 +103,7 @@ public class PautaController {
         if (!dataFutura(pautaDTO.getDataReuniao())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Data de reunião informada inválida");
         }
-        //fazer ele validar com a DTO de edição tbm
+
         if(!validacaoPropostasEdicao(pautaDTO.getPropostasPauta(), pauta)){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Uma das propostas informadas já está em uma pauta ou o id informado não existe");
         }
@@ -138,15 +137,12 @@ public class PautaController {
 
         pauta.setPropostasPauta(decisoesPauta);
 
-//        Pauta pautaSalva = pautaService.save(pauta);
+        Pauta pautaSalva = pautaService.save(pauta);
 
-//        for(DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()){
-////            encerrar historico de informar o parecer
-//            historicoWorkflowService.finishHistoricoByProposta(decisaoPropostaPauta.getProposta(), Tarefa.INFORMARPARECERFORUM);
-//
-////            inicio informar parecer da DG
-//            historicoWorkflowService.initializeHistoricoByProposta(new Timestamp(new Date().getTime()),Tarefa.INFORMARPARECERDG, StatusHistorico.EMAGUARDO, analistaTIresponsavel, decisaoPropostaPauta.getProposta());
-//        }
+        for(DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()){
+//            encerrar historico de informar o parecer
+            historicoWorkflowService.finishHistoricoByDemanda(decisaoPropostaPauta.getProposta().getDemanda(), Tarefa.INFORMARPARECERFORUM,analistaTIresponsavel, null, null );
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(pauta);
     }

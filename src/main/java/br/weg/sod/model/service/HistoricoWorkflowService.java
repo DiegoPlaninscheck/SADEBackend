@@ -65,6 +65,17 @@ public class HistoricoWorkflowService {
         return null;
     }
 
+    public AnalistaTI findLastHistoricoAnalistaByDemanda(Demanda demanda) {
+        List<HistoricoWorkflow> listHistorico = findByDemanda(demanda);
+        for (int i = listHistorico.size() - 1; i >= 0; i--) {
+            if (listHistorico.get(i).getUsuario() instanceof AnalistaTI) {
+                return (AnalistaTI) listHistorico.get(i).getUsuario();
+            }
+        }
+
+        return null;
+    }
+
 
     //validações
     public ResponseEntity<Object> validaCriacaoHistorico(HistoricoWorkflowCriacaoDTO historicoWorkflowDTO, Usuario usuarioProximoHistorico) {
@@ -152,9 +163,9 @@ public class HistoricoWorkflowService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Status da ação anterior inválido para ação do próximo histórico");
         }
 
-         if (motivoDevolucaoAnterior == null) {
-             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Essa ação necessita de um motivo de devolução");
-         }
+        if (motivoDevolucaoAnterior == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Essa ação necessita de um motivo de devolução");
+        }
 
         if (!(usuario instanceof AnalistaTI)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário responsável não pode ser encarregado dessa ação");
