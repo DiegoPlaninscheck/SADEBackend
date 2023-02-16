@@ -102,6 +102,10 @@ public class DemandaController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de usuário informado inválido para essa ação");
         }
 
+        if (versaoPDF.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Arquivo de versionamento da demanda não informado");
+        }
+
         DemandaUtil util = new DemandaUtil();
         DemandaEdicaoDTO demandaDTO = util.convertJsontoDtoEdicao(demandaJSON);
         Demanda demanda = demandaService.findById(idDemanda).get();
@@ -123,10 +127,6 @@ public class DemandaController {
 
                 demanda.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, demanda.getUsuario()));
             }
-        }
-
-        if (versaoPDF.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Arquivo de versionamento da demanda não informado");
         }
 
         Demanda demandaSalva = demandaService.save(demanda);
@@ -228,6 +228,10 @@ public class DemandaController {
     }
 
     private ResponseEntity<Object> validarAdicionandoInformacoes(Demanda demanda) {
+        if (demanda.getStatusDemanda() != StatusDemanda.ASSESSMENT && demanda.getStatusDemanda() != StatusDemanda.BUSINESSCASE) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Status informado inválido");
+        }
+
         if (demanda.getPrazoElaboracao() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Prazo de elaboração da demanda não informado");
         }

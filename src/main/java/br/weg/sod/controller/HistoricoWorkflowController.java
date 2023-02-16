@@ -3,6 +3,7 @@ package br.weg.sod.controller;
 import br.weg.sod.dto.HistoricoWorkflowCriacaoDTO;
 import br.weg.sod.dto.HistoricoWorkflowEdicaoDTO;
 import br.weg.sod.model.entities.*;
+import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.DemandaService;
@@ -125,6 +126,12 @@ public class HistoricoWorkflowController {
 
         if (versaoPDF != null) {
             historicoWorkflow.setArquivoHistoricoWorkflow(new ArquivoHistoricoWorkflow(versaoPDF));
+        }
+
+        if(historicoWorkflowDTO.getAcaoFeita() == Tarefa.REPROVARDEMANDA) {
+            Demanda demandaAtualizar = demandaService.findById(historicoWorkflowDTO.getDemanda().getIdDemanda()).get();
+            demandaAtualizar.setStatusDemanda(StatusDemanda.CANCELED);
+            demandaService.save(demandaAtualizar);
         }
 
         HistoricoWorkflow historicoWorkflowSalvo = historicoWorkflowService.save(historicoWorkflow);

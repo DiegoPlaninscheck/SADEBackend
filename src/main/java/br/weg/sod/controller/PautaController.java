@@ -62,6 +62,7 @@ public class PautaController {
         if(!validacaoPropostasCriacao(pautaCriacaoDTO.getPropostasPauta())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Uma das propostas informadas já está em uma pauta ou o id informado não existe");
         }
+
         if(!forumService.existsById(pautaCriacaoDTO.getForum().getIdForum())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("O id do fórum informado não existe");
         }
@@ -74,18 +75,18 @@ public class PautaController {
             BeanUtils.copyProperties(decisaoPropostaPautaDTO, decisaoPropostaPauta);
             pauta.getPropostasPauta().add(decisaoPropostaPauta);
         }
-
+//testar essa merda
 //        Pauta pautaSalva = pautaService.save(pauta);
 
-//        for(DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()){
-////            encerrar historico criar pauta
-//            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-//            historicoWorkflowService.finishHistoricoByDemanda(decisaoPropostaPauta.getProposta().getDemanda(), Tarefa.CRIARPAUTA,analistaResponsavel, null, null );
-//
-////            inicio informar parecer da comissao
-//            Timestamp time = new Timestamp(pautaSalva.getDataReuniao().getTime());
-//            historicoWorkflowService.initializeHistoricoByDemanda(time,Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoPropostaPauta.getProposta().getDemanda());
-//        }
+        for(DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()){
+//            encerrar historico criar pauta
+            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
+            historicoWorkflowService.finishHistoricoByDemanda(decisaoPropostaPauta.getProposta().getDemanda(), Tarefa.CRIARPAUTA,analistaResponsavel, null, null );
+
+//            inicio informar parecer da comissao
+            Timestamp time = new Timestamp(pauta.getDataReuniao().getTime());
+            historicoWorkflowService.initializeHistoricoByDemanda(time,Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoPropostaPauta.getProposta().getDemanda());
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(pauta);
     }

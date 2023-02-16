@@ -1,6 +1,7 @@
 package br.weg.sod.dto;
 
 import br.weg.sod.model.entities.*;
+import br.weg.sod.model.entities.enuns.SecaoTI;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.Tamanho;
 import lombok.Data;
@@ -31,7 +32,7 @@ public class DemandaEdicaoDTO {
 
     private List<BU> BUsBeneficiadas;
 
-    private String secaoTIResponsavel;
+    private SecaoTI secaoTIResponsavel;
 
     private Date prazoElaboracao;
 
