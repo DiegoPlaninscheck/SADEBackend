@@ -21,4 +21,6 @@ public class PautaEdicaoDTO {
     private Forum forum;
 
     private List<DecisaoPropostaPautaEdicaoDTO> propostasPauta;
+
+    private Date dataReuniaoATA;
 }

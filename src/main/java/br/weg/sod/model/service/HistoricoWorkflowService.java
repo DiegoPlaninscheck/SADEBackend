@@ -51,9 +51,6 @@ public class HistoricoWorkflowService {
 
     public HistoricoWorkflow findLastHistoricoByDemanda(Demanda demanda) {
         List<HistoricoWorkflow> listHistorico = findByDemanda(demanda);
-
-        System.out.println(listHistorico.size());
-
         return listHistorico.get(listHistorico.size() - 1);
     }
 
@@ -199,38 +196,5 @@ public class HistoricoWorkflowService {
 
         save(new HistoricoWorkflow(recebimento, prazo, tarefa, statusHistorico, usuario, demanda));
     }
-
-//
-//    public List<HistoricoWorkflow> findByProposta(Proposta proposta) {
-//        return findByDemanda(proposta.getDemanda());
-//    }
-//
-//    public HistoricoWorkflow findLastHistoricoByProposta(Proposta proposta) {
-//        List<HistoricoWorkflow> listHistorico = findByProposta(proposta);
-//        return listHistorico.get(listHistorico.size() - 1);
-//    }
-//
-//
-
-//
-//    public void finishHistoricoByDemanda(Demanda demanda, Tarefa acaoFeita,Usuario usuario) {
-//        HistoricoWorkflow historicoWorkflowVelho = findLastHistoricoByDemanda(demanda);
-//
-//        historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(new Date().getTime()));
-//        historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
-//        historicoWorkflowVelho.setAcaoFeita(acaoFeita);
-//        historicoWorkflowVelho.setUsuario(usuario);
-//        //dar um jeito no pdf
-//
-//        save(historicoWorkflowVelho);
-//    }
-//
-//    public void initializeHistoricoByProposta(Timestamp recebimento, Tarefa tarefa, StatusHistorico statusHistorico, Usuario usuario, Proposta proposta) {
-//        initializeHistoricoByDemanda(recebimento, tarefa, statusHistorico, usuario, proposta.getDemanda());
-//    }
-//
-//    public void finishHistoricoByProposta(Proposta proposta, Tarefa acaoFeita){
-//        finishHistoricoByDemanda(proposta.getDemanda(), acaoFeita, (ArquivoHistoricoWorkflow) null);
-//    }
 
 }

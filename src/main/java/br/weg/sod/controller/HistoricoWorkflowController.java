@@ -8,6 +8,7 @@ import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.DemandaService;
 import br.weg.sod.model.service.HistoricoWorkflowService;
+import br.weg.sod.model.service.PropostaService;
 import br.weg.sod.model.service.UsuarioService;
 import br.weg.sod.util.HistoricoWorkflowUtil;
 import br.weg.sod.util.UtilFunctions;
@@ -32,6 +33,7 @@ public class HistoricoWorkflowController {
     private HistoricoWorkflowService historicoWorkflowService;
     private UsuarioService usuarioService;
     private DemandaService demandaService;
+    private PropostaService propostaService;
 
     @GetMapping
     public ResponseEntity<List<HistoricoWorkflow>> findAll() {
@@ -74,7 +76,16 @@ public class HistoricoWorkflowController {
 
         historicoWorkflowService.finishHistoricoByDemanda(demandaService.findById(historicoWorkflowDTO.getDemanda().getIdDemanda()).get(), historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), usuarioResponsavel, historicoWorkflowDTO.getMotivoDevolucaoAnterior(), null);
 
-        return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowService.save(historicoWorkflow));
+        HistoricoWorkflow historicoSalvo = historicoWorkflowService.save(historicoWorkflow);
+
+        if(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior() == Tarefa.REPROVARWORKFLOW){
+            Proposta propostaAlterada = propostaService.findById(historicoSalvo.getDemanda().getIdDemanda()).get();
+            propostaAlterada.setEmWorkflow(false);
+            propostaService.save(propostaAlterada);
+        }
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(historicoSalvo);
     }
 
     @PutMapping("/{id}")

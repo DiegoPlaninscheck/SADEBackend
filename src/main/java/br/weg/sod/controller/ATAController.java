@@ -5,6 +5,9 @@ import br.weg.sod.dto.ATAEdicaoDTO;
 import br.weg.sod.dto.DecisaoPropostaATADTO;
 import br.weg.sod.dto.DecisaoPropostaPautaCriacaoDTO;
 import br.weg.sod.model.entities.*;
+import br.weg.sod.model.entities.enuns.StatusDemanda;
+import br.weg.sod.model.entities.enuns.StatusHistorico;
+import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.entities.enuns.TipoDocumento;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.ATAUtil;
@@ -20,7 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin
@@ -34,6 +39,7 @@ public class ATAController {
     private DecisaoPropostaATAService decisaoPropostaATAService;
     private UsuarioService usuarioService;
     private PautaService pautaService;
+    private DemandaService demandaService;
 
     @GetMapping
     public ResponseEntity<List<ATA>> findAll() {
@@ -50,14 +56,17 @@ public class ATAController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid ATACriacaoDTO ATACriacaoDTO) {
-        if(!pautaService.existsById(ATACriacaoDTO.getPauta().getIdPauta())){
+    public ResponseEntity<Object> save(@RequestBody @Valid ATACriacaoDTO ataDTO) {
+        if(!pautaService.existsById(ataDTO.getPauta().getIdPauta())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id de pauta informado inválido");
         }
 
-        ATA ata = new ATA();
-        BeanUtils.copyProperties(ATACriacaoDTO, ata);
+        if(ataDTO.getFinalReuniao().getTime() < ataDTO.getInicioReuniao().getTime()){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Horários de reunião inválidos");
+        }
 
+        ATA ata = new ATA();
+        BeanUtils.copyProperties(ataDTO, ata);
 
         return ResponseEntity.status(HttpStatus.OK).body(ataService.save(ata));
     }
@@ -101,12 +110,34 @@ public class ATAController {
 
         ATA ataSalva = ataService.save(ata);
 
-//        List<DecisaoPropostaPauta> listaDecisaoPropostaPauta = ata.getPauta().getPropostasPauta();
-//
-//        for (DecisaoPropostaPauta deicasaoProposta : listaDecisaoPropostaPauta) {
-//            Proposta proposta = deicasaoProposta.getProposta();
-//            historicoWorkflowService.finishHistoricoByProposta(proposta, Tarefa.INFORMARPARECERDG);
-//        }
+        for (DecisaoPropostaPauta deicasaoProposta : ataSalva.getPauta().getPropostasPauta()) {
+            //arrumar essa merda pqp
+
+            Demanda demandaDecisao = demandaService.findById(deicasaoProposta.getProposta().getIdProposta()).get();
+            Tarefa tarefaStatus;
+            StatusDemanda statusEscolhidoComissao = deicasaoProposta.getStatusDemandaComissao();
+            boolean continuaProcesso = false;
+
+            if(statusEscolhidoComissao == StatusDemanda.TODO){
+                tarefaStatus = Tarefa.FINALIZAR;
+            } else if (statusEscolhidoComissao == StatusDemanda.CANCELED){
+                tarefaStatus = Tarefa.REPROVARDEMANDA;
+            } else {
+                tarefaStatus = Tarefa.CRIARPAUTA;
+                continuaProcesso = true;
+            }
+
+            demandaDecisao.setStatusDemanda(statusEscolhidoComissao);
+            demandaService.save(demandaDecisao);
+
+            //finaliza histórico de informar parecer da DG
+//            historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, tarefaStatus, analistaTIresponsavel, null, null);
+
+            if(continuaProcesso) {
+                //inicia histórico de criar pauta
+//                historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPAUTA, StatusHistorico.EMANDAMENTO, analistaTIresponsavel, demandaDecisao);
+            }
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(ataSalva);
     }
@@ -121,6 +152,12 @@ public class ATAController {
     }
 
     private ResponseEntity<Object> validacoesEdicaoATA(ATAEdicaoDTO ataDTO, ATA ata, MultipartFile multipartFiles[]) {
+        if(ataDTO.getFinalReuniao() != null && ataDTO.getInicioReuniao() != null) {
+            if (ataDTO.getFinalReuniao().getTime() < ataDTO.getInicioReuniao().getTime()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Horários de reunião inválidos");
+            }
+        }
+
         if(ataService.existsByNumeroDG(ataDTO.getNumeroDG())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Número da DG já registrado em ourta ATA");
         }

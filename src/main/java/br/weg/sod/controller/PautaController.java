@@ -75,20 +75,20 @@ public class PautaController {
             BeanUtils.copyProperties(decisaoPropostaPautaDTO, decisaoPropostaPauta);
             pauta.getPropostasPauta().add(decisaoPropostaPauta);
         }
-//testar essa merda
-//        Pauta pautaSalva = pautaService.save(pauta);
+
+        Pauta pautaSalva = pautaService.save(pauta);
 
         for(DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()){
 //            encerrar historico criar pauta
+            Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
             AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-            historicoWorkflowService.finishHistoricoByDemanda(decisaoPropostaPauta.getProposta().getDemanda(), Tarefa.CRIARPAUTA,analistaResponsavel, null, null );
+            historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.CRIARPAUTA,analistaResponsavel, null, null );
 
 //            inicio informar parecer da comissao
-            Timestamp time = new Timestamp(pauta.getDataReuniao().getTime());
-            historicoWorkflowService.initializeHistoricoByDemanda(time,Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, decisaoPropostaPauta.getProposta().getDemanda());
+            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(pauta.getDataReuniao().getTime()),Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, demandaDecisao);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(pauta);
+        return ResponseEntity.status(HttpStatus.OK).body(pautaSalva);
     }
 
     @PutMapping("/{idPauta}/{idAnalista}")
@@ -114,6 +114,9 @@ public class PautaController {
         AnalistaTI analistaTIresponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
 
         if (multipartFile != null) {
+            if(multipartFile.isEmpty()){
+                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF a ata da reunião não informado");
+            }
             List<ArquivoPauta> arquivosPauta = new ArrayList<>();
 
             arquivosPauta.add(new ArquivoPauta(multipartFile, TipoDocumento.ATAREUNIAO ,analistaTIresponsavel));
@@ -142,7 +145,10 @@ public class PautaController {
 
         for(DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()){
 //            encerrar historico de informar o parecer
-            historicoWorkflowService.finishHistoricoByDemanda(decisaoPropostaPauta.getProposta().getDemanda(), Tarefa.INFORMARPARECERFORUM,analistaTIresponsavel, null, null );
+            Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
+            historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.INFORMARPARECERFORUM,analistaTIresponsavel, null, null );
+
+            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(pautaDTO.getDataReuniaoATA().getTime()), Tarefa.INFORMARPARECERDG, StatusHistorico.EMAGUARDO, analistaTIresponsavel, demandaDecisao);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(pauta);
