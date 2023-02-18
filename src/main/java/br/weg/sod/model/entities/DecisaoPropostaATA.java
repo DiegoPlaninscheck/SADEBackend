@@ -28,4 +28,14 @@ public class DecisaoPropostaATA {
     @ManyToOne
     @JoinColumn(name = "idProposta", nullable = false)
     private Proposta proposta;
+
+    @Override
+    public String toString() {
+        return "DecisaoPropostaATA{" +
+                "idDecisaoPropostaAta=" + idDecisaoPropostaAta +
+                ", numeroSequencial=" + numeroSequencial +
+                ", statusDemandaComissao=" + statusDemandaComissao +
+                ", comentario='" + comentario + '\'' +
+                '}';
+    }
 }

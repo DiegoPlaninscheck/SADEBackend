@@ -110,9 +110,7 @@ public class ATAController {
 
         ATA ataSalva = ataService.save(ata);
 
-        for (DecisaoPropostaPauta deicasaoProposta : ataSalva.getPauta().getPropostasPauta()) {
-            //arrumar essa merda pqp
-
+        for (DecisaoPropostaATA deicasaoProposta : ataSalva.getPropostasAta()) {
             Demanda demandaDecisao = demandaService.findById(deicasaoProposta.getProposta().getIdProposta()).get();
             Tarefa tarefaStatus;
             StatusDemanda statusEscolhidoComissao = deicasaoProposta.getStatusDemandaComissao();
@@ -131,11 +129,11 @@ public class ATAController {
             demandaService.save(demandaDecisao);
 
             //finaliza histórico de informar parecer da DG
-//            historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, tarefaStatus, analistaTIresponsavel, null, null);
+            historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, tarefaStatus, analistaTIresponsavel, null, null);
 
             if(continuaProcesso) {
                 //inicia histórico de criar pauta
-//                historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPAUTA, StatusHistorico.EMANDAMENTO, analistaTIresponsavel, demandaDecisao);
+                historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPAUTA, StatusHistorico.EMANDAMENTO, analistaTIresponsavel, demandaDecisao);
             }
         }
 
@@ -156,10 +154,6 @@ public class ATAController {
             if (ataDTO.getFinalReuniao().getTime() < ataDTO.getInicioReuniao().getTime()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Horários de reunião inválidos");
             }
-        }
-
-        if(ataService.existsByNumeroDG(ataDTO.getNumeroDG())){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Número da DG já registrado em ourta ATA");
         }
 
         if(multipartFiles.length != ataDTO.getTipoDocumentos().size()){
