@@ -2,6 +2,7 @@ package br.weg.sod.controller;
 
 import br.weg.sod.dto.UsuarioDTO;
 import br.weg.sod.model.entities.Usuario;
+import br.weg.sod.model.entities.*;
 import br.weg.sod.model.service.UsuarioService;
 import br.weg.sod.util.UsuarioUtil;
 import lombok.AllArgsConstructor;
@@ -69,7 +70,39 @@ public class UsuarioController {
             System.out.println(e);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuario).toString());
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuario));
+    }
+
+    @PutMapping("/notificacao")
+    public ResponseEntity<Object> novaNotificacao(@RequestBody @Valid NotificacaoUsuarioDTO notificacaoUsuarioDTO){
+        Usuario usuarioNotificacao = usuarioService.findById(notificacaoUsuarioDTO.getUsuario().getIdUsuario()).get();
+
+        if (!usuarioService.existsById(usuarioNotificacao.getIdUsuario())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
+        }
+
+        List<Notificacao> novasNotificacacoesUsuario = usuarioNotificacao.getNotificacoesUsuario();
+        novasNotificacacoesUsuario.add(notificacaoUsuarioDTO.getNotificacao());
+
+        usuarioNotificacao.setNotificacoesUsuario(novasNotificacacoesUsuario);
+
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuarioNotificacao));
+    }
+
+    @DeleteMapping("/notificacao")
+    public ResponseEntity<Object> deletarNotificacao(@RequestBody @Valid NotificacaoUsuarioDTO notificacaoUsuarioDTO){
+        Usuario usuarioNotificacao = usuarioService.findById(notificacaoUsuarioDTO.getUsuario().getIdUsuario()).get();
+
+        if (!usuarioService.existsById(usuarioNotificacao.getIdUsuario())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
+        }
+
+        List<Notificacao> novasNotificacacoesUsuario = usuarioNotificacao.getNotificacoesUsuario();
+        novasNotificacacoesUsuario.remove(notificacaoUsuarioDTO.getNotificacao());
+
+        usuarioNotificacao.setNotificacoesUsuario(novasNotificacacoesUsuario);
+
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuarioNotificacao));
     }
 
     @DeleteMapping("/{id}")

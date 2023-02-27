@@ -38,8 +38,20 @@ public class HistoricoWorkflowController {
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody @Valid HistoricoWorkflowCriacaoDTO historicoWorkflowCriacaoDTO) {
         HistoricoWorkflow historicoWorkflow = new HistoricoWorkflow();
-        BeanUtils.copyProperties(historicoWorkflowCriacaoDTO, historicoWorkflow);
-        return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowService.save(historicoWorkflow));
+        BeanUtils.copyProperties(historicoWorkflowDTO, historicoWorkflow);
+        historicoWorkflow.setStatus(StatusHistorico.EMANDAMENTO);
+
+        historicoWorkflowService.finishHistoricoByDemanda(demandaService.findById(historicoWorkflowDTO.getDemanda().getIdDemanda()).get(), historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), usuarioResponsavel, historicoWorkflowDTO.getMotivoDevolucaoAnterior(), null);
+
+        HistoricoWorkflow historicoSalvo = historicoWorkflowService.save(historicoWorkflow);
+
+        if(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior() == Tarefa.REPROVARWORKFLOW){
+            Proposta propostaAlterada = propostaService.findById(historicoSalvo.getDemanda().getIdDemanda()).get();
+            propostaAlterada.setEmWorkflow(false);
+            propostaService.save(propostaAlterada);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(historicoSalvo);
     }
 
     @PutMapping("/{id}")

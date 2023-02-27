@@ -2,6 +2,9 @@ package br.weg.sod.controller;
 
 import br.weg.sod.dto.ChatDTO;
 import br.weg.sod.model.entities.Chat;
+import br.weg.sod.model.entities.Usuario;
+import br.weg.sod.model.entities.enuns.AcaoNotificacao;
+import br.weg.sod.model.entities.enuns.TipoNotificacao;
 import br.weg.sod.model.service.ChatService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -39,7 +42,17 @@ public class ChatController {
     public ResponseEntity<Object> save(@RequestBody @Valid ChatDTO chatDTO) {
         Chat chat = new Chat();
         BeanUtils.copyProperties(chatDTO, chat);
-        return ResponseEntity.status(HttpStatus.OK).body(chatService.save(chat));
+
+        chat.setIdChat(chatDTO.getDemanda().getIdDemanda());
+        Chat chatSalvo = chatService.save(chat);
+        List<Usuario> usuariosRelacionados = new ArrayList<>();
+
+        usuariosRelacionados.add(chatSalvo.getDemanda().getUsuario());
+        usuariosRelacionados.add(usuarioService.findById(idAnalista).get());
+
+        notificacaoController.save(new NotificacaoDTO("Novo chat criado", "A demanda " + chatSalvo.getDemanda().getTituloDemanda() +" agora tem um chat!", "http://localhost:8081/chats", TipoNotificacao.CHAT, AcaoNotificacao.CHAT, chatSalvo.getIdChat(), usuariosRelacionados));
+
+        return ResponseEntity.status(HttpStatus.OK).body(chatSalvo);
     }
 
     @PutMapping("/{id}")
