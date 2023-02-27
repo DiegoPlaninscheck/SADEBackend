@@ -1,13 +1,12 @@
 package br.weg.sod.dto;
 
-import br.weg.sod.model.entities.Proposta;
 import lombok.Getter;
+import lombok.Setter;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.*;
+import java.util.List;
 
+@Setter
 @Getter
 public class TabelaCustoDTO {
 
@@ -21,5 +20,11 @@ public class TabelaCustoDTO {
     private Double valorTotal;
 
     @NotNull
-    private Proposta proposta;
+    private Boolean licenca;
+
+    @Size
+    private List<CentroCustoPaganteDTO> centrosCustoPagantes;
+
+    @Size
+    private List<LinhaTabelaDTO> linhasTabela;
 }

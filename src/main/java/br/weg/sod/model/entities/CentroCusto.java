@@ -5,14 +5,9 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "centroCusto")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class CentroCusto {
 
     @Id
@@ -23,9 +18,4 @@ public class CentroCusto {
     @Column(nullable = false)
     private String nomeCentroCusto;
 
-//    @ManyToMany(mappedBy = "centroCustoDemanda")
-//    private List<Demanda> demandas;
-
-//    @OneToMany(mappedBy = "centroCusto")
-//    private List<CentroCustoDemanda> centroCustoDemandas;
 }

@@ -1,26 +1,21 @@
 package br.weg.sod.dto;
 
-import br.weg.sod.model.entities.ArquivoDemanda;
 import br.weg.sod.model.entities.Demanda;
 import br.weg.sod.model.entities.Usuario;
 import lombok.Data;
-import lombok.Getter;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
 @Data
-public class PropostaDTO {
-
-    @Digits(integer = 10, fraction = 0)
-    private Integer idProposta;
+public class PropostaCriacaoDTO {
 
     @NotBlank
     private String escopo;
-
-    @Positive
-    private Double payback;
 
     @FutureOrPresent
     private Date periodoExecucaoInicio;
@@ -29,14 +24,14 @@ public class PropostaDTO {
     private Date periodoExecucaoFim;
 
     @NotNull
-    private Boolean emWorkflow;
-
-    @NotNull
     private Demanda demanda;
 
-    private Boolean aprovadoWorkflow;
-
+    @NotNull
     private List<Usuario> responsaveisNegocio;
 
-    private List<ArquivoDemanda> novosArquivos;
+    @NotNull
+    private List<TabelaCustoDTO> tabelasCustoProposta;
+
+    private Integer payback;
 }
+

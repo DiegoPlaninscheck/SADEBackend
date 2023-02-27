@@ -7,14 +7,9 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "usuario")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class Usuario {
 
     @Id
@@ -53,17 +48,8 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "idNotificacao", nullable = false))
     private List<Notificacao> notificacoesUsuario = new ArrayList<>();
 
-    @Override
-    public String toString() {
-        return "Usuario{" +
-                "idUsuario=" + idUsuario +
-                ", numeroCadastro=" + numeroCadastro +
-                ", nomeUsuario='" + nomeUsuario + '\'' +
-                ", departamento='" + departamento + '\'' +
-                ", email='" + email + '\'' +
-                ", setor='" + setor + '\'' +
-                ", cargo='" + cargo + '\'' +
-                ", notificacoesUsuario=" + notificacoesUsuario +
-                '}';
-    }
+    @ManyToMany
+    @JoinTable(name = "chatsUsuario", joinColumns = @JoinColumn(name = "idUsuario", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "idChat", nullable = false))
+    private List<Chat> chatsUsuario;
 }

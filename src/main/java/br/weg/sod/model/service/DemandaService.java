@@ -1,5 +1,6 @@
 package br.weg.sod.model.service;
 
+import br.weg.sod.model.entities.Beneficio;
 import br.weg.sod.model.entities.Demanda;
 import br.weg.sod.repository.DemandaRepository;
 import lombok.AllArgsConstructor;
@@ -33,4 +34,5 @@ public class DemandaService {
     public void deleteById(Integer integer) {
         demandaRepository.deleteById(integer);
     }
+
 }

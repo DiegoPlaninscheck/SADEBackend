@@ -1,5 +1,6 @@
 package br.weg.sod.dto;
 
+import br.weg.sod.model.entities.AnalistaTI;
 import br.weg.sod.model.entities.Usuario;
 import lombok.Getter;
 
@@ -13,7 +14,7 @@ public class ForumDTO {
     private String nomeForum;
 
     @NotNull
-    private Integer analistaIdUsuario;
+    private AnalistaTI analistaResponsavel;
 
    @NotNull
     private List<Usuario> usuariosForum;

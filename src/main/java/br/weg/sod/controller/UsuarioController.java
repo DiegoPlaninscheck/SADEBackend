@@ -1,6 +1,9 @@
 package br.weg.sod.controller;
 
+import br.weg.sod.dto.DemandaEdicaoDTO;
+import br.weg.sod.dto.NotificacaoUsuarioDTO;
 import br.weg.sod.dto.UsuarioDTO;
+import br.weg.sod.model.entities.Notificacao;
 import br.weg.sod.model.entities.Usuario;
 import br.weg.sod.model.entities.*;
 import br.weg.sod.model.service.UsuarioService;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin
@@ -32,15 +36,19 @@ public class UsuarioController {
     @GetMapping("/{id}")
     public ResponseEntity<Object> findById(@PathVariable(name = "id") Integer idUsuario) {
         if (!usuarioService.existsById(idUsuario)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma usuario com o ID informado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
         }
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.findById(idUsuario));
     }
 
-    @PostMapping
-    public ResponseEntity<Object> save(@RequestParam("usuario") String usuarioJSON, @RequestParam("foto") MultipartFile foto) {
+    @PostMapping("/{tipoUsuario}")
+    public ResponseEntity<Object> save(@RequestParam("usuario") String usuarioJSON, @RequestParam(value = "foto", required = false) MultipartFile foto, @PathVariable("tipoUsuario") Integer tipoUsuario) {
         UsuarioUtil usuarioUtil = new UsuarioUtil();
-        Usuario usuario = usuarioUtil.convertJsonToModel(usuarioJSON);
+        Usuario usuario = usuarioUtil.convertJsonToModel(usuarioJSON, tipoUsuario);
+
+        if(usuarioService.existsByNumeroCadastro(usuario.getNumeroCadastro())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Esse número de cadastro já existe");
+        }
 
         try {
             usuario.setFoto(foto.getBytes());
@@ -51,19 +59,19 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuario));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestParam("usuario") @Valid String usuarioJSON, @RequestParam("foto") @Valid MultipartFile foto, @PathVariable(name = "id") Integer idUsuario) {
+    @PutMapping("/{idUsuario}")
+    public ResponseEntity<Object> edit(@RequestParam("usuario") @Valid String usuarioJSON, @RequestParam("foto") @Valid MultipartFile foto, @PathVariable(name = "idUsuario") Integer idUsuario) {
         if (!usuarioService.existsById(idUsuario)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma usuario com o ID informado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
         }
 
         UsuarioUtil usuarioUtil = new UsuarioUtil();
         Usuario novoUsuario = usuarioUtil.convertJsonToModel(usuarioJSON);
         Usuario usuario = usuarioService.findById(idUsuario).get();
-        System.out.println("novo: " + novoUsuario);
-        System.out.println("velho: " + usuario);
+
         BeanUtils.copyProperties(novoUsuario, usuario);
         usuario.setIdUsuario(idUsuario);
+
         try {
             usuario.setFoto(foto.getBytes());
         } catch (Exception e) {
@@ -108,7 +116,7 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteById(@PathVariable(name = "id") Integer idUsuario) {
         if (!usuarioService.existsById(idUsuario)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma usuario com o ID informado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
         }
         usuarioService.deleteById(idUsuario);
         return ResponseEntity.status(HttpStatus.OK).body("Usuario deletado com sucesso!");

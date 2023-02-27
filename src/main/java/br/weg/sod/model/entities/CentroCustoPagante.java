@@ -4,27 +4,18 @@ import lombok.*;
 
 import javax.persistence.*;
 
+@Data
 @Entity
-@Table(name = "centroCustoTabelaCusto")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
-public class CentroCustoTabelaCusto {
+@Table(name = "centroCustoPagante")
+public class CentroCustoPagante {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private Integer idCentroCustoDemanda;
+    private Integer idCentroCustoPagante;
 
     @Column(length = 3, nullable = false)
     private Double porcentagemDespesa;
-
-    @ManyToOne
-    @JoinColumn(name = "idTabelaCusto", nullable = false)
-    private TabelaCusto tabelaCusto;
 
     @ManyToOne
     @JoinColumn(name = "idCentroCusto", nullable = false)

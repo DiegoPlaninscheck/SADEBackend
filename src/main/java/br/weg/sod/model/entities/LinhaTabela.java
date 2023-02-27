@@ -4,15 +4,9 @@ import lombok.*;
 
 import javax.persistence.*;
 
-
+@Data
 @Entity
 @Table(name = "linhaTabela")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class LinhaTabela {
 
     @Id
@@ -28,9 +22,5 @@ public class LinhaTabela {
 
     @Column(nullable = false)
     private Double valorQuantidade;
-
-    @ManyToOne
-    @JoinColumn(name = "idTabelaCusto", nullable = false)
-    private TabelaCusto tabelaCusto;
 
 }

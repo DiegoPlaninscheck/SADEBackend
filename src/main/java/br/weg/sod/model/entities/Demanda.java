@@ -3,20 +3,17 @@ package br.weg.sod.model.entities;
 import br.weg.sod.model.entities.enuns.SecaoTI;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.Tamanho;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "demanda")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class Demanda {
 
     @Id
@@ -48,7 +45,7 @@ public class Demanda {
     private Integer frequenciaUso;
 
     @Column
-    private Time prazoElaboracao;
+    private Date prazoElaboracao;
 
     @Column
     private Integer codigoPPM;
@@ -66,6 +63,14 @@ public class Demanda {
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idDemanda", nullable = false)
+    private List<ArquivoDemanda> arquivosDemanda = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idDemanda", nullable = false)
+    private List<Beneficio> beneficiosDemanda;
 
     @ManyToMany
     @JoinTable(name = "budemanda", joinColumns =

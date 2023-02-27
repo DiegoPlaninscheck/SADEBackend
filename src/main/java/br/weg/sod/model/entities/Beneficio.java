@@ -6,15 +6,9 @@ import lombok.*;
 
 import javax.persistence.*;
 
-
+@Data
 @Entity
 @Table(name = "beneficio")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class Beneficio {
 
     @Id
@@ -34,12 +28,6 @@ public class Beneficio {
     private Moeda moeda;
 
     @Column
-    private String memoriaCalculo;
-
-    @Column
     private Double valor;
 
-//    @ManyToOne
-//    @JoinColumn(name = "idDemanda", nullable = false)
-//    private Demanda demanda;
 }

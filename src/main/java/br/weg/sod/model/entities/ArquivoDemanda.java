@@ -1,17 +1,16 @@
 package br.weg.sod.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
+import java.io.IOException;
 
+@Data
 @Entity
-@Table(name = "arquivoDemanda")
-@AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
+@Table(name = "arquivoDemanda")
 public class ArquivoDemanda {
 
     @Id
@@ -20,14 +19,23 @@ public class ArquivoDemanda {
     private Integer idArquivoDemanda;
 
     @Column(nullable = false)
+    private String nome;
+
+    @Column(nullable = false)
+    private String tipo;
+
+    @Column(nullable = false)
     @Lob
     private byte[] arquivo;
 
     @ManyToOne
-    @JoinColumn(name = "idDemanda", nullable = false)
-    private Demanda demanda;
-
-    @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
-    private Usuario usuario;
+    private Usuario insersor;
+
+    public ArquivoDemanda(MultipartFile multipartFile, Usuario insersor) throws IOException {
+        this.nome = multipartFile.getOriginalFilename();
+        this.tipo = multipartFile.getContentType();
+        this.arquivo = multipartFile.getBytes();
+        this.insersor = insersor;
+    }
 }

@@ -5,20 +5,15 @@ import lombok.*;
 
 import javax.persistence.*;
 
+@Data
 @Entity
-@Table(name = "decisaoProposta")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
-public class DecisaoProposta {
+@Table(name = "decisaoPropostaPauta")
+public class DecisaoPropostaPauta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private Integer idDecisaoProposta;
+    private Integer idDecisaoPropostaPauta;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -30,23 +25,7 @@ public class DecisaoProposta {
     @Column
     private String comentario;
 
-    @Column
-    private Integer numeroSequencial;
-
-    @Column
-    private Integer numeroAno;
-
     @ManyToOne
     @JoinColumn(name = "idProposta", nullable = false)
     private Proposta proposta;
-
-    @ManyToOne
-    @JoinColumn(name = "idPauta", nullable = false)
-    private Pauta pauta;
-
-    @ManyToOne
-    @JoinColumn(name = "idATA")
-    private ATA ATA;
-
-
 }

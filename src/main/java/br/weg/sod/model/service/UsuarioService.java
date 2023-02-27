@@ -40,11 +40,11 @@ public class UsuarioService {
         return usuarioRepository.findByDepartamento(departamento);
     }
 
-    public GerenteNegocio findGerenteBySolicitante( String departamento) {
+    public GerenteNegocio findGerenteByDepartamento(String departamento) {
         List<Usuario> usuarioList = findByDepartamento(departamento);
 
-        for(Usuario usuario : usuarioList){
-            if(usuario instanceof GerenteNegocio){
+        for (Usuario usuario : usuarioList) {
+            if (usuario instanceof GerenteNegocio) {
                 return (GerenteNegocio) usuario;
             }
         }
@@ -52,16 +52,29 @@ public class UsuarioService {
         return null;
     }
 
-    public GerenteTI findGerenteTIByAnalista(String departamento) {
+    public GerenteTI findGerenteTIByDepartamento(String departamento) {
         List<Usuario> usuarioList = findByDepartamento(departamento);
 
-        for(Usuario usuario : usuarioList){
-            if(usuario instanceof GerenteTI){
+        for (Usuario usuario : usuarioList) {
+            if (usuario instanceof GerenteTI) {
                 return (GerenteTI) usuario;
             }
         }
 
         return null;
+    }
 
+    public boolean existsByNumeroCadastro(Integer numeroCadastro) {
+        return usuarioRepository.existsByNumeroCadastro(numeroCadastro);
+    }
+
+    public boolean responsaveisValidos(List<Usuario> responsaveisNegocio) {
+        for(Usuario usuario : responsaveisNegocio){
+            if(!existsById(usuario.getIdUsuario())){
+                return false;
+            }
+        }
+
+        return true;
     }
 }

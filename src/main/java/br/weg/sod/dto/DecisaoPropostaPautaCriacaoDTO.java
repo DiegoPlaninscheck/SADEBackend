@@ -1,16 +1,14 @@
 package br.weg.sod.dto;
 
-import br.weg.sod.model.entities.Pauta;
 import br.weg.sod.model.entities.Proposta;
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 
+@ToString
 @Getter
-public class DecisaoPropostaCriacaoDTO {
-
-    @NotNull
-    private Pauta pauta;
+public class DecisaoPropostaPautaCriacaoDTO {
 
     @NotNull
     private Proposta proposta;

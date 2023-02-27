@@ -1,7 +1,10 @@
 package br.weg.sod.controller;
 
 import br.weg.sod.dto.NotificacaoDTO;
+import br.weg.sod.dto.NotificacaoUsuarioDTO;
 import br.weg.sod.model.entities.Notificacao;
+import br.weg.sod.model.entities.Usuario;
+import br.weg.sod.model.entities.enuns.TipoNotificacao;
 import br.weg.sod.model.service.NotificacaoService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -20,6 +23,7 @@ import java.util.List;
 public class NotificacaoController {
 
     private NotificacaoService notificacaoService;
+    private UsuarioController usuarioController;
 
     @GetMapping
     public ResponseEntity<List<Notificacao>> findAll() {
@@ -38,8 +42,14 @@ public class NotificacaoController {
     public ResponseEntity<Object> save(@RequestBody @Valid NotificacaoDTO notificacaoDTO) {
         Notificacao notificacao = new Notificacao();
         BeanUtils.copyProperties(notificacaoDTO, notificacao);
+        Notificacao notificacaoSalva = notificacaoService.save(notificacao);
 
-        return ResponseEntity.status(HttpStatus.OK).body(notificacaoService.save(notificacao));
+        for (Usuario usuario : notificacaoDTO.getUsuariosRelacionados()) {
+            NotificacaoUsuarioDTO notificacaoUsuarioDTO = new NotificacaoUsuarioDTO(notificacaoSalva, usuario);
+            usuarioController.novaNotificacao(notificacaoUsuarioDTO);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(notificacaoSalva);
     }
 
     @PutMapping("/{id}")
@@ -63,4 +73,5 @@ public class NotificacaoController {
         notificacaoService.deleteById(idNotificacao);
         return ResponseEntity.status(HttpStatus.OK).body("Notificacao deletada com sucesso!");
     }
+
 }

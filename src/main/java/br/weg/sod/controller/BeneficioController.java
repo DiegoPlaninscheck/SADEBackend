@@ -2,6 +2,8 @@ package br.weg.sod.controller;
 
 import br.weg.sod.dto.BeneficioDTO;
 import br.weg.sod.model.entities.Beneficio;
+import br.weg.sod.model.entities.enuns.Moeda;
+import br.weg.sod.model.entities.enuns.TipoBeneficio;
 import br.weg.sod.model.service.BeneficioService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -38,7 +40,12 @@ public class BeneficioController {
     public ResponseEntity<Object> save(@RequestBody @Valid BeneficioDTO beneficioDTO) {
         Beneficio beneficio = new Beneficio();
         BeanUtils.copyProperties(beneficioDTO, beneficio);
-        return ResponseEntity.status(HttpStatus.OK).body(beneficioService.save(beneficio));
+
+        try {
+            return checarBeneficio(beneficio);
+        } catch (Exception exception){
+            return ResponseEntity.status(HttpStatus.OK).body(exception.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
@@ -51,7 +58,11 @@ public class BeneficioController {
         BeanUtils.copyProperties(beneficioDTO, beneficio);
         beneficio.setIdBeneficio(idBeneficio);
 
-        return ResponseEntity.status(HttpStatus.OK).body(beneficioService.save(beneficio));
+        try {
+            return checarBeneficio(beneficio);
+        } catch (Exception exception){
+            return ResponseEntity.status(HttpStatus.OK).body(exception.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -61,5 +72,18 @@ public class BeneficioController {
         }
         beneficioService.deleteById(idBeneficio);
         return ResponseEntity.status(HttpStatus.OK).body("Beneficio deletado com sucesso!");
+    }
+
+    /**
+     * Retorna o ResponseEntity de acordo com o estado das propriedades do Benefício passado
+     * Ver a função beneficioValido() em BeneficioService para mais informações
+     *
+     * @param beneficio
+     * @return
+     */
+    public ResponseEntity<Object> checarBeneficio(Beneficio beneficio){
+        beneficioService.beneficioValido(beneficio);
+
+        return ResponseEntity.status(HttpStatus.OK).body(beneficioService.save(beneficio));
     }
 }

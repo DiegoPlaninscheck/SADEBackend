@@ -1,19 +1,13 @@
 package br.weg.sod.model.entities;
 
-import br.weg.sod.model.entities.enuns.TipoForum;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "forum")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class Forum {
 
     @Id
@@ -26,7 +20,7 @@ public class Forum {
 
     @OneToOne
     @JoinColumn(name = "idUsuario", nullable = false)
-    private Usuario analistaResponsavel;
+    private AnalistaTI analistaResponsavel;
 
     @ManyToMany
     @JoinTable(name = "usuariosForum", joinColumns = @JoinColumn(name = "idForum", nullable = false),

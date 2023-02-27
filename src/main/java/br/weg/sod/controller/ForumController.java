@@ -38,6 +38,7 @@ public class ForumController {
     public ResponseEntity<Object> save(@RequestBody @Valid ForumDTO forumDTO) {
         Forum forum = new Forum();
         BeanUtils.copyProperties(forumDTO, forum);
+
         return ResponseEntity.status(HttpStatus.OK).body(forumService.save(forum));
     }
 
