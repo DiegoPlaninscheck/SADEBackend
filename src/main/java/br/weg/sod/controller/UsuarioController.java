@@ -97,8 +97,9 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuarioNotificacao));
     }
 
-    @DeleteMapping("/notificacao")
+    @DeleteMapping("/deletarNotificacao")
     public ResponseEntity<Object> deletarNotificacao(@RequestBody @Valid NotificacaoUsuarioDTO notificacaoUsuarioDTO){
+        System.out.println(notificacaoUsuarioDTO.getNotificacao());
         Usuario usuarioNotificacao = usuarioService.findById(notificacaoUsuarioDTO.getUsuario().getIdUsuario()).get();
 
         if (!usuarioService.existsById(usuarioNotificacao.getIdUsuario())) {
@@ -106,7 +107,12 @@ public class UsuarioController {
         }
 
         List<Notificacao> novasNotificacacoesUsuario = usuarioNotificacao.getNotificacoesUsuario();
-        novasNotificacacoesUsuario.remove(notificacaoUsuarioDTO.getNotificacao());
+
+        for(int i = 0; i < novasNotificacacoesUsuario.size(); i ++){
+            if(novasNotificacacoesUsuario.get(i).getIdNotificacao() == notificacaoUsuarioDTO.getNotificacao().getIdNotificacao()){
+                novasNotificacacoesUsuario.remove(i);
+            }
+        }
 
         usuarioNotificacao.setNotificacoesUsuario(novasNotificacacoesUsuario);
 
