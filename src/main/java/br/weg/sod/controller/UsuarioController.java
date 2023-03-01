@@ -97,7 +97,8 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuarioNotificacao));
     }
 
-    @DeleteMapping("/deletarNotificacao")
+    @PutMapping("/d" +
+            "eletarNotificacao")
     public ResponseEntity<Object> deletarNotificacao(@RequestBody @Valid NotificacaoUsuarioDTO notificacaoUsuarioDTO){
         System.out.println(notificacaoUsuarioDTO.getNotificacao());
         Usuario usuarioNotificacao = usuarioService.findById(notificacaoUsuarioDTO.getUsuario().getIdUsuario()).get();
