@@ -139,6 +139,8 @@ public class PautaController {
             decisoesPauta.add(decisaoPropostaPautaNova);
         }
 
+        List<DecisaoPropostaPauta> propostasAprovadasWorkflow = decisaoPropostaPautaService.createDecisaoPropostaWorkflow(propostaService.getPropostasAprovadasWorkflow());
+
         pauta.setPropostasPauta(decisoesPauta);
 
         Pauta pautaSalva = pautaService.save(pauta);

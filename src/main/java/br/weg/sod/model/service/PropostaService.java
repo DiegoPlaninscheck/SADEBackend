@@ -8,6 +8,7 @@ import br.weg.sod.repository.PropostaRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +36,20 @@ public class PropostaService {
 
     public void deleteById(Integer integer) {
         propostaRepository.deleteById(integer);
+    }
+
+    public List<Proposta> getPropostasAprovadasWorkflow(){
+        List<Proposta> propostas = findAll(), propostasParaAprovar = new ArrayList<>();
+
+        for(Proposta proposta : propostas){
+            if(proposta.getAprovadoWorkflow() && !proposta.getAvaliadoWorkflow()){
+
+
+                propostasParaAprovar.add(proposta);
+            }
+        }
+
+        return propostasParaAprovar;
     }
 
     public boolean propostasExistem(List<Proposta> propostasPauta){

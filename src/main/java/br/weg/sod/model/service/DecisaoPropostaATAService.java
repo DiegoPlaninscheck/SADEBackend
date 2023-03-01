@@ -3,10 +3,12 @@ package br.weg.sod.model.service;
 import br.weg.sod.dto.DecisaoPropostaATADTO;
 import br.weg.sod.model.entities.DecisaoPropostaATA;
 import br.weg.sod.model.entities.DecisaoPropostaPauta;
+import br.weg.sod.model.entities.Proposta;
 import br.weg.sod.repository.DecisaoPropostaATARepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,12 +70,12 @@ public class DecisaoPropostaATAService {
             }
 
             if(!existe){
-                System.out.println("3");
                 return false;
             }
         }
 
         return true;
     }
+
 
 }

@@ -28,4 +28,11 @@ public class DecisaoPropostaPauta {
     @ManyToOne
     @JoinColumn(name = "idProposta", nullable = false)
     private Proposta proposta;
+
+    public DecisaoPropostaPauta(StatusDemanda statusDemandaComissao, Boolean ataPublicada, String comentario, Proposta proposta) {
+        this.statusDemandaComissao = statusDemandaComissao;
+        this.ataPublicada = ataPublicada;
+        this.comentario = comentario;
+        this.proposta = proposta;
+    }
 }

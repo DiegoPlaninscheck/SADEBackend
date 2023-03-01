@@ -84,7 +84,6 @@ public class HistoricoWorkflowController {
             propostaService.save(propostaAlterada);
         }
 
-
         return ResponseEntity.status(HttpStatus.OK).body(historicoSalvo);
     }
 

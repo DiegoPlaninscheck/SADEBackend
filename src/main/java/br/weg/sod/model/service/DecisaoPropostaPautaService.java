@@ -1,14 +1,13 @@
 package br.weg.sod.model.service;
 
-import br.weg.sod.model.entities.ATA;
-import br.weg.sod.model.entities.DecisaoPropostaPauta;
-import br.weg.sod.model.entities.Pauta;
-import br.weg.sod.model.entities.Proposta;
+import br.weg.sod.model.entities.*;
+import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.repository.DecisaoPropostaPautaRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +40,17 @@ public class DecisaoPropostaPautaService {
 
     public boolean existsByProposta(Proposta proposta) {
         return decisaoPropostaPautaRepository.existsByProposta(proposta);
+    }
+
+    public List<DecisaoPropostaPauta> createDecisaoPropostaWorkflow(List<Proposta> propostasAprovadasWorkflow) {
+        List<DecisaoPropostaPauta> decisoesPauta = new ArrayList<>();
+
+        for(Proposta proposta : propostasAprovadasWorkflow){
+            DecisaoPropostaPauta decisaoPropostaPauta = new DecisaoPropostaPauta(StatusDemanda.TODO, false, "", proposta);
+            decisoesPauta.add(decisaoPropostaPauta);
+        }
+
+        return decisoesPauta;
     }
 
 }
