@@ -141,6 +141,9 @@ public class DemandaController {
             GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
             historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demandaSalva);
         } else if (demandaDTO.getAdicionandoInformacoes()) {
+            demandaSalva.setStatusDemanda(StatusDemanda.BACKLOG);
+            demandaService.save(demandaSalva);
+
             //conclui o histórico de adicionar informações
             historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOESDEMANDA, analistaTI, null, versaoPDF);
 
