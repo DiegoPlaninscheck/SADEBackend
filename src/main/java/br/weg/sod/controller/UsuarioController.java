@@ -46,7 +46,7 @@ public class UsuarioController {
         UsuarioUtil usuarioUtil = new UsuarioUtil();
         Usuario usuario = usuarioUtil.convertJsonToModel(usuarioJSON, tipoUsuario);
 
-        if(usuarioService.existsByNumeroCadastro(usuario.getNumeroCadastro())){
+        if (usuarioService.existsByNumeroCadastro(usuario.getNumeroCadastro())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Esse número de cadastro já existe");
         }
 
@@ -82,7 +82,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/notificacao")
-    public ResponseEntity<Object> novaNotificacao(@RequestBody @Valid NotificacaoUsuarioDTO notificacaoUsuarioDTO){
+    public ResponseEntity<Object> novaNotificacao(@RequestBody @Valid NotificacaoUsuarioDTO notificacaoUsuarioDTO) {
         Usuario usuarioNotificacao = usuarioService.findById(notificacaoUsuarioDTO.getUsuario().getIdUsuario()).get();
 
         if (!usuarioService.existsById(usuarioNotificacao.getIdUsuario())) {
@@ -97,9 +97,8 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuarioNotificacao));
     }
 
-    @PutMapping("/d" +
-            "eletarNotificacao")
-    public ResponseEntity<Object> deletarNotificacao(@RequestBody @Valid NotificacaoUsuarioDTO notificacaoUsuarioDTO){
+    @PutMapping("/deletarNotificacao")
+    public ResponseEntity<Object> deletarNotificacao(@RequestBody @Valid NotificacaoUsuarioDTO notificacaoUsuarioDTO) {
         System.out.println(notificacaoUsuarioDTO.getNotificacao());
         Usuario usuarioNotificacao = usuarioService.findById(notificacaoUsuarioDTO.getUsuario().getIdUsuario()).get();
 
@@ -109,8 +108,8 @@ public class UsuarioController {
 
         List<Notificacao> novasNotificacacoesUsuario = usuarioNotificacao.getNotificacoesUsuario();
 
-        for(int i = 0; i < novasNotificacacoesUsuario.size(); i ++){
-            if(novasNotificacacoesUsuario.get(i).getIdNotificacao() == notificacaoUsuarioDTO.getNotificacao().getIdNotificacao()){
+        for (int i = 0; i < novasNotificacacoesUsuario.size(); i++) {
+            if (novasNotificacacoesUsuario.get(i).getIdNotificacao() == notificacaoUsuarioDTO.getNotificacao().getIdNotificacao()) {
                 novasNotificacacoesUsuario.remove(i);
             }
         }
