@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @CrossOrigin
 @AllArgsConstructor
@@ -139,7 +140,11 @@ public class PautaController {
             decisoesPauta.add(decisaoPropostaPautaNova);
         }
 
-        pauta.setPropostasPauta(decisoesPauta);
+        List<DecisaoPropostaPauta> propostasAprovadasWorkflow = decisaoPropostaPautaService.createDecisaoPropostaWorkflow(propostaService.getPropostasAprovadasWorkflow());
+
+        List<DecisaoPropostaPauta> todasDecisoesAprovadas = Stream.concat(propostasAprovadasWorkflow.stream(), decisoesPauta.stream()).toList();
+
+        pauta.setPropostasPauta(todasDecisoesAprovadas);
 
         Pauta pautaSalva = pautaService.save(pauta);
 
