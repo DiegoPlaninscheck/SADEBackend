@@ -24,7 +24,6 @@ public class ArquivoDemanda {
     @Column(nullable = false)
     private String tipo;
 
-    @JsonIgnore
     @Column(nullable = false)
     @Lob
     private byte[] arquivo;
