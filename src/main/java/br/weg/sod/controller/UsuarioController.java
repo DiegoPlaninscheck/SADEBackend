@@ -99,7 +99,6 @@ public class UsuarioController {
 
     @PutMapping("/deletarNotificacao")
     public ResponseEntity<Object> deletarNotificacao(@RequestBody @Valid NotificacaoUsuarioDTO notificacaoUsuarioDTO) {
-        System.out.println(notificacaoUsuarioDTO.getNotificacao());
         Usuario usuarioNotificacao = usuarioService.findById(notificacaoUsuarioDTO.getUsuario().getIdUsuario()).get();
 
         if (!usuarioService.existsById(usuarioNotificacao.getIdUsuario())) {
