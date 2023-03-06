@@ -51,6 +51,21 @@ public class DemandaController {
         return ResponseEntity.status(HttpStatus.OK).body(demandaService.findById(idDemanda));
     }
 
+    @GetMapping("/usuario/{idUsuario}")
+    public ResponseEntity<List<Demanda>> findByUsuario(@PathVariable(name = "idUsuario") Integer idUsuario) {
+        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandasByUsuario(usuarioService.findById(idUsuario).get()));
+    }
+
+    @GetMapping("/rascunho/{isRascunho}")
+    public ResponseEntity<List<Demanda>> findRascunho(@PathVariable(name = "isRascunho") boolean isRascunho) {
+        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandasByRascunho(isRascunho));
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Demanda>> findByStatusDemanda(@PathVariable(name = "status") StatusDemanda statusDemanda) {
+        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandasByStatusDemanda(statusDemanda));
+    }
+
     /**
      * fazer processo de atualização de listagem
      *
@@ -88,6 +103,8 @@ public class DemandaController {
         if (demandaValidada != null) {
             return demandaValidada;
         }
+
+        //fazer cálculo de score
 
         if (multipartFiles != null) {
             for (MultipartFile multipartFile : multipartFiles) {

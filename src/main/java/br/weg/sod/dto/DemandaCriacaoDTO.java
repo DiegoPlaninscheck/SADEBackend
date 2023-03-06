@@ -24,9 +24,6 @@ public class DemandaCriacaoDTO {
     @Digits(integer = 3, fraction = 0)
     private Integer frequenciaUso;
 
-    @PositiveOrZero
-    private Double score;
-
     @Size
     private List<CentroCusto> centroCustoDemanda;
 
@@ -34,4 +31,8 @@ public class DemandaCriacaoDTO {
 
     @NotNull
     private Usuario usuario;
+
+    private Double score;
+
+    private boolean rascunho = false;
 }
