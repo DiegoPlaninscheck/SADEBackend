@@ -51,6 +51,21 @@ public class DemandaController {
         return ResponseEntity.status(HttpStatus.OK).body(demandaService.findById(idDemanda));
     }
 
+    /**
+     * fazer processo de atualização de listagem
+     *
+     * @param indexLista
+     * @return
+     */
+    @GetMapping("/listagem/{index}")
+    public ResponseEntity<Object> findByStartingIndex(@PathVariable(name = "index") Integer indexLista) {
+//        if (!demandaService.existsById(idDemanda)) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
+//        }
+//        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findById(idDemanda));
+        return null;
+    }
+
     @GetMapping("/{id}/arquivos")
     public ResponseEntity<Object> findArquivosDemanda(@PathVariable(name = "id") Integer idDemanda) {
         if (!demandaService.existsById(idDemanda)) {
@@ -73,8 +88,6 @@ public class DemandaController {
         if (demandaValidada != null) {
             return demandaValidada;
         }
-
-        demanda.setStatusDemanda(StatusDemanda.BACKLOG);
 
         if (multipartFiles != null) {
             for (MultipartFile multipartFile : multipartFiles) {

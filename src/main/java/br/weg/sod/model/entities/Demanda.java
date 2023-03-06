@@ -64,7 +64,6 @@ public class Demanda {
     @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
 
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "idDemanda", nullable = false)
     private List<ArquivoDemanda> arquivosDemanda = new ArrayList<>();
