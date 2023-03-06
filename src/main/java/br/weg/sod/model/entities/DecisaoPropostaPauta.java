@@ -7,6 +7,7 @@ import javax.persistence.*;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name = "decisaoPropostaPauta")
 public class DecisaoPropostaPauta {
 
