@@ -59,7 +59,10 @@ public class PautaController {
     }
 
     @PostMapping("/{idAnalista}")
-    public ResponseEntity<Object> save(@RequestBody @Valid PautaCriacaoDTO pautaCriacaoDTO, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
+    public ResponseEntity<Object> save(
+            @RequestBody @Valid PautaCriacaoDTO pautaCriacaoDTO,
+            @PathVariable(name = "idAnalista") Integer idAnalista)
+            throws IOException {
         if(!validacaoPropostasCriacao(pautaCriacaoDTO.getPropostasPauta())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Uma das propostas informadas já está em uma pauta ou o id informado não existe");
         }
@@ -86,7 +89,13 @@ public class PautaController {
             historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.CRIARPAUTA,analistaResponsavel, null, null );
 
 //            inicio informar parecer da comissao
-            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(pauta.getDataReuniao().getTime()),Tarefa.INFORMARPARECERFORUM, StatusHistorico.EMAGUARDO, analistaResponsavel, demandaDecisao);
+            historicoWorkflowService.initializeHistoricoByDemanda(
+                    new Timestamp(pauta.getDataReuniao().getTime()),
+                    Tarefa.INFORMARPARECERFORUM,
+                    StatusHistorico.EMAGUARDO,
+                    analistaResponsavel,
+                    demandaDecisao
+            );
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(pautaSalva);

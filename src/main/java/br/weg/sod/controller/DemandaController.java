@@ -92,7 +92,11 @@ public class DemandaController {
 
     @Transactional
     @PostMapping
-    public ResponseEntity<Object> save(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF) throws IOException {
+    public ResponseEntity<Object> save(
+            @RequestParam("demanda") @Valid String demandaJSON,
+            @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
+            @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF)
+            throws IOException {
         if (versaoPDF.isEmpty()) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
         }
@@ -104,8 +108,6 @@ public class DemandaController {
             return demandaValidada;
         }
 
-        //fazer cálculo de score
-
         if (multipartFiles != null) {
             for (MultipartFile multipartFile : multipartFiles) {
                 demanda.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, demanda.getUsuario()));
@@ -114,7 +116,16 @@ public class DemandaController {
 
         Demanda demandaSalva = demandaService.save(demanda);
         Timestamp momento = new Timestamp(new Date().getTime());
-        HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(Tarefa.CRIARDEMANDA, StatusHistorico.CONCLUIDO, new ArquivoHistoricoWorkflow(versaoPDF), momento, Tarefa.CRIARDEMANDA, demandaSalva);
+
+        HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(
+                Tarefa.CRIARDEMANDA,
+                StatusHistorico.CONCLUIDO,
+                new ArquivoHistoricoWorkflow(versaoPDF),
+                momento,
+                Tarefa.CRIARDEMANDA,
+                demandaSalva
+        );
+
         HistoricoWorkflow historicoWorkflowAvaliacao = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
         historicoWorkflowService.save(historicoWorkflowCriacao);
         historicoWorkflowService.save(historicoWorkflowAvaliacao);

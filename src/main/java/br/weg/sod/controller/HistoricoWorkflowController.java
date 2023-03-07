@@ -49,7 +49,10 @@ public class HistoricoWorkflowController {
     }
 
     @PostMapping("/{idUsuario}")
-    public ResponseEntity<Object> save(@RequestParam("historico") @Valid String historicoJSON, @PathVariable(name = "idUsuario") Integer idUsuario) throws IOException {
+    public ResponseEntity<Object> save(
+            @RequestParam("historico") @Valid String historicoJSON,
+            @PathVariable(name = "idUsuario") Integer idUsuario)
+            throws IOException {
         if (!usuarioService.existsById(idUsuario)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID de usuário não encontrado");
         }
@@ -74,8 +77,14 @@ public class HistoricoWorkflowController {
         BeanUtils.copyProperties(historicoWorkflowDTO, historicoWorkflow);
         historicoWorkflow.setStatus(StatusHistorico.EMANDAMENTO);
 
-        historicoWorkflowService.finishHistoricoByDemanda(demandaService.findById(historicoWorkflowDTO.getDemanda().getIdDemanda()).get(), historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(), usuarioResponsavel, historicoWorkflowDTO.getMotivoDevolucaoAnterior(), null);
-
+        Demanda demandaRelacionada = demandaService.findById(historicoWorkflowDTO.getDemanda().getIdDemanda()).get();
+        historicoWorkflowService.finishHistoricoByDemanda(
+                demandaRelacionada,
+                historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(),
+                usuarioResponsavel,
+                historicoWorkflowDTO.getMotivoDevolucaoAnterior(),
+                null
+        );
         HistoricoWorkflow historicoSalvo = historicoWorkflowService.save(historicoWorkflow);
 
         if(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior() == Tarefa.REPROVARWORKFLOW){
