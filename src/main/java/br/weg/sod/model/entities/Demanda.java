@@ -24,7 +24,7 @@ public class Demanda {
     @Column
     private String tituloDemanda;
 
-    @Column(nullable = false)
+    @Column
     @Enumerated(EnumType.STRING)
     private StatusDemanda statusDemanda;
 

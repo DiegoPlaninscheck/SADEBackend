@@ -78,6 +78,7 @@ public class DemandaController {
     @Transactional
     @PostMapping
     public ResponseEntity<Object> save(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF) throws IOException {
+        System.out.println("aaaa");
         if (versaoPDF.isEmpty()) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
         }
@@ -96,6 +97,9 @@ public class DemandaController {
         }
 
         Demanda demandaSalva = demandaService.save(demanda);
+
+        System.out.println(demandaSalva);
+
         Timestamp momento = new Timestamp(new Date().getTime());
         HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(Tarefa.CRIARDEMANDA, StatusHistorico.CONCLUIDO, new ArquivoHistoricoWorkflow(versaoPDF), momento, Tarefa.CRIARDEMANDA, demandaSalva);
         HistoricoWorkflow historicoWorkflowAvaliacao = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
