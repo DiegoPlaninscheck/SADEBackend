@@ -48,6 +48,15 @@ public class HistoricoWorkflowController {
         return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowService.findById(idHistoricoWorkflow));
     }
 
+    @GetMapping("/demanda/{id}")
+    public ResponseEntity<Object> findByDemanda(@PathVariable(name = "id") Integer idDemanda) {
+        if (!demandaService.existsById(idDemanda)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum historico workflow com o ID informado");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowService.findByDemanda(demandaService.findById(idDemanda).get()));
+    }
+
     @PostMapping("/{idUsuario}")
     public ResponseEntity<Object> save(
             @RequestParam("historico") @Valid String historicoJSON,
