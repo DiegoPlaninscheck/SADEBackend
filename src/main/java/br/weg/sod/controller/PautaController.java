@@ -78,6 +78,10 @@ public class PautaController {
             DecisaoPropostaPauta decisaoPropostaPauta = new DecisaoPropostaPauta();
             BeanUtils.copyProperties(decisaoPropostaPautaDTO, decisaoPropostaPauta);
             pauta.getPropostasPauta().add(decisaoPropostaPauta);
+
+            Proposta propostaDaPauta = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get();
+            propostaDaPauta.setEstaEmPauta(true);
+            propostaService.save(propostaDaPauta);
         }
 
         Pauta pautaSalva = pautaService.save(pauta);

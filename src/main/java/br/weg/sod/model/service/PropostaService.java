@@ -30,6 +30,10 @@ public class PropostaService {
         return propostaRepository.findById(integer);
     }
 
+    public List<Proposta> findByEstaEmPauta(boolean estaEmPauta) {
+        return propostaRepository.findByEstaEmPauta(estaEmPauta);
+    }
+
     public boolean existsById(Integer integer) {
         return propostaRepository.existsById(integer);
     }
