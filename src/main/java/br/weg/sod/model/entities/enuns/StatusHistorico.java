@@ -10,7 +10,8 @@ public enum StatusHistorico {
     EMAGUARDO("Em Aguardo"),
     EMANDAMENTO("Em Andamento"),
     CONCLUIDO("Concluído"),
-    ATRASADO("Atrasado");
+    ATRASADO("Atrasado"),
+    CONCLUIDOCOMATRASO("Concluído com Atraso");
 
     String nome;
 

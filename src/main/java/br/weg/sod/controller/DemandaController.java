@@ -51,6 +51,21 @@ public class DemandaController {
         return ResponseEntity.status(HttpStatus.OK).body(demandaService.findById(idDemanda));
     }
 
+    @GetMapping("/usuario/{idUsuario}")
+    public ResponseEntity<List<Demanda>> findByUsuario(@PathVariable(name = "idUsuario") Integer idUsuario) {
+        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandasByUsuario(usuarioService.findById(idUsuario).get()));
+    }
+
+    @GetMapping("/rascunho/{isRascunho}")
+    public ResponseEntity<List<Demanda>> findRascunho(@PathVariable(name = "isRascunho") boolean isRascunho) {
+        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandasByRascunho(isRascunho));
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Demanda>> findByStatusDemanda(@PathVariable(name = "status") StatusDemanda statusDemanda) {
+        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandasByStatusDemanda(statusDemanda));
+    }
+
     /**
      * fazer processo de atualização de listagem
      *
@@ -77,8 +92,11 @@ public class DemandaController {
 
     @Transactional
     @PostMapping
-    public ResponseEntity<Object> save(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF) throws IOException {
-        System.out.println("aaaa");
+    public ResponseEntity<Object> save(
+            @RequestParam("demanda") @Valid String demandaJSON,
+            @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
+            @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF)
+            throws IOException {
         if (versaoPDF.isEmpty()) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
         }
@@ -101,7 +119,16 @@ public class DemandaController {
         System.out.println(demandaSalva);
 
         Timestamp momento = new Timestamp(new Date().getTime());
-        HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(Tarefa.CRIARDEMANDA, StatusHistorico.CONCLUIDO, new ArquivoHistoricoWorkflow(versaoPDF), momento, Tarefa.CRIARDEMANDA, demandaSalva);
+
+        HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(
+                Tarefa.CRIARDEMANDA,
+                StatusHistorico.CONCLUIDO,
+                new ArquivoHistoricoWorkflow(versaoPDF),
+                momento,
+                Tarefa.CRIARDEMANDA,
+                demandaSalva
+        );
+
         HistoricoWorkflow historicoWorkflowAvaliacao = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
         historicoWorkflowService.save(historicoWorkflowCriacao);
         historicoWorkflowService.save(historicoWorkflowAvaliacao);
@@ -158,6 +185,9 @@ public class DemandaController {
             GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
             historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demandaSalva);
         } else if (demandaDTO.getAdicionandoInformacoes()) {
+            demandaSalva.setStatusDemanda(StatusDemanda.BACKLOG);
+            demandaService.save(demandaSalva);
+
             //conclui o histórico de adicionar informações
             historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOESDEMANDA, analistaTI, null, versaoPDF);
 

@@ -56,6 +56,8 @@ public class Demanda {
     @Column
     private Double score;
 
+    private boolean rascunho;
+
     @ManyToOne
     @JoinColumn(name = "idBU")
     private BU BUSolicitante;

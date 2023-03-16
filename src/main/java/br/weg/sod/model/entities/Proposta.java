@@ -29,6 +29,9 @@ public class Proposta {
     private Date periodoExecucaoFim;
 
     @Column(nullable = false)
+    private Boolean estaEmPauta = false;
+
+    @Column(nullable = false)
     private Boolean avaliadoWorkflow = false;
 
     @Column(nullable = false)
