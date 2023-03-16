@@ -56,7 +56,11 @@ public class Demanda {
     @Column
     private Double score;
 
-    private boolean rascunho;
+    @Column
+    private boolean rascunho = false;
+
+    @Column
+    private boolean pertenceUmaProposta = false;
 
     @ManyToOne
     @JoinColumn(name = "idBU")

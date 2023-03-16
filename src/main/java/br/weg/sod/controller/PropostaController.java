@@ -84,6 +84,10 @@ public class PropostaController {
         }
 
         Proposta propostaSalva = propostaService.save(proposta);
+        Demanda demandaProposta = demandaService.findById(propostaSalva.getIdProposta()).get();
+        demandaProposta.setPertenceUmaProposta(true);
+        demandaService.save(demandaProposta);
+
         //encerra o histórico da criação de proposta
         historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.CRIARPROPOSTA, analistaResponsavel, null, versaoPDF);
 

@@ -4,6 +4,7 @@
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
+//import org.springframework.http.HttpMethod;
 //import org.springframework.security.authentication.AuthenticationManager;
 //import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 //import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -16,9 +17,7 @@
 //@Configuration
 //@AllArgsConstructor
 //public class AutenticacaoConfig {
-//
 //    private JPAService JPAService;
-//
 //
 //    @Autowired
 //    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
@@ -27,7 +26,34 @@
 //
 //    @Bean
 //    protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
-//        httpSecurity.authorizeRequests().antMatchers("/sod/login", "/sod/login/auth").permitAll().anyRequest().authenticated();
+//        httpSecurity.authorizeRequests().antMatchers("/login", "/sod/login/auth", "/logout").permitAll()
+//                //ATA
+//                .antMatchers(HttpMethod.GET, "/sod/ata").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//                .antMatchers(HttpMethod.GET, "/sod/ata/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//                .antMatchers(HttpMethod.POST, "/sod/ata").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//                .antMatchers(HttpMethod.PUT, "/sod/ata/*/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//                .antMatchers(HttpMethod.DELETE, "/sod/ata/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//
+//                //CHAT
+//                .antMatchers(HttpMethod.POST, "/sod/chat/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//                .antMatchers(HttpMethod.PUT, "/sod/chat/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//                .antMatchers(HttpMethod.DELETE, "/sod/chat/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//
+//                //PAUTA
+//                .antMatchers(HttpMethod.GET, "/sod/pauta").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//                .antMatchers(HttpMethod.GET, "/sod/pauta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//                .antMatchers(HttpMethod.POST, "/sod/pauta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//                .antMatchers(HttpMethod.PUT, "/sod/pauta/*/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//                .antMatchers(HttpMethod.DELETE, "/sod/pauta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//
+//                //PROPOSTA
+//                .antMatchers(HttpMethod.GET, "/sod/proposta").hasAnyAuthority("AnalistaTI", "GerenteTI", "GerenteNegocio")
+//                .antMatchers(HttpMethod.GET, "/sod/proposta/*").hasAnyAuthority("AnalistaTI", "GerenteTI", "GerenteNegocio")
+//                .antMatchers(HttpMethod.POST, "/sod/proposta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//                .antMatchers(HttpMethod.PUT, "/sod/proposta/*/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//                .antMatchers(HttpMethod.DELETE, "/sod/proposta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+//
+//                .anyRequest().authenticated();
 //
 //        httpSecurity.csrf().disable();
 //

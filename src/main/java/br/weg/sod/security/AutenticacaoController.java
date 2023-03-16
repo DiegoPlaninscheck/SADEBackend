@@ -27,20 +27,20 @@
 //
 //    @PostMapping("/auth")
 //    public ResponseEntity<Object> autenticacao(@RequestBody @Valid UsuarioDTO usuarioDTO, HttpServletResponse response) {
-//        System.out.println(usuarioDTO);
 //        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(), usuarioDTO.getSenha());
 //        Authentication authentication = authenticationManager.authenticate(authenticationToken);
-//
-//        System.out.println(authentication.isAuthenticated());
 //
 //        if (authentication.isAuthenticated()) {
 //            String token = tokenUtils.gerarToken(authentication);
 //            Cookie cookie = new Cookie("jwt", token);
+//            cookie.setPath("/");
 //            UserJPA userJPA = (UserJPA) authentication.getPrincipal();
 //            Usuario usuario = userJPA.getUsuario();
 //            response.addCookie(cookie);
+//
 //            return ResponseEntity.ok(usuario);
 //        }
+//
 //        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 //    }
 //

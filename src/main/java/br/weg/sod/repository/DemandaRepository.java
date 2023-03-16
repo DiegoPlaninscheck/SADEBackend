@@ -16,4 +16,6 @@ public interface DemandaRepository extends JpaRepository<Demanda, Integer> {
     List<Demanda> findDemandasByRascunho(boolean rascunho);
 
     List<Demanda> findDemandasByStatusDemanda(StatusDemanda statusDemanda);
+
+    List<Demanda> findDemandaByPertenceUmaProposta(boolean pertenceUmaProposta);
 }

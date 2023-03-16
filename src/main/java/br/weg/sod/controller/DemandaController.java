@@ -61,6 +61,11 @@ public class DemandaController {
         return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandasByRascunho(isRascunho));
     }
 
+    @GetMapping("/proposta/{pertenceUmaProposta}")
+    public ResponseEntity<Object> findByEstaEmPauta(@PathVariable(name = "pertenceUmaProposta") Boolean pertenceUmaProposta) {
+        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandaByPertenceUmaProposta(pertenceUmaProposta));
+    }
+
     @GetMapping("/status/{status}")
     public ResponseEntity<List<Demanda>> findByStatusDemanda(@PathVariable(name = "status") StatusDemanda statusDemanda) {
         return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandasByStatusDemanda(statusDemanda));

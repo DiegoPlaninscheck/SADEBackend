@@ -29,6 +29,10 @@ public class DemandaService {
         return demandaRepository.findById(integer);
     }
 
+    public List<Demanda> findDemandaByPertenceUmaProposta(boolean pertenceUmaProposta) {
+        return demandaRepository.findDemandaByPertenceUmaProposta(pertenceUmaProposta);
+    }
+
     public List<Demanda> findDemandasByUsuario(Usuario usuario) {
         return demandaRepository.findDemandasByUsuario(usuario);
     }

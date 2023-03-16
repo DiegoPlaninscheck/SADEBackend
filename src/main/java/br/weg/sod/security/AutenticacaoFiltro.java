@@ -22,18 +22,14 @@
 //    @Override
 //    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 //        System.out.println(request.getRequestURI());
+//        String requestURI = request.getRequestURI();
 //
-//        if (request.getRequestURI().equals("/login") || request.getRequestURI().equals("/sod/login/auth")) {
+//        if (requestURI.equals("/login") || requestURI.equals("/sod/login/auth") || requestURI.equals("/logout")) {
 //            filterChain.doFilter(request, response);
 //            return;
 //        }
 //
-//        System.out.println(request);
-//
 //        String token = tokenUtils.buscarCookie(request);
-//
-//        System.out.println(token);
-//
 //        Boolean valido = tokenUtils.validarToken(token);
 //
 //        if (valido) {
