@@ -51,4 +51,18 @@ public class Usuario {
     @JoinTable(name = "chatsUsuario", joinColumns = @JoinColumn(name = "idUsuario", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "idChat", nullable = false))
     private List<Chat> chatsUsuario;
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "idUsuario=" + idUsuario +
+                ", numeroCadastro=" + numeroCadastro +
+                ", nomeUsuario='" + nomeUsuario + '\'' +
+                ", departamento='" + departamento + '\'' +
+                ", email='" + email + '\'' +
+                ", senha='" + senha + '\'' +
+                ", setor='" + setor + '\'' +
+                ", cargo='" + cargo + '\'' +
+                '}';
+    }
 }

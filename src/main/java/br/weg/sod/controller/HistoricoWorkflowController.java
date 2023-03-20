@@ -57,6 +57,28 @@ public class HistoricoWorkflowController {
         return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowService.findByDemanda(demandaService.findById(idDemanda).get()));
     }
 
+    @GetMapping("/aprovadaGerente/{id}")
+    public ResponseEntity<Object> demandaIsAprovadaByGerente(@PathVariable(name = "id") Integer idDemanda) {
+        if (!demandaService.existsById(idDemanda)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
+        }
+
+        List<HistoricoWorkflow> historicosDemanda = historicoWorkflowService.findByDemanda(demandaService.findById(idDemanda).get());
+
+        for(HistoricoWorkflow historicoWorkflow : historicosDemanda){
+            if(historicoWorkflow.getUsuario() == null){
+                continue;
+            }
+            Usuario usuarioResponsavel = usuarioService.findById(historicoWorkflow.getUsuario().getIdUsuario()).get();
+
+            if(usuarioResponsavel instanceof GerenteNegocio && historicoWorkflow.getTarefa() == Tarefa.AVALIARDEMANDA && historicoWorkflow.getAcaoFeita() == Tarefa.APROVARDEMANDA){
+                return ResponseEntity.status(HttpStatus.OK).body(true);
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(false);
+    }
+
     @PostMapping("/{idUsuario}")
     public ResponseEntity<Object> save(
             @RequestParam("historico") @Valid String historicoJSON,
