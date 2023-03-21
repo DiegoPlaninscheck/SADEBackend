@@ -109,6 +109,10 @@ public class HistoricoWorkflowController {
         historicoWorkflow.setStatus(StatusHistorico.EMANDAMENTO);
 
         Demanda demandaRelacionada = demandaService.findById(historicoWorkflowDTO.getDemanda().getIdDemanda()).get();
+
+        System.out.println(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior());
+        System.out.println(historicoWorkflowDTO.getTarefa());
+
         historicoWorkflowService.finishHistoricoByDemanda(
                 demandaRelacionada,
                 historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior(),

@@ -50,7 +50,9 @@ public class HistoricoWorkflowService {
     }
 
     public HistoricoWorkflow findLastHistoricoByDemanda(Demanda demanda) {
+        System.out.println(demanda);
         List<HistoricoWorkflow> listHistorico = findByDemanda(demanda);
+        System.out.println(listHistorico);
         return listHistorico.get(listHistorico.size() - 1);
     }
 
