@@ -45,19 +45,29 @@ public class HistoricoWorkflowService {
         historicoWorkflowRepository.deleteById(integer);
     }
 
-    public List<HistoricoWorkflow> findByDemanda(Demanda demanda) {
-        return historicoWorkflowRepository.findByDemanda(demanda);
+    public List<HistoricoWorkflow> findHistoricoWorkflowByDemanda(Demanda demanda) {
+        return historicoWorkflowRepository.findHistoricoWorkflowByDemanda(demanda);
     }
 
     public HistoricoWorkflow findLastHistoricoByDemanda(Demanda demanda) {
-        System.out.println(demanda);
-        List<HistoricoWorkflow> listHistorico = findByDemanda(demanda);
-        System.out.println(listHistorico);
+        List<HistoricoWorkflow> listHistorico = findHistoricoWorkflowByDemanda(demanda);
         return listHistorico.get(listHistorico.size() - 1);
     }
 
+    public ArquivoHistoricoWorkflow findArquivoLastHistoricoByDemanda(Demanda demanda) {
+        List<HistoricoWorkflow> listHistorico = findHistoricoWorkflowByDemanda(demanda);
+
+        for (int i = listHistorico.size() - 1; i >= 0; i--) {
+            if (listHistorico.get(i).getArquivoHistoricoWorkflow() != null) {
+                return listHistorico.get(i).getArquivoHistoricoWorkflow();
+            }
+        }
+
+        return null;
+    }
+
     public HistoricoWorkflow findLastHistoricoCompletedByDemanda(Demanda demanda) {
-        List<HistoricoWorkflow> listHistorico = findByDemanda(demanda);
+        List<HistoricoWorkflow> listHistorico = findHistoricoWorkflowByDemanda(demanda);
         for (int i = listHistorico.size() - 1; i >= 0; i--) {
             if (listHistorico.get(i).getStatus() == StatusHistorico.CONCLUIDO) {
                 return listHistorico.get(i);
@@ -68,7 +78,7 @@ public class HistoricoWorkflowService {
     }
 
     public AnalistaTI findLastHistoricoAnalistaByDemanda(Demanda demanda) {
-        List<HistoricoWorkflow> listHistorico = findByDemanda(demanda);
+        List<HistoricoWorkflow> listHistorico = findHistoricoWorkflowByDemanda(demanda);
         for (int i = listHistorico.size() - 1; i >= 0; i--) {
             if (listHistorico.get(i).getUsuario() instanceof AnalistaTI) {
                 return (AnalistaTI) listHistorico.get(i).getUsuario();

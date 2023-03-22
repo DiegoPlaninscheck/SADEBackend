@@ -89,4 +89,28 @@ public class Demanda {
             inverseJoinColumns = @JoinColumn(name = "id_centrocusto", nullable = false))
     private List<CentroCusto> centroCustoDemanda;
 
+
+    @Override
+    public String toString() {
+        return "Demanda{" +
+                "idDemanda=" + idDemanda +
+                ", tituloDemanda='" + tituloDemanda + '\'' +
+                ", statusDemanda=" + statusDemanda +
+                ", tamanho=" + tamanho +
+                ", objetivo='" + objetivo + '\'' +
+                ", secaoTIResponsavel=" + secaoTIResponsavel +
+                ", situacaoAtual='" + situacaoAtual + '\'' +
+                ", frequenciaUso=" + frequenciaUso +
+                ", prazoElaboracao=" + prazoElaboracao +
+                ", codigoPPM=" + codigoPPM +
+                ", linkJira='" + linkJira + '\'' +
+                ", score=" + score +
+                ", rascunho=" + rascunho +
+                ", pertenceUmaProposta=" + pertenceUmaProposta +
+                ", BUSolicitante=" + BUSolicitante +
+                ", usuario=" + usuario +
+                ", BUsBeneficiadas=" + BUsBeneficiadas +
+                ", centroCustoDemanda=" + centroCustoDemanda +
+                '}';
+    }
 }

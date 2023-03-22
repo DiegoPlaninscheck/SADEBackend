@@ -48,7 +48,7 @@ public class DemandaController {
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findById(idDemanda));
+        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findById(idDemanda).get());
     }
 
     @GetMapping("/usuario/{idUsuario}")
@@ -139,7 +139,14 @@ public class DemandaController {
     }
 
     @PutMapping("/{idDemanda}/{idAnalista}")
-    public ResponseEntity<Object> edit(@RequestParam("demanda") @Valid String demandaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF, @PathVariable(name = "idDemanda") Integer idDemanda, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
+    public ResponseEntity<Object> edit(
+            @RequestParam("demanda") @Valid String demandaJSON,
+            @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
+            @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF,
+            @PathVariable(name = "idDemanda") Integer idDemanda,
+            @PathVariable(name = "idAnalista") Integer idAnalista)
+            throws IOException {
+        System.out.println(versaoPDF);
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }

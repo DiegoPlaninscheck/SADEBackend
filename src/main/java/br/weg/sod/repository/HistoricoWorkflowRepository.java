@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface HistoricoWorkflowRepository extends JpaRepository<HistoricoWorkflow, Integer> {
 
-    public List<HistoricoWorkflow> findByDemanda(Demanda demanda);
+    List<HistoricoWorkflow> findHistoricoWorkflowByDemanda(Demanda demanda);
 }
