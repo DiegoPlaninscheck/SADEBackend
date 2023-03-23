@@ -24,7 +24,7 @@ public class Demanda {
     @Column
     private String tituloDemanda;
 
-    @Column(nullable = false)
+    @Column
     @Enumerated(EnumType.STRING)
     private StatusDemanda statusDemanda;
 
@@ -32,13 +32,13 @@ public class Demanda {
     @Enumerated(EnumType.STRING)
     private Tamanho tamanho;
 
-    @Column
+    @Column(length = 1000)
     private String objetivo;
 
     @Column
     private SecaoTI secaoTIResponsavel;
 
-    @Column
+    @Column(length = 1000)
     private String situacaoAtual;
 
     @Column

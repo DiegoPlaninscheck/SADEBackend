@@ -17,7 +17,7 @@ public class HistoricoWorkflowEdicaoDTO {
     private Tarefa acaoFeita;
 
     @NotNull
-    private StatusHistorico statusHistorico;
+    private StatusHistorico statusHistorico = StatusHistorico.CONCLUIDO;
 
     private Demanda demanda;
 
