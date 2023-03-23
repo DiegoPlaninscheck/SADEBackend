@@ -120,6 +120,9 @@ public class DemandaController {
         }
 
         Demanda demandaSalva = demandaService.save(demanda);
+
+        System.out.println(demandaSalva);
+
         Timestamp momento = new Timestamp(new Date().getTime());
 
         HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(
