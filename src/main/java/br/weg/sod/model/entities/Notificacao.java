@@ -1,5 +1,6 @@
 package br.weg.sod.model.entities;
 
+import br.weg.sod.model.entities.enuns.AcaoNotificacao;
 import br.weg.sod.model.entities.enuns.TipoNotificacao;
 import lombok.*;
 
@@ -30,5 +31,9 @@ public class Notificacao {
 
     @Column(nullable = false)
     private Integer idComponenteLink;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AcaoNotificacao acao;
 
 }

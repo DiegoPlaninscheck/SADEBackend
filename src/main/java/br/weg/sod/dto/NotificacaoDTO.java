@@ -1,12 +1,15 @@
 package br.weg.sod.dto;
 
 import br.weg.sod.model.entities.Usuario;
+import br.weg.sod.model.entities.enuns.AcaoNotificacao;
+import br.weg.sod.model.entities.Usuario;
 import br.weg.sod.model.entities.enuns.TipoNotificacao;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @AllArgsConstructor
@@ -21,14 +24,16 @@ public class NotificacaoDTO {
 
     @NotBlank
     private String linkNotificacao;
-
-    @NotBlank
+    @NotNull
     private TipoNotificacao tipoNotificacao;
+
+    @NotNull
+    private AcaoNotificacao acao;
 
     @Digits(integer = 5, fraction = 0)
     private Integer idComponenteLink;
 
-    @NotBlank
+    @NotNull
     private List<Usuario> usuariosRelacionados;
 
 }

@@ -5,6 +5,7 @@ import br.weg.sod.dto.NotificacaoUsuarioDTO;
 import br.weg.sod.dto.UsuarioDTO;
 import br.weg.sod.model.entities.Notificacao;
 import br.weg.sod.model.entities.Usuario;
+import br.weg.sod.model.entities.*;
 import br.weg.sod.model.service.UsuarioService;
 import br.weg.sod.util.UsuarioUtil;
 import lombok.AllArgsConstructor;
@@ -45,7 +46,7 @@ public class UsuarioController {
         UsuarioUtil usuarioUtil = new UsuarioUtil();
         Usuario usuario = usuarioUtil.convertJsonToModel(usuarioJSON, tipoUsuario);
 
-        if(usuarioService.existsByNumeroCadastro(usuario.getNumeroCadastro())){
+        if (usuarioService.existsByNumeroCadastro(usuario.getNumeroCadastro())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Esse número de cadastro já existe");
         }
 
@@ -81,8 +82,8 @@ public class UsuarioController {
     }
 
     @PutMapping("/notificacao")
-    public ResponseEntity<Object> novaNotificacao(@RequestBody @Valid NotificacaoUsuarioDTO notificacaoUsuarioDTO){
-        Usuario usuarioNotificacao = notificacaoUsuarioDTO.getUsuario();
+    public ResponseEntity<Object> novaNotificacao(@RequestBody @Valid NotificacaoUsuarioDTO notificacaoUsuarioDTO) {
+        Usuario usuarioNotificacao = usuarioService.findById(notificacaoUsuarioDTO.getUsuario().getIdUsuario()).get();
 
         if (!usuarioService.existsById(usuarioNotificacao.getIdUsuario())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
@@ -90,6 +91,27 @@ public class UsuarioController {
 
         List<Notificacao> novasNotificacacoesUsuario = usuarioNotificacao.getNotificacoesUsuario();
         novasNotificacacoesUsuario.add(notificacaoUsuarioDTO.getNotificacao());
+
+        usuarioNotificacao.setNotificacoesUsuario(novasNotificacacoesUsuario);
+
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuarioNotificacao));
+    }
+
+    @PutMapping("/deletarNotificacao")
+    public ResponseEntity<Object> deletarNotificacao(@RequestBody @Valid NotificacaoUsuarioDTO notificacaoUsuarioDTO) {
+        Usuario usuarioNotificacao = usuarioService.findById(notificacaoUsuarioDTO.getUsuario().getIdUsuario()).get();
+
+        if (!usuarioService.existsById(usuarioNotificacao.getIdUsuario())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
+        }
+
+        List<Notificacao> novasNotificacacoesUsuario = usuarioNotificacao.getNotificacoesUsuario();
+
+        for (int i = 0; i < novasNotificacacoesUsuario.size(); i++) {
+            if (novasNotificacacoesUsuario.get(i).getIdNotificacao() == notificacaoUsuarioDTO.getNotificacao().getIdNotificacao()) {
+                novasNotificacacoesUsuario.remove(i);
+            }
+        }
 
         usuarioNotificacao.setNotificacoesUsuario(novasNotificacacoesUsuario);
 

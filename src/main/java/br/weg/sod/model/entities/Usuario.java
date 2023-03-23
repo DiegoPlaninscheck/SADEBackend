@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -42,10 +43,10 @@ public class Usuario {
     @Column(nullable = false)
     private String cargo;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "notificacoesUsuario", joinColumns = @JoinColumn(name = "idUsuario", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "idNotificacao", nullable = false))
-    private List<Notificacao> notificacoesUsuario;
+    private List<Notificacao> notificacoesUsuario = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "chatsUsuario", joinColumns = @JoinColumn(name = "idUsuario", nullable = false),

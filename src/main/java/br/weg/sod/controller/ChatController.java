@@ -5,6 +5,7 @@ import br.weg.sod.dto.NotificacaoDTO;
 import br.weg.sod.model.entities.AnalistaTI;
 import br.weg.sod.model.entities.Chat;
 import br.weg.sod.model.entities.Usuario;
+import br.weg.sod.model.entities.enuns.AcaoNotificacao;
 import br.weg.sod.model.entities.enuns.TipoNotificacao;
 import br.weg.sod.model.service.ChatService;
 import br.weg.sod.model.service.NotificacaoService;
@@ -56,8 +57,7 @@ public class ChatController {
         usuariosRelacionados.add(chatSalvo.getDemanda().getUsuario());
         usuariosRelacionados.add(usuarioService.findById(idAnalista).get());
 
-        notificacaoController.save(new NotificacaoDTO("Novo chat criado", "A demanda " + chatSalvo.getDemanda().getTituloDemanda() +" agora tem um chat!", "http://localhost:8081/chats", TipoNotificacao.CHAT, chatSalvo.getIdChat(), usuariosRelacionados));
-
+        notificacaoController.save(new NotificacaoDTO("Novo chat criado", "A demanda " + chatSalvo.getDemanda().getTituloDemanda() +" agora tem um chat!", "http://localhost:8081/chats", TipoNotificacao.CHAT, AcaoNotificacao.CHAT, chatSalvo.getIdChat(), usuariosRelacionados));
         return ResponseEntity.status(HttpStatus.OK).body(chatSalvo);
     }
 
