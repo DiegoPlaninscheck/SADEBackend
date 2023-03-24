@@ -35,6 +35,7 @@ public class Demanda {
     @Column(length = 1000)
     private String objetivo;
 
+    @Enumerated(EnumType.STRING)
     @Column
     private SecaoTI secaoTIResponsavel;
 
