@@ -17,7 +17,7 @@ public enum SecaoTI {
     SCO("Sistemas Corporativos"),
     SIM("Sistemas de Manufatura"),
     SIE("Sistemas de Engenharia"),
-    SVE("Sistemas de Vendas e ECommerce ");
+    SVE("Sistemas de Vendas e ECommerce");
 
     String nome;
 }
