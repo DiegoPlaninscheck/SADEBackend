@@ -149,7 +149,6 @@ public class DemandaController {
             @PathVariable(name = "idDemanda") Integer idDemanda,
             @PathVariable(name = "idAnalista") Integer idAnalista)
             throws IOException {
-        System.out.println(versaoPDF);
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }
@@ -161,8 +160,6 @@ public class DemandaController {
         if (versaoPDF.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Arquivo de versionamento da demanda não informado");
         }
-
-        //ver o que chega quando adiciona informações
 
         DemandaUtil util = new DemandaUtil();
         DemandaEdicaoDTO demandaDTO = util.convertJsontoDtoEdicao(demandaJSON);
@@ -199,9 +196,6 @@ public class DemandaController {
             GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
             historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demandaSalva);
         } else if (demandaDTO.getAdicionandoInformacoes()) {
-            demandaSalva.setStatusDemanda(StatusDemanda.BACKLOG);
-            demandaService.save(demandaSalva);
-
             //conclui o histórico de adicionar informações
             historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOESDEMANDA, analistaTI, null, versaoPDF);
 
@@ -289,7 +283,7 @@ public class DemandaController {
     }
 
     private ResponseEntity<Object> validarAdicionandoInformacoes(Demanda demanda) {
-        if (demanda.getStatusDemanda() != StatusDemanda.ASSESSMENT && demanda.getStatusDemanda() != StatusDemanda.BUSINESSCASE) {
+        if (demanda.getStatusDemanda() != StatusDemanda.ASSESMENT && demanda.getStatusDemanda() != StatusDemanda.BUSINESSCASE) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Status informado inválido");
         }
 
