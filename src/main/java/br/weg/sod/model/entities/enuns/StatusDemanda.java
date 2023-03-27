@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum StatusDemanda {
 
     BACKLOG("Backlog"),
-    ASSESSMENT("Assessment"),
+    ASSESMENT("Assessment"),
     BUSINESSCASE("Business Case"),
     CANCELED("Canceled"),
     TODO("To Do");
