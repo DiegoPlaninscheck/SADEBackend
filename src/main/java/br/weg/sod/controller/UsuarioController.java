@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @AllArgsConstructor
@@ -39,6 +40,25 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
         }
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.findById(idUsuario));
+    }
+
+    @GetMapping("/gerente/usuario/{idUsuario}")
+    public ResponseEntity<Object> findGerenteByUsuario(@PathVariable(name = "idUsuario") Integer idUsuario) {
+        if (!usuarioService.existsById(idUsuario)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.findGerenteByDepartamento(usuarioService.findById(idUsuario).get().getDepartamento()));
+    }
+
+    @GetMapping("/gerente/departamento/{departamento}")
+    public ResponseEntity<Object> findGerenteByDepartamento(@PathVariable(name = "departamento") String departamento) {
+        Usuario usuario = usuarioService.findGerenteByDepartamento(departamento);
+
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(usuario);
     }
 
     @PostMapping("/{tipoUsuario}")

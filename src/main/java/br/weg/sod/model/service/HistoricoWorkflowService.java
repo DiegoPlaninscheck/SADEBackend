@@ -159,7 +159,7 @@ public class HistoricoWorkflowService {
     }
 
     private ResponseEntity<Object> validarHistoricoWorkflowAprovado(Tarefa acaoFeitaHistoricoAnterior, Usuario usuario) {
-        if (acaoFeitaHistoricoAnterior != Tarefa.APROVARWORKFLOW) {
+        if (acaoFeitaHistoricoAnterior != Tarefa.APROVARWORKFLOW && acaoFeitaHistoricoAnterior != Tarefa.INICIARWORKFLOW) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Status da ação anterior inválido para ação do próximo histórico");
         }
 

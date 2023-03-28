@@ -114,7 +114,9 @@ public class HistoricoWorkflowController {
 
         if(historicoWorkflowDTO.getUsuario() != null) {
             Usuario usuarioProximoHistorico = usuarioService.findById(historicoWorkflowDTO.getUsuario().getIdUsuario()).get();
-             historicoValido = historicoWorkflowService.validaCriacaoHistorico(historicoWorkflowDTO, usuarioProximoHistorico);
+            System.out.println(usuarioProximoHistorico);
+            System.out.println(usuarioProximoHistorico instanceof GerenteNegocio);
+            historicoValido = historicoWorkflowService.validaCriacaoHistorico(historicoWorkflowDTO, usuarioProximoHistorico);
         } else {
             historicoValido = historicoWorkflowService.validaCriacaoHistorico(historicoWorkflowDTO, null);
         }
