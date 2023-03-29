@@ -31,6 +31,9 @@ public class Pauta {
     @Column(nullable = false)
     private Time finalReuniao;
 
+    @Column
+    private boolean pertenceUmaATA = false;
+
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "idPauta", nullable = false)

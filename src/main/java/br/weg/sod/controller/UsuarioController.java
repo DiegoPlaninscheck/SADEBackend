@@ -61,6 +61,25 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuario);
     }
 
+    @GetMapping("/gerenteTI/usuario/{idUsuario}")
+    public ResponseEntity<Object> findGerenteTIByUsuario(@PathVariable(name = "idUsuario") Integer idUsuario) {
+        if (!usuarioService.existsById(idUsuario)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.findGerenteTIByDepartamento(usuarioService.findById(idUsuario).get().getDepartamento()));
+    }
+
+    @GetMapping("/gerenteTI/departamento/{departamento}")
+    public ResponseEntity<Object> findGerenteTIByDepartamento(@PathVariable(name = "departamento") String departamento) {
+        Usuario usuario = usuarioService.findGerenteTIByDepartamento(departamento);
+
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(usuario);
+    }
+
     @PostMapping("/{tipoUsuario}")
     public ResponseEntity<Object> save(@RequestParam("usuario") String usuarioJSON, @RequestParam(value = "foto", required = false) MultipartFile foto, @PathVariable("tipoUsuario") Integer tipoUsuario) {
         UsuarioUtil usuarioUtil = new UsuarioUtil();

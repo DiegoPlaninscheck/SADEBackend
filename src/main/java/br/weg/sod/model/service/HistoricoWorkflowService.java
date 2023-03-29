@@ -88,7 +88,6 @@ public class HistoricoWorkflowService {
         return null;
     }
 
-
     //validações
     public ResponseEntity<Object> validaCriacaoHistorico(HistoricoWorkflowCriacaoDTO historicoWorkflowDTO, Usuario usuarioProximoHistorico) {
         Tarefa tarefaNova = historicoWorkflowDTO.getTarefa();
@@ -163,7 +162,7 @@ public class HistoricoWorkflowService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Status da ação anterior inválido para ação do próximo histórico");
         }
 
-        if (!(usuario instanceof GerenteTI)) {
+        if (!(usuario instanceof GerenteTI) && !(usuario instanceof GerenteNegocio)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário responsável não pode ser encarregado dessa ação");
         }
 
@@ -208,5 +207,4 @@ public class HistoricoWorkflowService {
 
         save(new HistoricoWorkflow(recebimento, prazo, tarefa, statusHistorico, usuario, demanda));
     }
-
 }
