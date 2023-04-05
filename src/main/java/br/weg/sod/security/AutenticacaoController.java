@@ -33,7 +33,7 @@ public class AutenticacaoController {
         if (authentication.isAuthenticated()) {
             response.addCookie(tokenUtils.gerarCookie(authentication));
             UserJPA userJPA = (UserJPA) authentication.getPrincipal();
-            return ResponseEntity.ok(userJPA.getUsuario());
+            return ResponseEntity.ok(userJPA);
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

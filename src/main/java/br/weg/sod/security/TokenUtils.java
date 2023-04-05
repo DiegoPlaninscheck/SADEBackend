@@ -17,16 +17,17 @@ public class TokenUtils {
     public String gerarToken(Authentication authentication) {
         UserJPA userJPA = (UserJPA) authentication.getPrincipal();
 
-        return Jwts.builder().setIssuer("Sod").
-                setSubject(userJPA.getUsuario().getIdUsuario().toString()).
-                setIssuedAt(new Date()).setExpiration(new Date(new Date().getTime() + 1800000)).
-                signWith(SignatureAlgorithm.HS256, senhaForte).compact();
+        return Jwts.builder().setIssuer("Sod")
+                .setSubject(userJPA.getUsuario().getIdUsuario().toString())
+                .setIssuedAt(new Date()).setExpiration(new Date(new Date().getTime() + 1800000))
+                .signWith(SignatureAlgorithm.HS256, senhaForte).compact()
+                ;
     }
 
     public Cookie gerarCookie(Authentication authentication) {
         Cookie cookie = new Cookie("jwt", gerarToken(authentication));
         cookie.setPath("/");
-        cookie.setMaxAge(3600);
+        cookie.setMaxAge(7200);
         return cookie;
     }
 
@@ -45,6 +46,7 @@ public class TokenUtils {
 
     public String buscarCookie(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, "jwt");
+
         if (cookie != null) {
             return cookie.getValue();
         }

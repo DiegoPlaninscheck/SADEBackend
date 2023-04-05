@@ -49,7 +49,7 @@ public class AutenticacaoConfig {
                 .antMatchers(HttpMethod.GET, "/sod/ata").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.GET, "/sod/ata/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.POST, "/sod/ata").hasAnyAuthority("AnalistaTI", "GerenteTI")
-                .antMatchers(HttpMethod.PUT, "/sod/ata/*/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+                .antMatchers(HttpMethod.PUT, "/sod/ata/**").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.DELETE, "/sod/ata/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
 
                 //CHAT
@@ -61,14 +61,14 @@ public class AutenticacaoConfig {
                 .antMatchers(HttpMethod.GET, "/sod/pauta").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.GET, "/sod/pauta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.POST, "/sod/pauta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
-                .antMatchers(HttpMethod.PUT, "/sod/pauta/*/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+                .antMatchers(HttpMethod.PUT, "/sod/pauta/**").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.DELETE, "/sod/pauta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
 
                 //PROPOSTA
                 .antMatchers(HttpMethod.GET, "/sod/proposta").hasAnyAuthority("AnalistaTI", "GerenteTI", "GerenteNegocio")
                 .antMatchers(HttpMethod.GET, "/sod/proposta/*").hasAnyAuthority("AnalistaTI", "GerenteTI", "GerenteNegocio")
                 .antMatchers(HttpMethod.POST, "/sod/proposta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
-                .antMatchers(HttpMethod.PUT, "/sod/proposta/*/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+                .antMatchers(HttpMethod.PUT, "/sod/proposta/**").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.DELETE, "/sod/proposta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
 
                 //SWAGGER

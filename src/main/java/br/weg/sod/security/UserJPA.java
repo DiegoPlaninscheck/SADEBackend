@@ -42,8 +42,7 @@ public class UserJPA implements UserDetails {
     @Override
     public Collection<GrantedAuthority> getAuthorities(){
         List<GrantedAuthority> grantedAuthorityList = new ArrayList<>();
-
-        grantedAuthorityList.add(new SimpleGrantedAuthority(this.getUsername().getClass().getSimpleName()));
+        grantedAuthorityList.add(new SimpleGrantedAuthority(this.getUsuario().getClass().getSimpleName()));
 
         return grantedAuthorityList;
     }
