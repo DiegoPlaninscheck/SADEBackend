@@ -9,19 +9,22 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
+
+
 public class TokenUtils {
     private final String senhaForte = "f9fae8edc4c43f2bdf83b5f3c37a80d8f3c73f559785889e606387be23558867";
 
     public String gerarToken(Authentication authentication) {
         UserJPA userJPA = (UserJPA) authentication.getPrincipal();
 
-        return Jwts.builder().setIssuer("Sod").setSubject(userJPA.getUsuario().getIdUsuario().toString()).setIssuedAt(new Date()).setExpiration(new Date(new Date().getTime() + 1800000)).signWith(SignatureAlgorithm.HS256, senhaForte).compact();
+        return Jwts.builder().setIssuer("Sod").
+                setSubject(userJPA.getUsuario().getIdUsuario().toString()).
+                setIssuedAt(new Date()).setExpiration(new Date(new Date().getTime() + 1800000)).
+                signWith(SignatureAlgorithm.HS256, senhaForte).compact();
     }
 
     public Cookie gerarCookie(Authentication authentication) {
-        System.out.println("entrou gerar cookie");
         Cookie cookie = new Cookie("jwt", gerarToken(authentication));
-        System.out.println(cookie.getValue());
         cookie.setPath("/");
         cookie.setMaxAge(3600);
         return cookie;

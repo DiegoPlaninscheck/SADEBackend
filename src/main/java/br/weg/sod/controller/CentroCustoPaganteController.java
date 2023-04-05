@@ -15,7 +15,7 @@ import java.util.List;
 
 @CrossOrigin
 @AllArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/sod/centroCustoPagante")
 public class CentroCustoPaganteController {
 

@@ -23,7 +23,7 @@ import java.util.List;
 
 @CrossOrigin
 @AllArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/sod/decisaoPropostaPauta")
 public class DecisaoPropostaPautaController {
 

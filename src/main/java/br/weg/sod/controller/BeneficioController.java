@@ -17,7 +17,7 @@ import java.util.List;
 
 @CrossOrigin
 @AllArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/sod/beneficio")
 public class BeneficioController {
 

@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @CrossOrigin
 @AllArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/sod/centroCusto")
 public class CentroCustoController {
 

@@ -71,6 +71,8 @@ public class AutenticacaoConfig {
                 .antMatchers(HttpMethod.PUT, "/sod/proposta/*/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.DELETE, "/sod/proposta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
 
+                //SWAGGER
+                .antMatchers("/swagger-ui**", "/swagger-ui/**", "/v3/api-docs/**", "/favicon.ico").permitAll()
                 .anyRequest().authenticated();
 
         httpSecurity.csrf().disable();

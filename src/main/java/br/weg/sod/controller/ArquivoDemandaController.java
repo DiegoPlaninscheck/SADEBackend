@@ -16,7 +16,7 @@ import java.util.List;
 
 @CrossOrigin
 @AllArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/sod/arquivoDemanda")
 public class ArquivoDemandaController {
 

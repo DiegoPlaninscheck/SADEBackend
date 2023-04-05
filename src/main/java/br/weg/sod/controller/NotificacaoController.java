@@ -18,7 +18,7 @@ import java.util.List;
 
 @CrossOrigin
 @AllArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/sod/notificacao")
 public class NotificacaoController {
 

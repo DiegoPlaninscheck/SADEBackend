@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 
 @CrossOrigin
 @AllArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/sod/pauta")
 public class PautaController {
 

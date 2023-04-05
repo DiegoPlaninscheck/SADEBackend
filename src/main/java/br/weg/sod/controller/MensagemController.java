@@ -15,7 +15,7 @@ import java.util.List;
 
 @CrossOrigin
 @AllArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/sod/mensagem")
 public class MensagemController {
 

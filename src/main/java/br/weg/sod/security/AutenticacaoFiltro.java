@@ -23,7 +23,8 @@ public class AutenticacaoFiltro extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
 
-        if (requestURI.equals("/login") || requestURI.equals("/sod/login/auth") || requestURI.equals("/logout")) {
+        if (requestURI.equals("/login") || requestURI.equals("/sod/login/auth") || requestURI.equals("/logout")
+                || requestURI.startsWith("/swagger-ui")  || requestURI.startsWith("/v3/api-docs") ||  requestURI.startsWith("/favicon.ico")) {
             filterChain.doFilter(request, response);
             return;
         }

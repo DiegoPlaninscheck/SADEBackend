@@ -24,7 +24,7 @@ import java.util.List;
 
 @CrossOrigin
 @AllArgsConstructor
-@Controller
+@RestController
 @RequestMapping("/sod/proposta")
 public class PropostaController {
 
