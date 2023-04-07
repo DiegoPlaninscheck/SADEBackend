@@ -63,6 +63,9 @@ public class Demanda {
     @Column
     private boolean pertenceUmaProposta = false;
 
+    @Column
+    private boolean temChat = false;
+
     @ManyToOne
     @JoinColumn(name = "idBU")
     private BU BUSolicitante;

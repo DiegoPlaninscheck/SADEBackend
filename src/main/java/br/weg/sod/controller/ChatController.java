@@ -42,7 +42,6 @@ public class ChatController {
         if (!chatService.existsById(idChat)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum chat com o ID informado");
         }
-
         return ResponseEntity.status(HttpStatus.OK).body(chatService.findById(idChat));
     }
 
@@ -50,7 +49,10 @@ public class ChatController {
     public ResponseEntity<Object> save(@RequestBody @Valid ChatDTO chatDTO, @PathVariable(name = "idAnalista") Integer idAnalista) {
         Chat chat = new Chat();
         BeanUtils.copyProperties(chatDTO, chat);
+        
         chat.setIdChat(chatDTO.getDemanda().getIdDemanda());
+        chat.getDemanda().setTemChat(true);
+
         Chat chatSalvo = chatService.save(chat);
         List<Usuario> usuariosRelacionados = new ArrayList<>();
 
