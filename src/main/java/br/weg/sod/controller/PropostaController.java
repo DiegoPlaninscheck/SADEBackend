@@ -75,7 +75,7 @@ public class PropostaController {
         }
 
         proposta.setIdProposta(proposta.getDemanda().getIdDemanda());
-        AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
+        Usuario analistaResponsavel = usuarioService.findById(idAnalista).get();
 
         if (multipartFiles != null) {
             for (MultipartFile multipartFile : multipartFiles) {
