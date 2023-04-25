@@ -68,7 +68,6 @@ public class PropostaController {
         if (validacao != null) {
             return validacao;
         }
-
         if (proposta.getPayback() == null) {
             Integer valorPayback = 2; //depois fazer a conta com payback e custo totais e os caralho
             proposta.setPayback(valorPayback);

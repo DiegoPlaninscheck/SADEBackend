@@ -3,7 +3,6 @@ package br.weg.sod.controller;
 import br.weg.sod.dto.ATACriacaoDTO;
 import br.weg.sod.dto.ATAEdicaoDTO;
 import br.weg.sod.dto.DecisaoPropostaATADTO;
-import br.weg.sod.dto.DecisaoPropostaPautaCriacaoDTO;
 import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
@@ -11,20 +10,17 @@ import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.entities.enuns.TipoDocumento;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.ATAUtil;
-import br.weg.sod.util.PautaUtil;
 import br.weg.sod.util.UtilFunctions;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -67,6 +63,7 @@ public class ATAController {
 
         ATA ata = new ATA();
         BeanUtils.copyProperties(ataDTO, ata);
+        ata.setUsuariosReuniaoATA(usuarioService.findGerentesTI());
 
         return ResponseEntity.status(HttpStatus.OK).body(ataService.save(ata));
     }

@@ -30,7 +30,6 @@ public class ATACriacaoDTO {
     @NotNull
     private Time finalReuniao;
 
-    @NotNull
     private List<Usuario> usuariosReuniaoATA;
 
     private Integer numeroAno;

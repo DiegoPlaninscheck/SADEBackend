@@ -1,6 +1,7 @@
 package br.weg.sod.dto;
 
 import br.weg.sod.model.entities.Forum;
+import br.weg.sod.model.entities.Proposta;
 import lombok.Getter;
 
 import javax.validation.constraints.Future;
@@ -28,5 +29,5 @@ public class PautaCriacaoDTO {
     @NotNull
     private Forum forum;
 
-    private List<DecisaoPropostaPautaCriacaoDTO> propostasPauta;
+    private List<Proposta> propostasPauta;
 }

@@ -60,7 +60,7 @@ public class AutenticacaoConfig {
                 //PAUTA
                 .antMatchers(HttpMethod.GET, "/sod/pauta").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.GET, "/sod/pauta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
-                .antMatchers(HttpMethod.POST, "/sod/pauta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
+                .antMatchers(HttpMethod.POST, "/sod/pauta/**").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.PUT, "/sod/pauta/**").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.DELETE, "/sod/pauta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")
 

@@ -40,6 +40,10 @@ public class UsuarioService {
         return usuarioRepository.findByDepartamento(departamento);
     }
 
+    public List<Usuario> findGerentesTI() {
+        return findAll().stream().filter(usuario -> usuario instanceof GerenteTI).toList();
+    }
+
     public GerenteNegocio findGerenteByDepartamento(String departamento) {
         List<Usuario> usuarioList = findByDepartamento(departamento);
 

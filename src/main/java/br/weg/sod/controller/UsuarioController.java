@@ -1,25 +1,19 @@
 package br.weg.sod.controller;
 
-import br.weg.sod.dto.DemandaEdicaoDTO;
 import br.weg.sod.dto.NotificacaoUsuarioDTO;
-import br.weg.sod.dto.UsuarioDTO;
 import br.weg.sod.model.entities.Notificacao;
 import br.weg.sod.model.entities.Usuario;
-import br.weg.sod.model.entities.*;
 import br.weg.sod.model.service.UsuarioService;
 import br.weg.sod.util.UsuarioUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @CrossOrigin
 @AllArgsConstructor
@@ -33,7 +27,6 @@ public class UsuarioController {
     public ResponseEntity<List<Usuario>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.findAll());
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<Object> findById(@PathVariable(name = "id") Integer idUsuario) {
         if (!usuarioService.existsById(idUsuario)) {
