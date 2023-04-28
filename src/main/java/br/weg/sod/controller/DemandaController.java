@@ -113,32 +113,33 @@ public class DemandaController {
             return demandaValidada;
         }
 
+        System.out.println(multipartFiles);
         if (multipartFiles != null) {
             for (MultipartFile multipartFile : multipartFiles) {
                 demanda.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, demanda.getUsuario()));
             }
         }
 
-        Demanda demandaSalva = demandaService.save(demanda);
-
-        System.out.println(demandaSalva);
-
-        Timestamp momento = new Timestamp(new Date().getTime());
-
-        HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(
-                Tarefa.CRIARDEMANDA,
-                StatusHistorico.CONCLUIDO,
-                new ArquivoHistoricoWorkflow(versaoPDF),
-                momento,
-                Tarefa.CRIARDEMANDA,
-                demandaSalva
-        );
-
-        HistoricoWorkflow historicoWorkflowAvaliacao = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
-        historicoWorkflowService.save(historicoWorkflowCriacao);
-        historicoWorkflowService.save(historicoWorkflowAvaliacao);
-
-        return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
+//        Demanda demandaSalva = demandaService.save(demanda);
+//
+//        System.out.println(demandaSalva);
+//
+//        Timestamp momento = new Timestamp(new Date().getTime());
+//
+//        HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(
+//                Tarefa.CRIARDEMANDA,
+//                StatusHistorico.CONCLUIDO,
+//                new ArquivoHistoricoWorkflow(versaoPDF),
+//                momento,
+//                Tarefa.CRIARDEMANDA,
+//                demandaSalva
+//        );
+//
+//        HistoricoWorkflow historicoWorkflowAvaliacao = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
+//        historicoWorkflowService.save(historicoWorkflowCriacao);
+//        historicoWorkflowService.save(historicoWorkflowAvaliacao);
+//
+        return ResponseEntity.status(HttpStatus.OK).body(demanda);
     }
 
     @PutMapping("/{idDemanda}/{idAnalista}")
