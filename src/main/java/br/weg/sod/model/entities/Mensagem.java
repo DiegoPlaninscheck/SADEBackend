@@ -1,5 +1,6 @@
 package br.weg.sod.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,6 +26,7 @@ public class Mensagem {
     @Column(nullable = false)
     private Timestamp dataHoraMensagem;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "idChat", nullable = false)
     private Chat chat;

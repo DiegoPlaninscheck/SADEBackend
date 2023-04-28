@@ -1,8 +1,9 @@
 package br.weg.sod.model.entities;
 
-import lombok.*;
+import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
@@ -19,5 +20,12 @@ public class Chat {
     @OneToOne
     @JoinColumn(name = "idDemanda", nullable = false)
     private Demanda demanda;
+
+    @OneToMany(mappedBy = "chat")
+    private List<Mensagem> mensagens;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "usuariosChat")
+    private List<Usuario> usuariosChat;
 
 }

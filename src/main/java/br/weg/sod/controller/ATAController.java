@@ -38,6 +38,7 @@ public class ATAController {
     private DemandaService demandaService;
 
     @GetMapping
+//    @PreAuthorize("hasAnyAuthority('GerenteTI', 'AnalistaTI')")
     public ResponseEntity<List<ATA>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(ataService.findAll());
     }

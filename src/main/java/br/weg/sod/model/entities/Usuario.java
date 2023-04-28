@@ -49,9 +49,8 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "idNotificacao", nullable = false))
     private List<Notificacao> notificacoesUsuario = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "chatsUsuario", joinColumns = @JoinColumn(name = "idUsuario", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "idChat", nullable = false))
+    @JsonIgnore
+    @ManyToMany(mappedBy = "usuariosChat")
     private List<Chat> chatsUsuario;
 
     @Override

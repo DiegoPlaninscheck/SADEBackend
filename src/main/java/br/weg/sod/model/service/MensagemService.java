@@ -1,5 +1,6 @@
 package br.weg.sod.model.service;
 
+import br.weg.sod.model.entities.Chat;
 import br.weg.sod.model.entities.Mensagem;
 import br.weg.sod.repository.MensagemRepository;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,10 @@ public class MensagemService {
 
     public List<Mensagem> findAll() {
         return mensagemRepository.findAll();
+    }
+
+    public List<Mensagem> findMensagemsByChat(Chat chat) {
+        return mensagemRepository.findMensagemsByChat(chat);
     }
 
     public <S extends Mensagem> S save(S entity) {

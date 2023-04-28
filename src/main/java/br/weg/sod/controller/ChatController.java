@@ -1,20 +1,16 @@
 package br.weg.sod.controller;
 
 import br.weg.sod.dto.ChatDTO;
-import br.weg.sod.dto.NotificacaoDTO;
-import br.weg.sod.model.entities.AnalistaTI;
 import br.weg.sod.model.entities.Chat;
+import br.weg.sod.model.entities.Demanda;
 import br.weg.sod.model.entities.Usuario;
-import br.weg.sod.model.entities.enuns.AcaoNotificacao;
-import br.weg.sod.model.entities.enuns.TipoNotificacao;
 import br.weg.sod.model.service.ChatService;
-import br.weg.sod.model.service.NotificacaoService;
+import br.weg.sod.model.service.DemandaService;
 import br.weg.sod.model.service.UsuarioService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -31,6 +27,8 @@ public class ChatController {
     private UsuarioService usuarioService;
 
     private NotificacaoController notificacaoController;
+
+    private DemandaService demandaService;
 
     @GetMapping
     public ResponseEntity<List<Chat>> findAll() {
@@ -53,13 +51,18 @@ public class ChatController {
         chat.setIdChat(chatDTO.getDemanda().getIdDemanda());
         chat.getDemanda().setTemChat(true);
 
-        Chat chatSalvo = chatService.save(chat);
         List<Usuario> usuariosRelacionados = new ArrayList<>();
+        Demanda demandaChat = demandaService.findById(chat.getDemanda().getIdDemanda()).get();
 
-        usuariosRelacionados.add(chatSalvo.getDemanda().getUsuario());
+        usuariosRelacionados.add(demandaChat.getUsuario());
         usuariosRelacionados.add(usuarioService.findById(idAnalista).get());
+        usuariosRelacionados.add(usuarioService.findGerenteByDepartamento(demandaChat.getUsuario().getDepartamento()));
 
-        notificacaoController.save(new NotificacaoDTO("Novo chat criado", "A demanda " + chatSalvo.getDemanda().getTituloDemanda() +" agora tem um chat!", "http://localhost:8081/chats", TipoNotificacao.CHAT, AcaoNotificacao.CHAT, chatSalvo.getIdChat(), usuariosRelacionados));
+        chat.setUsuariosChat(usuariosRelacionados);
+
+        Chat chatSalvo = chatService.save(chat);
+
+//        notificacaoController.save(new NotificacaoDTO("Novo chat criado", "A demanda " + chatSalvo.getDemanda().getTituloDemanda() +" agora tem um chat!", "http://localhost:8081/chats", TipoNotificacao.CHAT, AcaoNotificacao.CHAT, chatSalvo.getIdChat(), usuariosRelacionados));
         return ResponseEntity.status(HttpStatus.OK).body(chatSalvo);
     }
 

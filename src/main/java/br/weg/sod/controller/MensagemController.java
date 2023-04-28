@@ -1,13 +1,17 @@
 package br.weg.sod.controller;
 
 import br.weg.sod.dto.MensagemDTO;
+import br.weg.sod.model.entities.Chat;
 import br.weg.sod.model.entities.Mensagem;
+import br.weg.sod.model.service.ChatService;
 import br.weg.sod.model.service.MensagemService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -20,10 +24,22 @@ import java.util.List;
 public class MensagemController {
 
     private MensagemService mensagemService;
+    private ChatService chatService;
 
     @GetMapping
     public ResponseEntity<List<Mensagem>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(mensagemService.findAll());
+    }
+
+    @GetMapping("/chat/{idChat}")
+    public ResponseEntity<Object> findByChat(@PathVariable Integer idChat) {
+        if (!chatService.existsById(idChat)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum chat com o ID informado");
+        }
+
+        Chat chatEscolhido = chatService.findById(idChat).get();
+
+        return ResponseEntity.status(HttpStatus.OK).body(mensagemService.findMensagemsByChat(chatEscolhido));
     }
 
     @GetMapping("/{id}")
@@ -40,6 +56,14 @@ public class MensagemController {
         BeanUtils.copyProperties(mensagemDTO, mensagem);
 
         return ResponseEntity.status(HttpStatus.OK).body(mensagemService.save(mensagem));
+    }
+
+    @MessageMapping("/demanda/{idChat}")
+    @SendTo("/demanda/{idChat}/chat")
+    public Mensagem salvarMensagem(@Payload MensagemDTO mensagemDTO){
+        Mensagem mensagem = new Mensagem();
+        BeanUtils.copyProperties(mensagemDTO, mensagem);
+        return mensagemService.save(mensagem);
     }
 
     @PutMapping("/{id}")
