@@ -77,14 +77,15 @@ public class PropostaController {
         proposta.setIdProposta(proposta.getDemanda().getIdDemanda());
         Usuario analistaResponsavel = usuarioService.findById(idAnalista).get();
 
+        Proposta propostaSalva = propostaService.save(proposta);
+        Demanda demandaProposta = demandaService.findById(propostaSalva.getIdProposta()).get();
+
         if (multipartFiles != null) {
             for (MultipartFile multipartFile : multipartFiles) {
-                proposta.getDemanda().getArquivosDemanda().add(new ArquivoDemanda(multipartFile, analistaResponsavel));
+                demandaProposta.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, analistaResponsavel));
             }
         }
 
-        Proposta propostaSalva = propostaService.save(proposta);
-        Demanda demandaProposta = demandaService.findById(propostaSalva.getIdProposta()).get();
         demandaProposta.setPertenceUmaProposta(true);
         demandaService.save(demandaProposta);
 
@@ -94,7 +95,7 @@ public class PropostaController {
         //inicia o histórico de criar pauta
         historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPAUTA, StatusHistorico.EMANDAMENTO, analistaResponsavel, propostaSalva.getDemanda());
 
-        return ResponseEntity.status(HttpStatus.OK).body(propostaSalva);
+        return ResponseEntity.status(HttpStatus.OK).body(proposta);
     }
 
     @PutMapping("/{idProposta}/{idAnalista}")
