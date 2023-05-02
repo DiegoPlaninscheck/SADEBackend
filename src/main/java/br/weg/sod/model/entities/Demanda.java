@@ -3,8 +3,7 @@ package br.weg.sod.model.entities;
 import br.weg.sod.model.entities.enuns.SecaoTI;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.Tamanho;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -43,6 +42,7 @@ public class Demanda {
     private String situacaoAtual;
 
     @Column
+    //transformar em um enum pra semananlmente/mensalmente
     private Integer frequenciaUso;
 
     @Column
