@@ -143,8 +143,8 @@ public class DemandaController {
         HistoricoWorkflow historicoWorkflowAvaliacao = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
         historicoWorkflowService.save(historicoWorkflowCriacao);
         historicoWorkflowService.save(historicoWorkflowAvaliacao);
-
-        return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
+//
+        return ResponseEntity.status(HttpStatus.OK).body(demanda);
     }
 
     @PutMapping("/{idDemanda}/{idAnalista}")
