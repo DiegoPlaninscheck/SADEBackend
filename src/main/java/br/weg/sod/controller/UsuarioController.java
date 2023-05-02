@@ -73,6 +73,17 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuario);
     }
 
+    @GetMapping("/{id}/chat")
+    public ResponseEntity<Object> findChatsUsuario(@PathVariable(name = "id") Integer idUsuario) {
+        if (!usuarioService.existsById(idUsuario)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
+        }
+
+        Usuario usuario = usuarioService.findById(idUsuario).get();
+
+        return ResponseEntity.status(HttpStatus.OK).body(usuario.getChatsUsuario());
+    }
+
     @PostMapping("/{tipoUsuario}")
     public ResponseEntity<Object> save(@RequestParam("usuario") String usuarioJSON, @RequestParam(value = "foto", required = false) MultipartFile foto, @PathVariable("tipoUsuario") Integer tipoUsuario) {
         UsuarioUtil usuarioUtil = new UsuarioUtil();

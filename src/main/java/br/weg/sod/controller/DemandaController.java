@@ -1,21 +1,17 @@
 package br.weg.sod.controller;
 
-import br.weg.sod.dto.DemandaCriacaoDTO;
 import br.weg.sod.dto.DemandaEdicaoDTO;
-import br.weg.sod.dto.HistoricoWorkflowCriacaoDTO;
 import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.DemandaUtil;
-import br.weg.sod.util.HistoricoWorkflowUtil;
 import br.weg.sod.util.UtilFunctions;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -63,7 +60,16 @@ public class DemandaController {
 
     @GetMapping("/proposta/{pertenceUmaProposta}")
     public ResponseEntity<Object> findByEstaEmPauta(@PathVariable(name = "pertenceUmaProposta") Boolean pertenceUmaProposta) {
-        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandaByPertenceUmaProposta(pertenceUmaProposta));
+        List<Demanda> demandasSemProposta = demandaService.findDemandaByPertenceUmaProposta(pertenceUmaProposta), demandasAptas = new ArrayList<>();
+
+        for(Demanda demandaSemProposta : demandasSemProposta){
+            if(demandaSemProposta.getLinkJira() != null){
+                demandasAptas.add(demandaSemProposta);
+            }
+        }
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(demandasAptas);
     }
 
     @GetMapping("/status/{status}")

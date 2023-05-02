@@ -7,7 +7,6 @@ import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
-import br.weg.sod.model.entities.enuns.TipoDocumento;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.ATAUtil;
 import br.weg.sod.util.UtilFunctions;
@@ -38,7 +37,6 @@ public class ATAController {
     private DemandaService demandaService;
 
     @GetMapping
-//    @PreAuthorize("hasAnyAuthority('GerenteTI', 'AnalistaTI')")
     public ResponseEntity<List<ATA>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(ataService.findAll());
     }
@@ -70,7 +68,12 @@ public class ATAController {
     }
 
     @PutMapping("/{idATA}/{idAnalista}")
-    public ResponseEntity<Object> edit(@RequestParam("ata") @Valid String ataJSON, @RequestParam(value = "arquivos", required = false) MultipartFile[] multipartFiles, @PathVariable(name = "idATA") Integer idATA, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
+    public ResponseEntity<Object> edit(
+            @RequestParam("ata") @Valid String ataJSON,
+            @RequestParam(value = "arquivos", required = false) MultipartFile[] multipartFiles,
+            @PathVariable(name = "idATA") Integer idATA,
+            @PathVariable(name = "idAnalista") Integer idAnalista)
+            throws IOException {
         if (!ataService.existsById(idATA)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma ATA com o ID informado");
         }
@@ -90,11 +93,10 @@ public class ATAController {
         AnalistaTI analistaTIresponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
 
         if(multipartFiles != null){
-            List<TipoDocumento> tipoDocumentos = ataDTO.getTipoDocumentos();
             List<ArquivoPauta> arquivosAta = ata.getPauta().getArquivosPauta();
 
             for(int i = 0; i < multipartFiles.length; i++){
-                arquivosAta.add(new ArquivoPauta(multipartFiles[i], tipoDocumentos.get(i), analistaTIresponsavel));
+                arquivosAta.add(new ArquivoPauta(multipartFiles[i], analistaTIresponsavel));
             }
 
             ata.getPauta().setArquivosPauta(arquivosAta);

@@ -6,7 +6,6 @@ import br.weg.sod.dto.PautaEdicaoDTO;
 import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
-import br.weg.sod.model.entities.enuns.TipoDocumento;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.PautaUtil;
 import br.weg.sod.util.UtilFunctions;
@@ -49,6 +48,15 @@ public class PautaController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma pauta com o ID informado");
         }
         return ResponseEntity.status(HttpStatus.OK).body(pautaService.findById(idPauta));
+    }
+
+    @GetMapping("/arquivos/{id}")
+    public ResponseEntity<Object> findArquivosById(@PathVariable(name = "id") Integer idPauta) {
+        if (!pautaService.existsById(idPauta)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma pauta com o ID informado");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(pautaService.findById(idPauta).get().getArquivosPauta());
     }
 
     @PostMapping("/{idAnalista}")
@@ -127,7 +135,7 @@ public class PautaController {
             }
             List<ArquivoPauta> arquivosPauta = new ArrayList<>();
 
-            arquivosPauta.add(new ArquivoPauta(multipartFile, TipoDocumento.ATAREUNIAO ,analistaTIresponsavel));
+            arquivosPauta.add(new ArquivoPauta(multipartFile,analistaTIresponsavel));
 
             pauta.setArquivosPauta(arquivosPauta);
         }
@@ -232,12 +240,8 @@ public class PautaController {
 
     private boolean propostasLivres(List<Proposta> propostasPauta){
         for(Proposta proposta : propostasPauta){
-            if(decisaoPropostaPautaService.existsByProposta(proposta)){
-                for(Pauta pautaContemProposta : pautaService.findByProposta(proposta)){
-                    if(!pautaService.pautaFinalizada(pautaContemProposta)){
-                        return false;
-                    }
-                }
+            if(proposta.getEstaEmPauta()){
+               return false;
             }
         }
 

@@ -49,10 +49,11 @@ public class ChatController {
         BeanUtils.copyProperties(chatDTO, chat);
         
         chat.setIdChat(chatDTO.getDemanda().getIdDemanda());
-        chat.getDemanda().setTemChat(true);
+
+        Demanda demandaChat = demandaService.findById(chat.getDemanda().getIdDemanda()).get();
+        demandaChat.setTemChat(true);
 
         List<Usuario> usuariosRelacionados = new ArrayList<>();
-        Demanda demandaChat = demandaService.findById(chat.getDemanda().getIdDemanda()).get();
 
         usuariosRelacionados.add(demandaChat.getUsuario());
         usuariosRelacionados.add(usuarioService.findById(idAnalista).get());
@@ -61,6 +62,7 @@ public class ChatController {
         chat.setUsuariosChat(usuariosRelacionados);
 
         Chat chatSalvo = chatService.save(chat);
+        demandaService.save(demandaChat);
 
 //        notificacaoController.save(new NotificacaoDTO("Novo chat criado", "A demanda " + chatSalvo.getDemanda().getTituloDemanda() +" agora tem um chat!", "http://localhost:8081/chats", TipoNotificacao.CHAT, AcaoNotificacao.CHAT, chatSalvo.getIdChat(), usuariosRelacionados));
         return ResponseEntity.status(HttpStatus.OK).body(chatSalvo);
