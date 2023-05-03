@@ -81,28 +81,28 @@ public class PautaController {
             decisaoPropostaPauta.setProposta(proposta);
             pauta.getPropostasPauta().add(decisaoPropostaPauta);
 
-//            Proposta propostaDaPauta = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get();
-//            propostaDaPauta.setEstaEmPauta(true);
-//            propostaService.save(propostaDaPauta);
+            Proposta propostaDaPauta = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get();
+            propostaDaPauta.setEstaEmPauta(true);
+            propostaService.save(propostaDaPauta);
         }
 
-//        Pauta pautaSalva = pautaService.save(pauta);
-//
-//        for(DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()){
-////            encerrar historico criar pauta
-//            Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
-//            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-//            historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.CRIARPAUTA,analistaResponsavel, null, null );
-//
-////            inicio informar parecer da comissao
-//            historicoWorkflowService.initializeHistoricoByDemanda(
-//                    new Timestamp(pauta.getDataReuniao().getTime()),
-//                    Tarefa.INFORMARPARECERFORUM,
-//                    StatusHistorico.EMAGUARDO,
-//                    analistaResponsavel,
-//                    demandaDecisao
-//            );
-//        }
+        Pauta pautaSalva = pautaService.save(pauta);
+
+        for(DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()){
+//            encerrar historico criar pauta
+            Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
+            Usuario analistaResponsavel = usuarioService.findById(idAnalista).get();
+            historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.CRIARPAUTA,analistaResponsavel, null, null );
+
+//            inicio informar parecer da comissao
+            historicoWorkflowService.initializeHistoricoByDemanda(
+                    new Timestamp(pauta.getDataReuniao().getTime()),
+                    Tarefa.INFORMARPARECERFORUM,
+                    StatusHistorico.EMAGUARDO,
+                    analistaResponsavel,
+                    demandaDecisao
+            );
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(pauta);
     }
