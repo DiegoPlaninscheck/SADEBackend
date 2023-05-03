@@ -1,6 +1,7 @@
 package br.weg.sod.dto;
 
 import br.weg.sod.model.entities.*;
+import br.weg.sod.model.entities.enuns.Frequencia;
 import lombok.Data;
 import lombok.ToString;
 
@@ -21,8 +22,8 @@ public class DemandaCriacaoDTO {
     @NotBlank
     private String situacaoAtual;
 
-    @Digits(integer = 3, fraction = 0)
-    private Integer frequenciaUso;
+    @NotNull
+    private Frequencia frequenciaUso;
 
     @Size
     private List<CentroCusto> centroCustoDemanda;

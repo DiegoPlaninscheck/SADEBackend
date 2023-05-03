@@ -2,6 +2,7 @@ package br.weg.sod.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -51,6 +52,10 @@ public class Usuario {
     @JsonIgnore
     @ManyToMany(mappedBy = "usuariosChat")
     private List<Chat> chatsUsuario;
+
+    public void setSenha(String senha){
+        this.senha = new BCryptPasswordEncoder().encode(senha);
+    }
 
     @Override
     public String toString() {

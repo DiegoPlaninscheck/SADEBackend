@@ -1,5 +1,6 @@
 package br.weg.sod.model.entities;
 
+import br.weg.sod.model.entities.enuns.Frequencia;
 import br.weg.sod.model.entities.enuns.SecaoTI;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.Tamanho;
@@ -42,8 +43,8 @@ public class Demanda {
     private String situacaoAtual;
 
     @Column
-    //transformar em um enum pra semananlmente/mensalmente
-    private Integer frequenciaUso;
+    @Enumerated(EnumType.STRING)
+    private Frequencia frequenciaUso;
 
     @Column
     private Date prazoElaboracao;

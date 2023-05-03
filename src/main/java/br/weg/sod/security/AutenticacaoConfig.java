@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -26,7 +26,7 @@ public class AutenticacaoConfig {
 
     @Autowired
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(JPAService).passwordEncoder(NoOpPasswordEncoder.getInstance());
+        authenticationManagerBuilder.userDetailsService(JPAService).passwordEncoder(new BCryptPasswordEncoder());
     }
 
     private CorsConfigurationSource corsConfigurationSource() {
@@ -60,7 +60,6 @@ public class AutenticacaoConfig {
                 //PAUTA
                 .antMatchers(HttpMethod.GET, "/sod/pauta").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.GET, "/sod/pauta/**").hasAnyAuthority("AnalistaTI", "GerenteTI")
-//                .antMatchers(HttpMethod.GET, "/sod/pauta/arquivos/**").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.POST, "/sod/pauta/**").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.PUT, "/sod/pauta/**").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.DELETE, "/sod/pauta/*").hasAnyAuthority("AnalistaTI", "GerenteTI")

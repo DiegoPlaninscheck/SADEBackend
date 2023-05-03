@@ -1,6 +1,7 @@
 package br.weg.sod.dto;
 
 import br.weg.sod.model.entities.*;
+import br.weg.sod.model.entities.enuns.Frequencia;
 import br.weg.sod.model.entities.enuns.SecaoTI;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.Tamanho;
@@ -20,7 +21,7 @@ public class DemandaEdicaoDTO {
 
     private String situacaoAtual;
 
-    private Integer frequenciaUso;
+    private Frequencia frequenciaUso;
 
     private Double score;
 
