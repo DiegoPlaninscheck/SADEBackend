@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -63,6 +64,18 @@ public class ATAController {
         ATA ata = new ATA();
         BeanUtils.copyProperties(ataDTO, ata);
         ata.setUsuariosReuniaoATA(usuarioService.findGerentesTI());
+
+        Pauta pautaDaAta = pautaService.findById(ata.getPauta().getIdPauta()).get();
+        List<DecisaoPropostaATA> decisoesPropostasATA = new ArrayList<>();
+
+        for(DecisaoPropostaPauta decisaoPropostaPauta : pautaDaAta.getPropostasPauta()){
+            DecisaoPropostaATA decisaoPropostaATA = new DecisaoPropostaATA();
+            decisaoPropostaATA.setProposta(decisaoPropostaPauta.getProposta());
+
+            decisoesPropostasATA.add(decisaoPropostaATA);
+        }
+
+        ata.setPropostasAta(decisoesPropostasATA);
 
         return ResponseEntity.status(HttpStatus.OK).body(ataService.save(ata));
     }

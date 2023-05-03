@@ -15,10 +15,10 @@ public class DecisaoPropostaATA {
     @Column
     private Integer idDecisaoPropostaAta;
 
-    @Column(nullable = false, unique = true)
+    @Column( unique = true)
     private Long numeroSequencial;
 
-    @Column(nullable = false)
+    @Column
     @Enumerated(EnumType.STRING)
     private StatusDemanda statusDemandaComissao;
 

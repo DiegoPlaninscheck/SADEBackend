@@ -155,12 +155,11 @@ public class PautaController {
             decisoesPauta.add(decisaoPropostaPautaNova);
         }
 
-        List<DecisaoPropostaPauta> propostasAprovadasWorkflow = decisaoPropostaPautaService.createDecisaoPropostaWorkflow(propostaService.getPropostasAprovadasWorkflow());
+        for(DecisaoPropostaPauta propostasAprovadasWorkflow : decisaoPropostaPautaService.createDecisaoPropostaWorkflow(propostaService.getPropostasAprovadasWorkflow())){
+            decisoesPauta.add(propostasAprovadasWorkflow);
+        }
 
-        //tem coisa errada aqui carai
-        List<DecisaoPropostaPauta> todasDecisoesAprovadas = Stream.concat(propostasAprovadasWorkflow.stream(), decisoesPauta.stream()).toList();
-
-        pauta.setPropostasPauta(todasDecisoesAprovadas);
+        pauta.setPropostasPauta(decisoesPauta);
 
         Pauta pautaSalva = pautaService.save(pauta);
 

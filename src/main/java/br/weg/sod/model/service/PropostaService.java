@@ -46,7 +46,7 @@ public class PropostaService {
         List<Proposta> propostas = findAll(), propostasParaAprovar = new ArrayList<>();
 
         for(Proposta proposta : propostas){
-            if(proposta.getAprovadoWorkflow() && !proposta.getAvaliadoWorkflow()){
+            if(proposta.getAprovadoWorkflow() && proposta.getAvaliadoWorkflow()){
                 propostasParaAprovar.add(proposta);
 
                 proposta.setAprovadoWorkflow(true);
