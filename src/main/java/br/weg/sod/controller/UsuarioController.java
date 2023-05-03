@@ -27,6 +27,15 @@ public class UsuarioController {
     public ResponseEntity<List<Usuario>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.findAll());
     }
+
+    @GetMapping("/fotousuario/{id}")
+    public ResponseEntity<Object> getFotoUsuario(@PathVariable(name = "id") Integer idUsuario) {
+        if (!usuarioService.existsById(idUsuario)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.findById(idUsuario).get().getFoto());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Object> findById(@PathVariable(name = "id") Integer idUsuario) {
         if (!usuarioService.existsById(idUsuario)) {
