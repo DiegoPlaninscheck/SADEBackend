@@ -18,6 +18,10 @@ public class UsuarioUtil {
 
     public Usuario convertJsonToModel(String usuarioJSON, Integer tipoUsuario) {
         UsuarioDTO usuarioDTO = convertJsonToDTO(usuarioJSON);
+
+        System.out.println("Converteu json pra dto");
+        System.out.println(usuarioDTO);
+
         return convertDtoToModel(usuarioDTO, tipoUsuario);
     }
 
@@ -34,21 +38,24 @@ public class UsuarioUtil {
     }
 
     private Usuario convertDtoToModel(@Valid UsuarioDTO usuarioDTO, Integer tipoUsuario) {
+        Usuario usuario = null;
+
         switch (tipoUsuario) {
             case 1 -> {
-                return this.objectMapper.convertValue(usuarioDTO, Solicitante.class);
+                usuario = this.objectMapper.convertValue(usuarioDTO, Solicitante.class);
             }
             case 2 -> {
-                return this.objectMapper.convertValue(usuarioDTO, AnalistaTI.class);
+                usuario = this.objectMapper.convertValue(usuarioDTO, AnalistaTI.class);
             }
             case 3 -> {
-                return this.objectMapper.convertValue(usuarioDTO, GerenteNegocio.class);
+                usuario = this.objectMapper.convertValue(usuarioDTO, GerenteNegocio.class);
             }
             case 4 -> {
-                return this.objectMapper.convertValue(usuarioDTO, GerenteTI.class);
+                usuario = this.objectMapper.convertValue(usuarioDTO, GerenteTI.class);
             }
         }
-        return null;
+        usuario.setSenha(usuarioDTO.getSenha());
+        return usuario;
     }
 
 }
