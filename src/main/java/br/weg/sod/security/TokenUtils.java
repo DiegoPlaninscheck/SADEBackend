@@ -31,6 +31,13 @@ public class TokenUtils {
         return cookie;
     }
 
+    public Cookie renovarCookie(HttpServletRequest request, String nome){
+        Cookie cookie = WebUtils.getCookie(request, nome);
+        cookie.setPath("/");
+        cookie.setMaxAge(1800);
+        return cookie;
+    }
+
     public Boolean validarToken(String token) {
         try {
             Jwts.parser().setSigningKey(senhaForte).parseClaimsJws(token);

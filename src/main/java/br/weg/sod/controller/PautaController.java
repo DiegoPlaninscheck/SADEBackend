@@ -81,30 +81,30 @@ public class PautaController {
             decisaoPropostaPauta.setProposta(proposta);
             pauta.getPropostasPauta().add(decisaoPropostaPauta);
 
-//            Proposta propostaDaPauta = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get();
-//            propostaDaPauta.setEstaEmPauta(true);
-//            propostaService.save(propostaDaPauta);
+            Proposta propostaDaPauta = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get();
+            propostaDaPauta.setEstaEmPauta(true);
+            propostaService.save(propostaDaPauta);
         }
 
-//        Pauta pautaSalva = pautaService.save(pauta);
-//
-//        for(DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()){
-////            encerrar historico criar pauta
-//            Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
-//            AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
-//            historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.CRIARPAUTA,analistaResponsavel, null, null );
-//
-////            inicio informar parecer da comissao
-//            historicoWorkflowService.initializeHistoricoByDemanda(
-//                    new Timestamp(pauta.getDataReuniao().getTime()),
-//                    Tarefa.INFORMARPARECERFORUM,
-//                    StatusHistorico.EMAGUARDO,
-//                    analistaResponsavel,
-//                    demandaDecisao
-//            );
-//        }
+        Pauta pautaSalva = pautaService.save(pauta);
 
-        return ResponseEntity.status(HttpStatus.OK).body(pauta);
+        for(DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()){
+//            encerrar historico criar pauta
+            Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
+            Usuario analistaResponsavel = usuarioService.findById(idAnalista).get();
+            historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.CRIARPAUTA,analistaResponsavel, null, null );
+
+//            inicio informar parecer da comissao
+            historicoWorkflowService.initializeHistoricoByDemanda(
+                    new Timestamp(pauta.getDataReuniao().getTime()),
+                    Tarefa.INFORMARPARECERFORUM,
+                    StatusHistorico.EMAGUARDO,
+                    analistaResponsavel,
+                    demandaDecisao
+            );
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(pautaSalva);
     }
 
     @PutMapping("/{idPauta}/{idAnalista}")
@@ -127,7 +127,7 @@ public class PautaController {
 
         BeanUtils.copyProperties(pautaDTO, pauta, UtilFunctions.getPropriedadesNulas(pautaDTO));
         pauta.setIdPauta(idPauta);
-        AnalistaTI analistaTIresponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
+        Usuario analistaTIresponsavel = usuarioService.findById(idAnalista).get();
 
         if (multipartFile != null) {
             if(multipartFile.isEmpty()){
@@ -157,6 +157,7 @@ public class PautaController {
 
         List<DecisaoPropostaPauta> propostasAprovadasWorkflow = decisaoPropostaPautaService.createDecisaoPropostaWorkflow(propostaService.getPropostasAprovadasWorkflow());
 
+        //tem coisa errada aqui carai
         List<DecisaoPropostaPauta> todasDecisoesAprovadas = Stream.concat(propostasAprovadasWorkflow.stream(), decisoesPauta.stream()).toList();
 
         pauta.setPropostasPauta(todasDecisoesAprovadas);
@@ -226,11 +227,7 @@ public class PautaController {
 
             //ver se as propostas existem
             if (!propostaService.propostasExistem(propostasDaDecisao)) {
-                return false;
-            }
-
-            //ver se as propostas já não estão em outra pauta
-            if(!propostasLivres(propostasDaDecisao)){
+                System.out.println("proposta não existe");
                 return false;
             }
         }

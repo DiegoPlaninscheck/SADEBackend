@@ -36,6 +36,7 @@ public class Usuario {
 
     @Column
     @Lob
+    @JsonIgnore
     private byte[] foto;
 
     @Column(nullable = false)
