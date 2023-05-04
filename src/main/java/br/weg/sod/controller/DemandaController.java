@@ -53,9 +53,17 @@ public class DemandaController {
         return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandasByUsuario(usuarioService.findById(idUsuario).get()));
     }
 
-    @GetMapping("/rascunho/{isRascunho}")
-    public ResponseEntity<List<Demanda>> findRascunho(@PathVariable(name = "isRascunho") boolean isRascunho) {
-        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandasByRascunho(isRascunho));
+    @GetMapping("/usuario/{idUsuario}/rascunho/")
+    public ResponseEntity<List<Demanda>> findRascunho(@PathVariable(name = "idUsuario") Integer idUsuario) {
+        List<Demanda> demandasQueSaoRascunho = demandaService.findDemandasByRascunho(true), demandasDoUsuario = new ArrayList<>();
+
+        for (Demanda demanda : demandasQueSaoRascunho){
+            if(demanda.getUsuario().getIdUsuario() == idUsuario){
+                demandasDoUsuario.add(demanda);
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(demandasDoUsuario);
     }
 
     @GetMapping("/proposta/{pertenceUmaProposta}")
@@ -127,8 +135,6 @@ public class DemandaController {
 
         Demanda demandaSalva = demandaService.save(demanda);
 
-        System.out.println(demandaSalva);
-
         Timestamp momento = new Timestamp(new Date().getTime());
 
         HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(
@@ -143,10 +149,20 @@ public class DemandaController {
         HistoricoWorkflow historicoWorkflowAvaliacao = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
         historicoWorkflowService.save(historicoWorkflowCriacao);
         historicoWorkflowService.save(historicoWorkflowAvaliacao);
-//
-        return ResponseEntity.status(HttpStatus.OK).body(demanda);
+
+        return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
     }
 
+
+    @Transactional
+    @PostMapping("/rascunho")
+    public ResponseEntity<Object> saveRascunho( @RequestParam("demanda") @Valid String demandaJSON) {
+
+        Demanda demanda = new DemandaUtil().convertJsonToModel(demandaJSON, 2);
+        Demanda demandaSalva = demandaService.save(demanda);
+
+        return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
+    }
     @PutMapping("/{idDemanda}/{idAnalista}")
     public ResponseEntity<Object> edit(
             @RequestParam("demanda") @Valid String demandaJSON,

@@ -45,6 +45,8 @@ public class DemandaEdicaoDTO {
 
     private List<Beneficio> beneficiosDemanda;
 
+    private boolean rascunho = false;
+
     private Boolean classificando = false;
 
     private Boolean adicionandoInformacoes = false;
