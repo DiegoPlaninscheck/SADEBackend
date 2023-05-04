@@ -106,7 +106,7 @@ public class ATAController {
 
         BeanUtils.copyProperties(ataDTO, ata, UtilFunctions.getPropriedadesNulas(ataDTO));
         ata.setIdATA(idATA);
-        AnalistaTI analistaTIresponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
+        Usuario analistaTIresponsavel =  usuarioService.findById(idAnalista).get();
 
         if(multipartFiles != null){
             List<ArquivoPauta> arquivosAta = ata.getPauta().getArquivosPauta();
