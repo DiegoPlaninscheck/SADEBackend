@@ -12,6 +12,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.converter.SimpleMessageConverter;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +37,10 @@ public class DemandaController {
     private UsuarioService usuarioService;
     private BeneficioService beneficioService;
     private CentroCustoService centroCustoService;
+
+    private SimpMessagingTemplate simpMessagingTemplate;
+
+    private NotificacaoService notificacaoService;
 
     @GetMapping
     public ResponseEntity<List<Demanda>> findAll() {
@@ -155,6 +162,13 @@ public class DemandaController {
             @PathVariable(name = "idDemanda") Integer idDemanda,
             @PathVariable(name = "idAnalista") Integer idAnalista)
             throws IOException {
+
+        Notificacao notificacao = new Notificacao();
+
+        notificacao = notificacaoService.save(notificacao);
+
+        simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacao);
+
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }

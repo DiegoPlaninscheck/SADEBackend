@@ -63,6 +63,7 @@ public class MensagemController {
     public Mensagem salvarMensagem(@Payload MensagemDTO mensagemDTO){
         Mensagem mensagem = new Mensagem();
         BeanUtils.copyProperties(mensagemDTO, mensagem);
+
         return mensagemService.save(mensagem);
     }
 
