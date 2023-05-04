@@ -77,6 +77,9 @@ public class ATAController {
 
         ata.setPropostasAta(decisoesPropostasATA);
 
+        pautaDaAta.setPertenceUmaATA(true);
+        pautaService.save(pautaDaAta);
+
         return ResponseEntity.status(HttpStatus.OK).body(ataService.save(ata));
     }
 
@@ -167,10 +170,6 @@ public class ATAController {
             if (ataDTO.getFinalReuniao().getTime() < ataDTO.getInicioReuniao().getTime()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Horários de reunião inválidos");
             }
-        }
-
-        if(multipartFiles.length != ataDTO.getTipoDocumentos().size()){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Os documentos passados não são coesos com as informações passadas sobre eles");
         }
 
         if(ata.getPauta().getPropostasPauta().size() != ataDTO.getPropostasAta().size()){

@@ -20,7 +20,5 @@ public class ATAEdicaoDTO {
 
     private Time finalReuniao;
 
-    private List<TipoDocumento> tipoDocumentos;
-
     private List<DecisaoPropostaATADTO> propostasAta;
 }
