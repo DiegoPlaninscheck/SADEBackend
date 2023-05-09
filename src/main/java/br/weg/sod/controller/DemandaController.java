@@ -300,21 +300,21 @@ public class DemandaController {
 
     private ResponseEntity<Object> validarClassificando(Demanda demanda) {
         if (demanda.getTamanho() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tamanho da demanda não informado");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Tamanho da demanda não informado");
         }
 
         if (demanda.getBUSolicitante() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("BU solicitante não informada");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("BU solicitante não informada");
         }
 
         if (demanda.getBUsBeneficiadas() == null) {
             if (demanda.getBUsBeneficiadas().size() == 0) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("BUs beneficiadas não foi informado");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("BUs beneficiadas não foi informado");
             }
         }
 
         if (demanda.getSecaoTIResponsavel() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sessão de TI responsável não informada");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Sessão de TI responsável não informada");
         }
 
         return null;
@@ -322,19 +322,19 @@ public class DemandaController {
 
     private ResponseEntity<Object> validarAdicionandoInformacoes(Demanda demanda) {
         if (demanda.getStatusDemanda() != StatusDemanda.ASSESMENT && demanda.getStatusDemanda() != StatusDemanda.BUSINESSCASE) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Status informado inválido");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Status informado inválido");
         }
 
         if (demanda.getPrazoElaboracao() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Prazo de elaboração da demanda não informado");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Prazo de elaboração da demanda não informado");
         }
 
         if (demanda.getCodigoPPM() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Código PPM não informado");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Código PPM não informado");
         }
 
         if (demanda.getLinkJira() == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Link para o Jira não informado");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Link para o Jira não informado");
         }
 
         return null;
