@@ -59,6 +59,21 @@ public class PautaController {
         return ResponseEntity.status(HttpStatus.OK).body(pautaService.findById(idPauta).get().getArquivosPauta());
     }
 
+    @GetMapping("/arquivos/pautas")
+    public ResponseEntity<Object> findArquivosPautas(){
+        List<Pauta> pautas = pautaService.findAll();
+
+        List<ArquivoPauta> arquivoPautas = new ArrayList();
+
+        for(Pauta pauta : pautas){
+            for(ArquivoPauta arquivoPauta : pauta.getArquivosPauta()){
+                arquivoPautas.add(arquivoPauta);
+            }
+        }
+
+        return ResponseEntity.ok().body(arquivoPautas);
+    }
+
     @PostMapping("/{idAnalista}")
     public ResponseEntity<Object> save(
             @RequestBody @Valid PautaCriacaoDTO pautaCriacaoDTO,

@@ -99,6 +99,7 @@ public class ATAController {
         ATAEdicaoDTO ataDTO = util.convertJsontoDto(ataJSON);
 
         ResponseEntity<Object> validacaoEdicao = validacoesEdicaoATA(ataDTO, ata, multipartFiles);
+        System.out.println(validacaoEdicao);
 
         if (validacaoEdicao != null) {
             return validacaoEdicao;
@@ -173,7 +174,7 @@ public class ATAController {
         }
 
         if(ata.getPauta().getPropostasPauta().size() != ataDTO.getPropostasAta().size()){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("A quantidade de decisões de ata informada é inválida");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("A quantidade de decisões de ata informada é inválida");
         }
 
         if(!decisaoPropostaATAService.decisoesValidas(ata.getPauta().getPropostasPauta(), ataDTO.getPropostasAta())){
