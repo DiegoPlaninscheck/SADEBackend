@@ -163,6 +163,8 @@ public class DemandaController {
             @PathVariable(name = "idAnalista") Integer idAnalista)
             throws IOException {
 
+        // ver aquiiiiiiii notificacoes com web socket
+
         Notificacao notificacao = new Notificacao();
 
         notificacao = notificacaoService.save(notificacao);
