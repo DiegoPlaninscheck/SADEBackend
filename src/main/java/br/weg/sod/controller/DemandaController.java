@@ -157,12 +157,12 @@ public class DemandaController {
     @Transactional
     @PostMapping("/rascunho")
     public ResponseEntity<Object> saveRascunho( @RequestParam("demanda") @Valid String demandaJSON) {
-
         Demanda demanda = new DemandaUtil().convertJsonToModel(demandaJSON, 2);
         Demanda demandaSalva = demandaService.save(demanda);
 
         return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
     }
+
     @PutMapping("/{idDemanda}/{idAnalista}")
     public ResponseEntity<Object> edit(
             @RequestParam("demanda") @Valid String demandaJSON,
