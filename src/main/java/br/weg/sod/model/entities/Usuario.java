@@ -32,7 +32,7 @@ public class Usuario {
 
     @JsonIgnore
     @Column(nullable = false)
-    private String senha;
+    private String senha = "123";
 
     @Column
     @Lob
