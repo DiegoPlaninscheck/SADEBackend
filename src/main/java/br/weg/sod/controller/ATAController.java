@@ -77,7 +77,7 @@ public class ATAController {
 
         ata.setPropostasAta(decisoesPropostasATA);
 
-        pautaDaAta.setPertenceUmaATA(true);
+//        pautaDaAta.setPertenceUmaATA(true);
         pautaService.save(pautaDaAta);
 
         return ResponseEntity.status(HttpStatus.OK).body(ataService.save(ata));
