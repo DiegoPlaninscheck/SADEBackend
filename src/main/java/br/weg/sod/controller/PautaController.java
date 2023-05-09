@@ -80,11 +80,15 @@ public class PautaController {
             @PathVariable(name = "idAnalista") Integer idAnalista)
             throws IOException {
 
+        System.out.println("Pauta criacao DTO propostas: " + pautaCriacaoDTO.getPropostasPauta());
+
         if(!validacaoPropostasCriacao(pautaCriacaoDTO.getPropostasPauta())){
+            System.out.println("Entrou if 1");
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Uma das propostas informadas já está em uma pauta ou o id informado não existe");
         }
 
         if(!forumService.existsById(pautaCriacaoDTO.getForum().getIdForum())){
+            System.out.println("Entrou if 2");
             return ResponseEntity.status(HttpStatus.CONFLICT).body("O id do fórum informado não existe");
         }
 
@@ -97,7 +101,7 @@ public class PautaController {
             pauta.getPropostasPauta().add(decisaoPropostaPauta);
 
             Proposta propostaDaPauta = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get();
-            propostaDaPauta.setEstaEmPauta(true);
+//            propostaDaPauta.setEstaEmPauta(true);
             propostaService.save(propostaDaPauta);
         }
 
@@ -199,6 +203,7 @@ public class PautaController {
     }
 
     private boolean validacaoPropostasCriacao(List<Proposta> propostasPauta) {
+        System.out.println("Proposta Pauta: " + propostasPauta);
         //ver se as propostas estão em algum processo de aprovação em aberto
         if(!propostaService.propostasExistem(propostasPauta)){
             return false;

@@ -58,7 +58,9 @@ public class PropostaService {
     }
 
     public boolean propostasExistem(List<Proposta> propostasPauta){
+        System.out.println("Proposta Pauta proposta service: " + propostasPauta);
         for(Proposta proposta : propostasPauta){
+            System.out.println("Proposta ID: " + proposta.getIdProposta());
             if(!existsById(proposta.getIdProposta())){
                 return false;
             }
