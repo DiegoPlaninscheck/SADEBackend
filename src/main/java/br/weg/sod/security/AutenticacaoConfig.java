@@ -44,7 +44,7 @@ public class AutenticacaoConfig {
 
     @Bean
     protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeRequests().antMatchers("/login", "/sod/login/auth", "/logout").permitAll()
+        httpSecurity.authorizeRequests().antMatchers("/login", "/sod/login/auth", "/sod/login/auth/cookie", "/logout").permitAll()
                 //ATA
                 .antMatchers(HttpMethod.GET, "/sod/ata").hasAnyAuthority("AnalistaTI", "GerenteTI")
                 .antMatchers(HttpMethod.GET, "/sod/ata/*").hasAnyAuthority("AnalistaTI", "GerenteTI")

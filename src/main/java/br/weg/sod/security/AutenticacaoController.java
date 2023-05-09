@@ -1,6 +1,5 @@
 package br.weg.sod.security;
 
-import br.weg.sod.model.entities.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +33,20 @@ public class AutenticacaoController {
             response.addCookie(tokenUtils.gerarCookie(authentication));
             UserJPA userJPA = (UserJPA) authentication.getPrincipal();
             return ResponseEntity.ok(userJPA);
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @PostMapping("/auth/cookie")
+    public ResponseEntity<Object> autenticacaoCookie(@RequestBody @Valid UsuarioDTO usuarioDTO, HttpServletResponse response) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(), usuarioDTO.getSenha());
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
+        if (authentication.isAuthenticated()) {
+            Cookie cookie = tokenUtils.gerarCookie(authentication);
+            response.addCookie(cookie);
+            return ResponseEntity.ok(cookie);
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
