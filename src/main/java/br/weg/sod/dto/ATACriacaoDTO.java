@@ -3,7 +3,7 @@ package br.weg.sod.dto;
 
 import br.weg.sod.model.entities.Pauta;
 import br.weg.sod.model.entities.Usuario;
-import lombok.Getter;
+import lombok.Data;
 
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
@@ -12,7 +12,7 @@ import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 
-@Getter
+@Data
 public class ATACriacaoDTO {
 
     @NotNull

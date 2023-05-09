@@ -172,10 +172,6 @@ public class ATAController {
             }
         }
 
-        if(ata.getPauta().getPropostasPauta().size() != ataDTO.getPropostasAta().size()){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("A quantidade de decisões de ata informada é inválida");
-        }
-
         if(!decisaoPropostaATAService.decisoesValidas(ata.getPauta().getPropostasPauta(), ataDTO.getPropostasAta())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Decisões da ata contém número de id de proposta inválido ou número sequencial já registrado/repetido");
         }
