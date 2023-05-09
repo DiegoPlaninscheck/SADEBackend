@@ -99,6 +99,7 @@ public class ATAController {
         ATAEdicaoDTO ataDTO = util.convertJsontoDto(ataJSON);
 
         ResponseEntity<Object> validacaoEdicao = validacoesEdicaoATA(ataDTO, ata, multipartFiles);
+        System.out.println(validacaoEdicao);
 
         if (validacaoEdicao != null) {
             return validacaoEdicao;
@@ -171,7 +172,7 @@ public class ATAController {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Horários de reunião inválidos");
             }
         }
-
+        
         if(!decisaoPropostaATAService.decisoesValidas(ata.getPauta().getPropostasPauta(), ataDTO.getPropostasAta())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Decisões da ata contém número de id de proposta inválido ou número sequencial já registrado/repetido");
         }
