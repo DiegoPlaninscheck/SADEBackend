@@ -9,6 +9,8 @@ import java.util.List;
 @Data
 public class PropostaEdicaoDTO {
 
+    private Integer idProposta;
+
     private String escopo;
 
     private Date periodoExecucaoInicio;

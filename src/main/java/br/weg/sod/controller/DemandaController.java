@@ -181,11 +181,11 @@ public class DemandaController {
 
         // ver aquiiiiiiii notificacoes com web socket
 
-        Notificacao notificacao = new Notificacao();
-
-        notificacao = notificacaoService.save(notificacao);
-
-        simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacao);
+//        Notificacao notificacao = new Notificacao();
+//
+//        notificacao = notificacaoService.save(notificacao);
+//
+//        simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacao);
 
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");

@@ -94,11 +94,19 @@ public class PropostaController {
         //inicia o histórico de criar pauta
         historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPAUTA, StatusHistorico.EMANDAMENTO, analistaResponsavel, propostaSalva.getDemanda());
 
-        return ResponseEntity.status(HttpStatus.OK).body(proposta);
+        return ResponseEntity.status(HttpStatus.OK).body(propostaSalva);
     }
 
     @PutMapping("/{idProposta}/{idAnalista}")
-    public ResponseEntity<Object> edit(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @RequestParam(value = "pdfVersaoHistorico", required = false) MultipartFile versaoPDF, @PathVariable(name = "idProposta") Integer idProposta, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
+    public ResponseEntity<Object> edit(
+            @RequestParam("proposta")
+            @Valid String propostaJSON,
+            @RequestParam(value = "files", required = false)
+            MultipartFile[] multipartFiles,
+            @RequestParam(value = "pdfVersaoHistorico", required = false)
+            MultipartFile versaoPDF, @PathVariable(name = "idProposta")
+            Integer idProposta, @PathVariable(name = "idAnalista") Integer idAnalista)
+            throws IOException {
         if (!propostaService.existsById(idProposta)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma proposta com o ID informado");
         }
@@ -233,6 +241,7 @@ public class PropostaController {
         if (tabelasCustoProposta != null) {
             if (tabelasCustoProposta.size() != 0) {
                 for (TabelaCusto tabelaCusto : proposta.getTabelasCustoProposta()) {
+
                     if (!tabelaCustoService.existsById(tabelaCusto.getIdTabelaCusto())) {
                         return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de tabela de custo inválido");
                     }
