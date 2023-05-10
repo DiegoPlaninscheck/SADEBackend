@@ -2,9 +2,11 @@ package br.weg.sod.model.entities;
 
 import br.weg.sod.model.entities.enuns.AcaoNotificacao;
 import br.weg.sod.model.entities.enuns.TipoNotificacao;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
@@ -35,5 +37,11 @@ public class Notificacao {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AcaoNotificacao acao;
+
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "usuariosNotificacao", joinColumns = @JoinColumn(name = "idNotificacao", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "idUsuario", nullable = false))
+    private List<Usuario> usuariosNotificacao;
 
 }

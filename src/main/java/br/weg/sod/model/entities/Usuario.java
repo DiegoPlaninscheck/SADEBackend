@@ -45,9 +45,7 @@ public class Usuario {
     @Column(nullable = false)
     private String cargo;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "notificacoesUsuario", joinColumns = @JoinColumn(name = "idUsuario", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "idNotificacao", nullable = false))
+    @ManyToMany(mappedBy = "usuariosNotificacao",cascade = CascadeType.ALL)
     private List<Notificacao> notificacoesUsuario = new ArrayList<>();
 
     @JsonIgnore
