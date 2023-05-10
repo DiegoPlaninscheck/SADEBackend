@@ -52,9 +52,6 @@ public class Usuario {
     @ManyToMany(mappedBy = "usuariosChat")
     private List<Chat> chatsUsuario;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "usuariosReuniaoATA", cascade = CascadeType.ALL)
-    private List<ATA> ataUsuario;
 
     public void setSenha(String senha){
         this.senha = new BCryptPasswordEncoder().encode(senha);

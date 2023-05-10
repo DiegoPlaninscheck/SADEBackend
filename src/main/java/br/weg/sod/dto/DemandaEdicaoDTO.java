@@ -13,6 +13,8 @@ import java.util.List;
 @Data
 public class DemandaEdicaoDTO {
 
+    private Integer idDemanda;
+
     private String tituloDemanda;
 
     private StatusDemanda statusDemanda;
@@ -45,7 +47,13 @@ public class DemandaEdicaoDTO {
 
     private List<Beneficio> beneficiosDemanda;
 
-    private boolean rascunho = false;
+    private List<ArquivoDemanda> arquivosDemanda;
+
+    private Boolean pertenceUmaProposta = false;
+
+    private Boolean temChat = false;
+
+    private Boolean rascunho = false;
 
     private Boolean classificando = false;
 

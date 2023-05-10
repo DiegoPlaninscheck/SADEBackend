@@ -99,7 +99,6 @@ public class ATAController {
         ATAEdicaoDTO ataDTO = util.convertJsontoDto(ataJSON);
 
         ResponseEntity<Object> validacaoEdicao = validacoesEdicaoATA(ataDTO, ata, multipartFiles);
-        System.out.println(validacaoEdicao);
 
         if (validacaoEdicao != null) {
             return validacaoEdicao;
@@ -162,6 +161,12 @@ public class ATAController {
         if (!ataService.existsById(idATA)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma ATA com este ID");
         }
+        ATA ata = ataService.findById(idATA).get();
+
+        ata.setUsuariosReuniaoATA(null);
+
+        ataService.save(ata);
+
         ataService.deleteById(idATA);
         return ResponseEntity.status(HttpStatus.OK).body("ATA deletada com sucesso!");
     }
@@ -171,10 +176,6 @@ public class ATAController {
             if (ataDTO.getFinalReuniao().getTime() < ataDTO.getInicioReuniao().getTime()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Horários de reunião inválidos");
             }
-        }
-
-        if(ata.getPauta().getPropostasPauta().size() != ataDTO.getPropostasAta().size()){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("A quantidade de decisões de ata informada é inválida");
         }
 
         if(!decisaoPropostaATAService.decisoesValidas(ata.getPauta().getPropostasPauta(), ataDTO.getPropostasAta())){

@@ -4,6 +4,7 @@ import br.weg.sod.model.entities.enuns.Frequencia;
 import br.weg.sod.model.entities.enuns.SecaoTI;
 import br.weg.sod.model.entities.enuns.StatusDemanda;
 import br.weg.sod.model.entities.enuns.Tamanho;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -93,6 +94,11 @@ public class Demanda {
     @JoinTable(name = "centroCustoDemanda", joinColumns = @JoinColumn(name = "idDemanda", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "id_centrocusto", nullable = false))
     private List<CentroCusto> centroCustoDemanda;
+
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "demanda", cascade = CascadeType.ALL)
+    private List<HistoricoWorkflow> historicosWorkflowDemanda;
 
 
     @Override
