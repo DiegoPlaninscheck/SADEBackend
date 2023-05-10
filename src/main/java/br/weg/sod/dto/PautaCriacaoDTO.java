@@ -2,6 +2,7 @@ package br.weg.sod.dto;
 
 import br.weg.sod.model.entities.Forum;
 import br.weg.sod.model.entities.Proposta;
+import lombok.Data;
 import lombok.Getter;
 
 import javax.validation.constraints.Future;
@@ -11,7 +12,8 @@ import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 
-@Getter
+//@Getter
+@Data
 public class PautaCriacaoDTO {
 
     @NotBlank
@@ -30,4 +32,6 @@ public class PautaCriacaoDTO {
     private Forum forum;
 
     private List<Proposta> propostasPauta;
+
+    private boolean teste = false;
 }

@@ -80,15 +80,11 @@ public class PautaController {
             @PathVariable(name = "idAnalista") Integer idAnalista)
             throws IOException {
 
-        System.out.println("Pauta criacao DTO propostas: " + pautaCriacaoDTO.getPropostasPauta());
-
         if(!validacaoPropostasCriacao(pautaCriacaoDTO.getPropostasPauta())){
-            System.out.println("Entrou if 1");
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Uma das propostas informadas já está em uma pauta ou o id informado não existe");
         }
 
         if(!forumService.existsById(pautaCriacaoDTO.getForum().getIdForum())){
-            System.out.println("Entrou if 2");
             return ResponseEntity.status(HttpStatus.CONFLICT).body("O id do fórum informado não existe");
         }
 
@@ -107,20 +103,22 @@ public class PautaController {
 
         Pauta pautaSalva = pautaService.save(pauta);
 
-        for(DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()){
+        if(!pautaCriacaoDTO.isTeste()) {
+            for (DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()) {
 //            encerrar historico criar pauta
-            Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
-            Usuario analistaResponsavel = usuarioService.findById(idAnalista).get();
-            historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.CRIARPAUTA,analistaResponsavel, null, null );
+                Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
+                Usuario analistaResponsavel = usuarioService.findById(idAnalista).get();
+                historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.CRIARPAUTA, analistaResponsavel, null, null);
 
 //            inicio informar parecer da comissao
-            historicoWorkflowService.initializeHistoricoByDemanda(
-                    new Timestamp(pauta.getDataReuniao().getTime()),
-                    Tarefa.INFORMARPARECERFORUM,
-                    StatusHistorico.EMAGUARDO,
-                    analistaResponsavel,
-                    demandaDecisao
-            );
+                historicoWorkflowService.initializeHistoricoByDemanda(
+                        new Timestamp(pauta.getDataReuniao().getTime()),
+                        Tarefa.INFORMARPARECERFORUM,
+                        StatusHistorico.EMAGUARDO,
+                        analistaResponsavel,
+                        demandaDecisao
+                );
+            }
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(pautaSalva);
@@ -136,12 +134,9 @@ public class PautaController {
         Pauta pauta = pautaService.findById(idPauta).get();
         PautaEdicaoDTO pautaDTO = util.convertJsontoDto(pautaJSON);
 
-        if (!dataFutura(pautaDTO.getDataReuniao())){
+        if (!dataFutura(pautaDTO.getDataReuniaoATA())){
+            System.out.println("entrou if 1");
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Data de reunião informada inválida");
-        }
-
-        if(!validacaoPropostasEdicao(pautaDTO.getPropostasPauta(), pauta)){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Uma das propostas informadas já está em uma pauta ou o id informado não existe");
         }
 
         BeanUtils.copyProperties(pautaDTO, pauta, UtilFunctions.getPropriedadesNulas(pautaDTO));
@@ -182,12 +177,14 @@ public class PautaController {
 
         Pauta pautaSalva = pautaService.save(pauta);
 
-        for(DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()){
+        if(!pautaDTO.isTeste()){
+            for(DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()){
 //            encerrar historico de informar o parecer
-            Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
-            historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.INFORMARPARECERFORUM,analistaTIresponsavel, null, null );
+                Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
+                historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.INFORMARPARECERFORUM,analistaTIresponsavel, null, null );
 
-            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(pautaDTO.getDataReuniaoATA().getTime()), Tarefa.INFORMARPARECERDG, StatusHistorico.EMAGUARDO, analistaTIresponsavel, demandaDecisao);
+                historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(pautaDTO.getDataReuniaoATA().getTime()), Tarefa.INFORMARPARECERDG, StatusHistorico.EMAGUARDO, analistaTIresponsavel, demandaDecisao);
+            }
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(pauta);
@@ -203,7 +200,6 @@ public class PautaController {
     }
 
     private boolean validacaoPropostasCriacao(List<Proposta> propostasPauta) {
-        System.out.println("Proposta Pauta: " + propostasPauta);
         //ver se as propostas estão em algum processo de aprovação em aberto
         if(!propostaService.propostasExistem(propostasPauta)){
             return false;
@@ -212,43 +208,6 @@ public class PautaController {
         //ver se as propostas existem
         if(!propostasLivres(propostasPauta)){
             return false;
-        }
-
-        return true;
-    }
-
-    private boolean validacaoPropostasEdicao(List<DecisaoPropostaPautaEdicaoDTO> propostasPauta, Pauta pautaBancoDados) {
-        List<Proposta> propostasDaDecisao = new ArrayList<>();
-        List<DecisaoPropostaPauta> decisoesPauta =  pautaBancoDados.getPropostasPauta();
-
-        for(DecisaoPropostaPautaEdicaoDTO decisaoPropostaDTO : propostasPauta){
-            if(decisaoPropostaDTO.getProposta() != null){
-                propostasDaDecisao.add(decisaoPropostaDTO.getProposta());
-            }
-
-            //ver se o id de decisaoPropostaPauta informado já tá vinculado àquela pauta
-            boolean existe = false;
-
-            for(DecisaoPropostaPauta decisaoPauta : decisoesPauta){
-                if(decisaoPauta.getIdDecisaoPropostaPauta() == decisaoPropostaDTO.getIdDecisaoPropostaPauta()){
-                    existe = true;
-                    break;
-                }
-            }
-
-            if(!existe){
-                return false;
-            }
-        }
-
-        //ver se existem propostas para serem avaliadas
-        if(propostasDaDecisao.size() != 0) {
-
-            //ver se as propostas existem
-            if (!propostaService.propostasExistem(propostasDaDecisao)) {
-                System.out.println("proposta não existe");
-                return false;
-            }
         }
 
         return true;

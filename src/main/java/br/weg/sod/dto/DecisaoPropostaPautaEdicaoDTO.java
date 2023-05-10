@@ -22,4 +22,5 @@ public class DecisaoPropostaPautaEdicaoDTO {
     private Proposta proposta;
 
     private String comentario;
+
 }
