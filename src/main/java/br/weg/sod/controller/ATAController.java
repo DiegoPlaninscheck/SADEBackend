@@ -99,7 +99,6 @@ public class ATAController {
         ATAEdicaoDTO ataDTO = util.convertJsontoDto(ataJSON);
 
         ResponseEntity<Object> validacaoEdicao = validacoesEdicaoATA(ataDTO, ata, multipartFiles);
-        System.out.println(validacaoEdicao);
 
         if (validacaoEdicao != null) {
             return validacaoEdicao;
@@ -162,6 +161,12 @@ public class ATAController {
         if (!ataService.existsById(idATA)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma ATA com este ID");
         }
+        ATA ata = ataService.findById(idATA).get();
+
+        ata.setUsuariosReuniaoATA(null);
+
+        ataService.save(ata);
+
         ataService.deleteById(idATA);
         return ResponseEntity.status(HttpStatus.OK).body("ATA deletada com sucesso!");
     }
@@ -172,7 +177,7 @@ public class ATAController {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Horários de reunião inválidos");
             }
         }
-        
+
         if(!decisaoPropostaATAService.decisoesValidas(ata.getPauta().getPropostasPauta(), ataDTO.getPropostasAta())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Decisões da ata contém número de id de proposta inválido ou número sequencial já registrado/repetido");
         }
