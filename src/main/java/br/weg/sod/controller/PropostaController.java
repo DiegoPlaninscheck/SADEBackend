@@ -41,7 +41,7 @@ public class PropostaController {
     }
 
     @GetMapping("/pauta/{estaEmPauta}")
-    public ResponseEntity<Object> findByEstaEmPauta(@PathVariable(name = "estaEmPauta") Boolean estaEmPauta) {
+    public ResponseEntity<List<Proposta>> findByEstaEmPauta(@PathVariable(name = "estaEmPauta") Boolean estaEmPauta) {
         return ResponseEntity.status(HttpStatus.OK).body(propostaService.findByEstaEmPauta(estaEmPauta));
     }
 
