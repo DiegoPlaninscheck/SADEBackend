@@ -44,8 +44,8 @@ public class ATA {
     private List<DecisaoPropostaATA> propostasAta;
 
     @ManyToMany(cascade = CascadeType.ALL)
-//    @JoinTable(name = "usuariosReuniaoATA", joinColumns = @JoinColumn(name = "idATA", nullable = false),
-//            inverseJoinColumns = @JoinColumn(name = "idUsuario", nullable = false))
+    @JoinTable(name = "usuariosReuniaoATA", joinColumns = @JoinColumn(name = "idATA", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "idUsuario", nullable = false))
     private List<Usuario> usuariosReuniaoATA;
 
 }

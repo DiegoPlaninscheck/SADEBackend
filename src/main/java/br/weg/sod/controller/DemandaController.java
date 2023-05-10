@@ -2,9 +2,7 @@ package br.weg.sod.controller;
 
 import br.weg.sod.dto.DemandaEdicaoDTO;
 import br.weg.sod.model.entities.*;
-import br.weg.sod.model.entities.enuns.StatusDemanda;
-import br.weg.sod.model.entities.enuns.StatusHistorico;
-import br.weg.sod.model.entities.enuns.Tarefa;
+import br.weg.sod.model.entities.enuns.*;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.DemandaUtil;
 import br.weg.sod.util.UtilFunctions;
@@ -179,14 +177,6 @@ public class DemandaController {
             @PathVariable(name = "idAnalista") Integer idAnalista)
             throws IOException {
 
-        // ver aquiiiiiiii notificacoes com web socket
-
-        Notificacao notificacao = new Notificacao();
-
-        notificacao = notificacaoService.save(notificacao);
-
-        simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacao);
-
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }
@@ -226,13 +216,32 @@ public class DemandaController {
         AnalistaTI analistaTI = (AnalistaTI) usuarioService.findById(idAnalista).get();
 
         if (demandaDTO.getClassificando()) {
-            //concluindo histórico da classificacao do analista de TI
-            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, versaoPDF);
+//            //concluindo histórico da classificacao do analista de TI
+//            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, versaoPDF);
+//
+//            //iniciando o histórico de avaliacao do gerente de negócio
+//            Usuario solicitante = usuarioService.findById(demanda.getUsuario().getIdUsuario()).get();
+//            GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
+//            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demandaSalva);
 
-            //iniciando o histórico de avaliacao do gerente de negócio
-            Usuario solicitante = usuarioService.findById(demanda.getUsuario().getIdUsuario()).get();
-            GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
-            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demandaSalva);
+            Notificacao notificacao = new Notificacao();
+            notificacao.setAcao(AcaoNotificacao.DEMANDAAPROVADA);
+            notificacao.setDescricaoNotificacao("Demanda aprovado pelo analista de TI");
+            notificacao.setTituloNotificacao("Demanda Aprovada");
+            notificacao.setTipoNotificacao(TipoNotificacao.DEMANDA);
+            notificacao.setLinkNotificacao("http://localhost:8081/home/demand");
+            notificacao.setIdComponenteLink(demandaSalva.getIdDemanda());
+
+            List<Usuario> usuarios = new ArrayList<>();
+
+            usuarios.add(demandaSalva.getUsuario());
+
+            notificacao.setUsuariosNotificacao(usuarios);
+
+            notificacao = notificacaoService.save(notificacao);
+
+            simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacao);
+
         } else if (demandaDTO.getAdicionandoInformacoes()) {
             //conclui o histórico de adicionar informações
             historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOESDEMANDA, analistaTI, null, versaoPDF);
