@@ -177,14 +177,6 @@ public class DemandaController {
             @PathVariable(name = "idAnalista") Integer idAnalista)
             throws IOException {
 
-        // ver aquiiiiiiii notificacoes com web socket
-
-//        Notificacao notificacao = new Notificacao();
-//
-//        notificacao = notificacaoService.save(notificacao);
-//
-//        simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacao);
-
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }

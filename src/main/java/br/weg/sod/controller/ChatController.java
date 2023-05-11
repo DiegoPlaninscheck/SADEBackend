@@ -3,14 +3,19 @@ package br.weg.sod.controller;
 import br.weg.sod.dto.ChatDTO;
 import br.weg.sod.model.entities.Chat;
 import br.weg.sod.model.entities.Demanda;
+import br.weg.sod.model.entities.Notificacao;
 import br.weg.sod.model.entities.Usuario;
+import br.weg.sod.model.entities.enuns.AcaoNotificacao;
+import br.weg.sod.model.entities.enuns.TipoNotificacao;
 import br.weg.sod.model.service.ChatService;
 import br.weg.sod.model.service.DemandaService;
+import br.weg.sod.model.service.NotificacaoService;
 import br.weg.sod.model.service.UsuarioService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,6 +34,10 @@ public class ChatController {
     private NotificacaoController notificacaoController;
 
     private DemandaService demandaService;
+
+    private NotificacaoService notificacaoService;
+
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @GetMapping
     public ResponseEntity<List<Chat>> findAll() {
@@ -64,7 +73,20 @@ public class ChatController {
         Chat chatSalvo = chatService.save(chat);
         demandaService.save(demandaChat);
 
-//        notificacaoController.save(new NotificacaoDTO("Novo chat criado", "A demanda " + chatSalvo.getDemanda().getTituloDemanda() +" agora tem um chat!", "http://localhost:8081/chats", TipoNotificacao.CHAT, AcaoNotificacao.CHAT, chatSalvo.getIdChat(), usuariosRelacionados));
+        Notificacao notificacao = new Notificacao();
+
+        notificacao.setAcao(AcaoNotificacao.CHAT);
+        notificacao.setDescricaoNotificacao("Sua demanda tem um novo chat");
+        notificacao.setTituloNotificacao("Chat Criado");
+        notificacao.setTipoNotificacao(TipoNotificacao.CHAT);
+        notificacao.setLinkNotificacao("http://localhost:8081/home/chat");
+        notificacao.setIdComponenteLink(chatSalvo.getIdChat());
+        notificacao.setUsuariosNotificacao(usuariosRelacionados);
+
+        notificacao = notificacaoService.save(notificacao);
+
+        simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + demandaChat.getIdDemanda(), notificacao);
+
         return ResponseEntity.status(HttpStatus.OK).body(chatSalvo);
     }
 

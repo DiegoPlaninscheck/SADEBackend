@@ -3,24 +3,21 @@ package br.weg.sod.controller;
 import br.weg.sod.dto.HistoricoWorkflowCriacaoDTO;
 import br.weg.sod.dto.HistoricoWorkflowEdicaoDTO;
 import br.weg.sod.model.entities.*;
-import br.weg.sod.model.entities.enuns.StatusDemanda;
-import br.weg.sod.model.entities.enuns.StatusHistorico;
-import br.weg.sod.model.entities.enuns.Tarefa;
-import br.weg.sod.model.service.DemandaService;
-import br.weg.sod.model.service.HistoricoWorkflowService;
-import br.weg.sod.model.service.PropostaService;
-import br.weg.sod.model.service.UsuarioService;
+import br.weg.sod.model.entities.enuns.*;
+import br.weg.sod.model.service.*;
 import br.weg.sod.util.HistoricoWorkflowUtil;
 import br.weg.sod.util.UtilFunctions;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin
@@ -33,6 +30,9 @@ public class HistoricoWorkflowController {
     private UsuarioService usuarioService;
     private DemandaService demandaService;
     private PropostaService propostaService;
+    private NotificacaoService notificacaoService;
+    private SimpMessagingTemplate simpMessagingTemplate;
+
 
     @GetMapping
     public ResponseEntity<List<HistoricoWorkflow>> findAll() {
@@ -83,13 +83,13 @@ public class HistoricoWorkflowController {
         Demanda demandaHistorico = demandaService.findById(idDemanda).get();
         List<HistoricoWorkflow> historicosDemanda = historicoWorkflowService.findHistoricoWorkflowByDemanda(demandaHistorico);
 
-        for(HistoricoWorkflow historicoWorkflow : historicosDemanda){
-            if(historicoWorkflow.getUsuario() == null){
+        for (HistoricoWorkflow historicoWorkflow : historicosDemanda) {
+            if (historicoWorkflow.getUsuario() == null) {
                 continue;
             }
             Usuario usuarioResponsavel = usuarioService.findById(historicoWorkflow.getUsuario().getIdUsuario()).get();
 
-            if(usuarioResponsavel instanceof GerenteNegocio && historicoWorkflow.getTarefa() == Tarefa.AVALIARDEMANDA && historicoWorkflow.getAcaoFeita() == Tarefa.APROVARDEMANDA){
+            if (usuarioResponsavel instanceof GerenteNegocio && historicoWorkflow.getTarefa() == Tarefa.AVALIARDEMANDA && historicoWorkflow.getAcaoFeita() == Tarefa.APROVARDEMANDA) {
                 return ResponseEntity.status(HttpStatus.OK).body(true);
             }
         }
@@ -120,7 +120,7 @@ public class HistoricoWorkflowController {
         HistoricoWorkflowCriacaoDTO historicoWorkflowDTO = util.convertJsontoDtoCriacao(historicoJSON);
         ResponseEntity<Object> historicoValido;
 
-        if(historicoWorkflowDTO.getUsuario() != null) {
+        if (historicoWorkflowDTO.getUsuario() != null) {
             Usuario usuarioProximoHistorico = usuarioService.findById(historicoWorkflowDTO.getUsuario().getIdUsuario()).get();
             System.out.println(usuarioProximoHistorico);
             System.out.println(usuarioProximoHistorico instanceof GerenteNegocio);
@@ -146,15 +146,37 @@ public class HistoricoWorkflowController {
                 historicoWorkflowDTO.getMotivoDevolucaoAnterior(),
                 null
         );
+
+        criarNotificacao(historicoWorkflowService.findLastHistoricoByDemanda(demandaRelacionada));
+
         HistoricoWorkflow historicoSalvo = historicoWorkflowService.save(historicoWorkflow);
 
-        if(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior() == Tarefa.REPROVARWORKFLOW){
+        if (historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior() == Tarefa.REPROVARWORKFLOW) {
             Proposta propostaAlterada = propostaService.findById(historicoSalvo.getDemanda().getIdDemanda()).get();
             propostaAlterada.setEmWorkflow(false);
             propostaService.save(propostaAlterada);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(historicoSalvo);
+    }
+
+    private void criarNotificacao(HistoricoWorkflow historico) {
+        Notificacao notificacao = new Notificacao();
+        switch (historico.getAcaoFeita()){
+            case DEVOLVERDEMANDA -> {
+                List<Usuario> usuarios = new ArrayList<>();
+                usuarios.add(historico.getDemanda().getUsuario());
+                notificacao.setAcao(AcaoNotificacao.STATUSDEMANDA);
+                notificacao.setDescricaoNotificacao("Demanda devolvida pelo analista de TI");
+                notificacao.setTituloNotificacao("Demanda Devolvida");
+                notificacao.setTipoNotificacao(TipoNotificacao.DEMANDA);
+                notificacao.setLinkNotificacao("http://localhost:8081/home/demand");
+                notificacao.setIdComponenteLink(historico.getDemanda().getIdDemanda());
+                notificacao.setUsuariosNotificacao(usuarios);
+                notificacao = notificacaoService.save(notificacao);
+                simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + historico.getDemanda().getIdDemanda(), notificacao);
+            }
+        }
     }
 
     @PutMapping("/{id}")
@@ -208,10 +230,28 @@ public class HistoricoWorkflowController {
             historicoWorkflow.setArquivoHistoricoWorkflow(new ArquivoHistoricoWorkflow(versaoPDF));
         }
 
-        if(historicoWorkflowDTO.getAcaoFeita() == Tarefa.REPROVARDEMANDA) {
+        if (historicoWorkflowDTO.getAcaoFeita() == Tarefa.REPROVARDEMANDA) {
             Demanda demandaAtualizar = demandaService.findById(historicoWorkflowDTO.getDemanda().getIdDemanda()).get();
             demandaAtualizar.setStatusDemanda(StatusDemanda.CANCELED);
             demandaService.save(demandaAtualizar);
+
+            Notificacao notificacao = new Notificacao();
+
+            List<Usuario> usuarios = new ArrayList<>();
+
+            usuarios.add(demandaAtualizar.getUsuario());
+
+            notificacao.setAcao(AcaoNotificacao.STATUSDEMANDA);
+            notificacao.setTituloNotificacao("Demanda Reprovada");
+            notificacao.setDescricaoNotificacao("Demanda reprovada pelo analista de TI");
+            notificacao.setTipoNotificacao(TipoNotificacao.DEMANDA);
+            notificacao.setLinkNotificacao("http://localhost:8081/home/demand");
+            notificacao.setIdComponenteLink(demandaAtualizar.getIdDemanda());
+            notificacao.setUsuariosNotificacao(usuarios);
+
+            notificacao = notificacaoService.save(notificacao);
+
+            simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacao);
         }
 
         HistoricoWorkflow historicoWorkflowSalvo = historicoWorkflowService.save(historicoWorkflow);
