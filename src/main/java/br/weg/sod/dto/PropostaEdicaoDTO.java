@@ -17,9 +17,15 @@ public class PropostaEdicaoDTO {
 
     private Date periodoExecucaoFim;
 
+    private Demanda demanda;
+
     private Boolean emWorkflow;
 
     private Boolean aprovadoWorkflow;
+
+    private Boolean estaEmPauta;
+
+    private Boolean avaliadoWorkflow;
 
     private Integer payback;
 

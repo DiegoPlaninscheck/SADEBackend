@@ -23,16 +23,22 @@ public class AutenticacaoFiltro extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
 
+        System.out.println(requestURI);
+
         if (requestURI.equals("/login") || requestURI.equals("/sod/login/auth") || requestURI.equals("/sod/login/auth/cookie") || requestURI.equals("/logout")
                 || requestURI.startsWith("/swagger-ui")  || requestURI.startsWith("/v3/api-docs") ||  requestURI.startsWith("/favicon.ico")) {
+            System.out.println("rota livre");
             filterChain.doFilter(request, response);
             return;
         }
+
+        System.out.println("rota autenticada");
 
         String token = tokenUtils.buscarCookie(request);
         Boolean valido = tokenUtils.validarToken(token);
 
         if (valido) {
+            System.out.println("validou");
             Integer idUsuario = tokenUtils.getIDUsuario(token);
             UserDetails usuario = jpaService.loadUserByID(idUsuario);
 
@@ -40,6 +46,8 @@ public class AutenticacaoFiltro extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
             Cookie jwtCookie = tokenUtils.renovarCookie(request, "jwt");
+
+            System.out.println(jwtCookie.getName() + " / " + jwtCookie.getMaxAge());
             response.addCookie(jwtCookie);
 
             filterChain.doFilter(request, response);

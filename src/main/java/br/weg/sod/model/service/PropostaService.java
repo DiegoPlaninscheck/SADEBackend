@@ -42,11 +42,11 @@ public class PropostaService {
         propostaRepository.deleteById(integer);
     }
 
-    public List<Proposta> getPropostasAprovadasWorkflow(){
+    public List<Proposta> getPropostasAprovadasWorkflow() {
         List<Proposta> propostas = findAll(), propostasParaAprovar = new ArrayList<>();
 
-        for(Proposta proposta : propostas){
-            if(proposta.getAprovadoWorkflow() && proposta.getAvaliadoWorkflow()){
+        for (Proposta proposta : propostas) {
+            if (proposta.getAprovadoWorkflow() && proposta.getAvaliadoWorkflow()) {
                 propostasParaAprovar.add(proposta);
 
                 proposta.setAprovadoWorkflow(true);
@@ -57,9 +57,11 @@ public class PropostaService {
         return propostasParaAprovar;
     }
 
-    public boolean propostasExistem(List<Proposta> propostasPauta){
-        for(Proposta proposta : propostasPauta){
-            if(!existsById(proposta.getIdProposta())){
+    public boolean propostasExistem(List<Proposta> propostasPauta) {
+        System.out.println("Proposta Pauta proposta service: " + propostasPauta);
+        for (Proposta proposta : propostasPauta) {
+            System.out.println("Proposta ID: " + proposta.getIdProposta());
+            if (!existsById(proposta.getIdProposta())) {
                 return false;
             }
         }
@@ -68,24 +70,28 @@ public class PropostaService {
     }
 
     public boolean tabelasvalidas(List<TabelaCusto> tabelasCustoProposta) {
-        for(TabelaCusto tabela : tabelasCustoProposta){
+        for (TabelaCusto tabela : tabelasCustoProposta) {
             Double valorTotal = 0.0, porcentagemTotal = 0.0;
             Integer quantidadeTotal = 0;
 
-            for(LinhaTabela linhaTabela : tabela.getLinhasTabela()){
+            for (LinhaTabela linhaTabela : tabela.getLinhasTabela()) {
                 valorTotal += linhaTabela.getValorQuantidade() * linhaTabela.getQuantidade();
                 quantidadeTotal += linhaTabela.getQuantidade();
             }
 
-            if(quantidadeTotal != tabela.getQuantidadeTotal() || !valorTotal.equals(tabela.getValorTotal())){
+            if (quantidadeTotal != tabela.getQuantidadeTotal() || !valorTotal.equals(tabela.getValorTotal())) {
                 return false;
+
             }
 
-            for(CentroCustoPagante centroCustoPagante : tabela.getCentrosCustoPagantes()){
+            for (CentroCustoPagante centroCustoPagante : tabela.getCentrosCustoPagantes()) {
+                System.out.println(centroCustoPagante.getPorcentagemDespesa());
                 porcentagemTotal += centroCustoPagante.getPorcentagemDespesa();
             }
 
-            if(porcentagemTotal != 1){
+            System.out.println(porcentagemTotal);
+
+            if (porcentagemTotal != 1) {
                 return false;
             }
 
