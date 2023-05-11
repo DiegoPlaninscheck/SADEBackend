@@ -83,7 +83,7 @@ public class AutenticacaoConfig {
 //                .loginPage("http://127.0.0.1:8081/").defaultSuccessUrl("http://127.0.0.1:8081/home")
 //                .permitAll();
 
-        httpSecurity.logout().deleteCookies("jwt").permitAll();
+        httpSecurity.logout().logoutUrl("/logout").deleteCookies("jwt").permitAll();
 
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
