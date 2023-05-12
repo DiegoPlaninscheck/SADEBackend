@@ -216,18 +216,63 @@ public class DemandaController {
         AnalistaTI analistaTI = (AnalistaTI) usuarioService.findById(idAnalista).get();
 
         if (demandaDTO.getClassificando()) {
-//            //concluindo histórico da classificacao do analista de TI
-//            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, versaoPDF);
-//
-//            //iniciando o histórico de avaliacao do gerente de negócio
-//            Usuario solicitante = usuarioService.findById(demanda.getUsuario().getIdUsuario()).get();
-//            GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
-//            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demandaSalva);
+            //concluindo histórico da classificacao do analista de TI
+            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, versaoPDF);
+
+            //iniciando o histórico de avaliacao do gerente de negócio
+            Usuario solicitante = usuarioService.findById(demanda.getUsuario().getIdUsuario()).get();
+            GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
+            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demandaSalva);
+
+            // Notificacao para o solicitante
+            Notificacao notificacaoSolicitante = new Notificacao();
+            notificacaoSolicitante.setAcao(AcaoNotificacao.DEMANDAAPROVADA);
+            notificacaoSolicitante.setDescricaoNotificacao("Demanda aprovado pelo analista de TI");
+            notificacaoSolicitante.setTituloNotificacao("Demanda Aprovada");
+            notificacaoSolicitante.setTipoNotificacao(TipoNotificacao.DEMANDA);
+            notificacaoSolicitante.setLinkNotificacao("http://localhost:8081/home/demand");
+            notificacaoSolicitante.setIdComponenteLink(demandaSalva.getIdDemanda());
+
+            List<Usuario> usuariosSolicitante = new ArrayList<>();
+
+            usuariosSolicitante.add(demandaSalva.getUsuario());
+
+            notificacaoSolicitante.setUsuariosNotificacao(usuariosSolicitante);
+
+            notificacaoSolicitante = notificacaoService.save(notificacaoSolicitante);
+
+            simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacaoSolicitante);
+
+            // Notificação para o Gerente de Negocio
+            Notificacao notificacaoGerenteNegocio = new Notificacao();
+            notificacaoGerenteNegocio.setAcao(AcaoNotificacao.AVALIARDEMANDA);
+            notificacaoGerenteNegocio.setDescricaoNotificacao("Há uma nova demanda para ser avaliada");
+            notificacaoGerenteNegocio.setTituloNotificacao("Avaliar Demanda");
+            notificacaoGerenteNegocio.setTipoNotificacao(TipoNotificacao.DEMANDA);
+            notificacaoGerenteNegocio.setLinkNotificacao("http://localhost:8081/home/demand");
+            notificacaoGerenteNegocio.setIdComponenteLink(demandaSalva.getIdDemanda());
+
+            List<Usuario> usuariosGerenteNegocio = new ArrayList<>();
+
+            usuariosGerenteNegocio.add(gerenteNegocio);
+
+            notificacaoGerenteNegocio.setUsuariosNotificacao(usuariosGerenteNegocio);
+
+            notificacaoGerenteNegocio = notificacaoService.save(notificacaoGerenteNegocio);
+
+            simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacaoGerenteNegocio);
+
+        } else if (demandaDTO.getAdicionandoInformacoes()) {
+            //conclui o histórico de adicionar informações
+            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOESDEMANDA, analistaTI, null, versaoPDF);
+
+            //inicia o histórico de criar proposta
+            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPROPOSTA, StatusHistorico.EMANDAMENTO, analistaTI, demandaSalva);
 
             Notificacao notificacao = new Notificacao();
-            notificacao.setAcao(AcaoNotificacao.DEMANDAAPROVADA);
-            notificacao.setDescricaoNotificacao("Demanda aprovado pelo analista de TI");
-            notificacao.setTituloNotificacao("Demanda Aprovada");
+            notificacao.setAcao(AcaoNotificacao.ADICAOINFORMACOESDEMANDA);
+            notificacao.setDescricaoNotificacao("Foram adicionadas informações a sua demanda");
+            notificacao.setTituloNotificacao("Adição de informações a demanda");
             notificacao.setTipoNotificacao(TipoNotificacao.DEMANDA);
             notificacao.setLinkNotificacao("http://localhost:8081/home/demand");
             notificacao.setIdComponenteLink(demandaSalva.getIdDemanda());
@@ -242,12 +287,6 @@ public class DemandaController {
 
             simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacao);
 
-        } else if (demandaDTO.getAdicionandoInformacoes()) {
-            //conclui o histórico de adicionar informações
-            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOESDEMANDA, analistaTI, null, versaoPDF);
-
-            //inicia o histórico de criar proposta
-            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPROPOSTA, StatusHistorico.EMANDAMENTO, analistaTI, demandaSalva);
         } else {
             HistoricoWorkflow ultimoHistoricoConcluido = historicoWorkflowService.findLastHistoricoCompletedByDemanda(demandaSalva);
             ultimoHistoricoConcluido.setArquivoHistoricoWorkflow(new ArquivoHistoricoWorkflow(versaoPDF));

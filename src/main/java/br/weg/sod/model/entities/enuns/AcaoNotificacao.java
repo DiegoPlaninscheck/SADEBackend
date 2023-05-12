@@ -7,6 +7,8 @@ import lombok.Getter;
 @Getter
 public enum AcaoNotificacao {
     DEMANDAAPROVADA("Demanda aprovada"),
+    ADICAOINFORMACOESDEMANDA("Adição de informações a demanda"),
+    AVALIARDEMANDA("Avaliar demanda"),
     REDEFINICAOREQUERIDA("Redefinição Requerida"),
     NOVOWORKFLOWAPROVACAO("Novo Workflow aprovação"),
     CHAT("Chat"),
