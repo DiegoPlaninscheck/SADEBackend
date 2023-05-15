@@ -60,13 +60,13 @@ public class PautaController {
     }
 
     @GetMapping("/arquivos/pautas")
-    public ResponseEntity<Object> findArquivosPautas(){
+    public ResponseEntity<Object> findArquivosPautas() {
         List<Pauta> pautas = pautaService.findAll();
 
         List<ArquivoPauta> arquivoPautas = new ArrayList();
 
-        for(Pauta pauta : pautas){
-            for(ArquivoPauta arquivoPauta : pauta.getArquivosPauta()){
+        for (Pauta pauta : pautas) {
+            for (ArquivoPauta arquivoPauta : pauta.getArquivosPauta()) {
                 arquivoPautas.add(arquivoPauta);
             }
         }
@@ -80,11 +80,11 @@ public class PautaController {
             @PathVariable(name = "idAnalista") Integer idAnalista)
             throws IOException {
 
-        if(!validacaoPropostasCriacao(pautaCriacaoDTO.getPropostasPauta())){
+        if (!validacaoPropostasCriacao(pautaCriacaoDTO.getPropostasPauta())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Uma das propostas informadas já está em uma pauta ou o id informado não existe");
         }
 
-        if(!forumService.existsById(pautaCriacaoDTO.getForum().getIdForum())){
+        if (!forumService.existsById(pautaCriacaoDTO.getForum().getIdForum())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("O id do fórum informado não existe");
         }
 
@@ -103,7 +103,7 @@ public class PautaController {
 
         Pauta pautaSalva = pautaService.save(pauta);
 
-        if(!pautaCriacaoDTO.isTeste()) {
+        if (!pautaCriacaoDTO.isTeste()) {
             for (DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()) {
 //            encerrar historico criar pauta
                 Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
@@ -134,7 +134,7 @@ public class PautaController {
         Pauta pauta = pautaService.findById(idPauta).get();
         PautaEdicaoDTO pautaDTO = util.convertJsontoDto(pautaJSON);
 
-        if (!dataFutura(pautaDTO.getDataReuniaoATA())){
+        if (!dataFutura(pautaDTO.getDataReuniaoATA())) {
             System.out.println("entrou if 1");
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Data de reunião informada inválida");
         }
@@ -144,32 +144,32 @@ public class PautaController {
         Usuario analistaTIresponsavel = usuarioService.findById(idAnalista).get();
 
         if (multipartFile != null) {
-            if(multipartFile.isEmpty()){
+            if (multipartFile.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF a ata da reunião não informado");
             }
             List<ArquivoPauta> arquivosPauta = new ArrayList<>();
 
-            arquivosPauta.add(new ArquivoPauta(multipartFile,analistaTIresponsavel));
+            arquivosPauta.add(new ArquivoPauta(multipartFile, analistaTIresponsavel));
 
             pauta.setArquivosPauta(arquivosPauta);
         }
 
         List<DecisaoPropostaPauta> decisoesPauta = new ArrayList<>();
 
-        for(DecisaoPropostaPautaEdicaoDTO decisaoDTO : pautaDTO.getPropostasPauta()){
+        for (DecisaoPropostaPautaEdicaoDTO decisaoDTO : pautaDTO.getPropostasPauta()) {
             DecisaoPropostaPauta decisaoPropostaPautaNova = decisaoPropostaPautaService.findById(decisaoDTO.getIdDecisaoPropostaPauta()).get();
             Proposta propostaDaDecisao = decisaoPropostaPautaNova.getProposta();
 
             BeanUtils.copyProperties(decisaoDTO, decisaoPropostaPautaNova);
 
-            if(decisaoPropostaPautaNova.getProposta() == null){
+            if (decisaoPropostaPautaNova.getProposta() == null) {
                 decisaoPropostaPautaNova.setProposta(propostaDaDecisao);
             }
 
             decisoesPauta.add(decisaoPropostaPautaNova);
         }
 
-        for(DecisaoPropostaPauta propostasAprovadasWorkflow : decisaoPropostaPautaService.createDecisaoPropostaWorkflow(propostaService.getPropostasAprovadasWorkflow())){
+        for (DecisaoPropostaPauta propostasAprovadasWorkflow : decisaoPropostaPautaService.createDecisaoPropostaWorkflow(propostaService.getPropostasAprovadasWorkflow())) {
             decisoesPauta.add(propostasAprovadasWorkflow);
         }
 
@@ -177,13 +177,18 @@ public class PautaController {
 
         Pauta pautaSalva = pautaService.save(pauta);
 
-        if(!pautaDTO.isTeste()){
-            for(DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()){
+        if (!pautaDTO.isTeste()) {
+            for (DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()) {
 //            encerrar historico de informar o parecer
                 Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
-                historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.INFORMARPARECERFORUM,analistaTIresponsavel, null, null );
+                historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.INFORMARPARECERFORUM, analistaTIresponsavel, null, null);
 
-                historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(pautaDTO.getDataReuniaoATA().getTime()), Tarefa.INFORMARPARECERDG, StatusHistorico.EMAGUARDO, analistaTIresponsavel, demandaDecisao);
+                //adicionar histórico de criar ata no lugar
+
+                if (pautaDTO.getDataReuniaoATA() != null) {
+                    historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(pautaDTO.getDataReuniaoATA().getTime()), Tarefa.INFORMARPARECERDG, StatusHistorico.EMAGUARDO, analistaTIresponsavel, demandaDecisao);
+                }
+
             }
         }
 
@@ -201,22 +206,22 @@ public class PautaController {
 
     private boolean validacaoPropostasCriacao(List<Proposta> propostasPauta) {
         //ver se as propostas estão em algum processo de aprovação em aberto
-        if(!propostaService.propostasExistem(propostasPauta)){
+        if (!propostaService.propostasExistem(propostasPauta)) {
             return false;
         }
 
         //ver se as propostas existem
-        if(!propostasLivres(propostasPauta)){
+        if (!propostasLivres(propostasPauta)) {
             return false;
         }
 
         return true;
     }
 
-    private boolean propostasLivres(List<Proposta> propostasPauta){
-        for(Proposta proposta : propostasPauta){
-            if(proposta.getEstaEmPauta()){
-               return false;
+    private boolean propostasLivres(List<Proposta> propostasPauta) {
+        for (Proposta proposta : propostasPauta) {
+            if (proposta.getEstaEmPauta()) {
+                return false;
             }
         }
 

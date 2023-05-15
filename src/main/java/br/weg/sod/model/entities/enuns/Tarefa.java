@@ -22,6 +22,7 @@ public enum Tarefa {
     APROVARWORKFLOW("Aprovar Workflow"),
     REPROVARWORKFLOW("Reprovar Workflow"),
     INFORMARPARECERFORUM("Informar Parecer Fórum"),
+    CRIARATA("Criar ata"),
     INFORMARPARECERDG("Informar Parecer DG"),
     FINALIZAR("Finalizar histórico da demanda");
 

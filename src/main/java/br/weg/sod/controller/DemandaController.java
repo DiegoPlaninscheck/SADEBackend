@@ -10,9 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.converter.SimpleMessageConverter;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -181,7 +179,9 @@ public class DemandaController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }
 
-        if (!(usuarioService.findById(idAnalista).get() instanceof AnalistaTI)) {
+        Usuario usuario = usuarioService.findById(idAnalista).get();
+
+        if (!(usuario instanceof AnalistaTI || usuario instanceof GerenteTI)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de usuário informado inválido para essa ação");
         }
 
@@ -213,7 +213,7 @@ public class DemandaController {
         }
 
         Demanda demandaSalva = demandaService.save(demanda);
-        AnalistaTI analistaTI = (AnalistaTI) usuarioService.findById(idAnalista).get();
+        Usuario analistaTI = usuarioService.findById(idAnalista).get();
 
         if (demandaDTO.getClassificando()) {
             //concluindo histórico da classificacao do analista de TI
