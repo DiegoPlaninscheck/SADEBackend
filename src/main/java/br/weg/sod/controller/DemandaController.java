@@ -224,13 +224,13 @@ public class DemandaController {
         AnalistaTI analistaTI = (AnalistaTI) usuarioService.findById(idAnalista).get();
 
         if (demandaDTO.getClassificando()) {
-//            //concluindo histórico da classificacao do analista de TI
-//            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, versaoPDF);
-//
-//            //iniciando o histórico de avaliacao do gerente de negócio
-//            Usuario solicitante = usuarioService.findById(demanda.getUsuario().getIdUsuario()).get();
-//            GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
-//            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demandaSalva);
+            //concluindo histórico da classificacao do analista de TI
+            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, versaoPDF);
+
+            //iniciando o histórico de avaliacao do gerente de negócio
+            Usuario solicitante = usuarioService.findById(demanda.getUsuario().getIdUsuario()).get();
+            GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
+            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, gerenteNegocio, demandaSalva);
 
             Notificacao notificacao = new Notificacao();
             notificacao.setAcao(AcaoNotificacao.DEMANDAAPROVADA);
