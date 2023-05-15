@@ -87,6 +87,7 @@ public class HistoricoWorkflowController {
             if (historicoWorkflow.getUsuario() == null) {
                 continue;
             }
+
             Usuario usuarioResponsavel = usuarioService.findById(historicoWorkflow.getUsuario().getIdUsuario()).get();
 
             if (usuarioResponsavel instanceof GerenteNegocio && historicoWorkflow.getTarefa() == Tarefa.AVALIARDEMANDA && historicoWorkflow.getAcaoFeita() == Tarefa.APROVARDEMANDA) {
@@ -209,7 +210,11 @@ public class HistoricoWorkflowController {
     }
 
     @PutMapping("/demanda/{idDemanda}")
-    public ResponseEntity<Object> editLastByDemanda(@RequestParam("historico") @Valid String historicoJSON, @RequestParam(value = "pdf", required = false) MultipartFile versaoPDF, @PathVariable(name = "idDemanda") Integer idDemanda) throws IOException {
+    public ResponseEntity<Object> editLastByDemanda(
+            @RequestParam("historico") @Valid String historicoJSON,
+            @RequestParam(value = "pdf", required = false) MultipartFile versaoPDF,
+            @PathVariable(name = "idDemanda") Integer idDemanda)
+            throws IOException {
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }
