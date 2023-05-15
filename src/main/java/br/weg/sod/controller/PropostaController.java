@@ -10,14 +10,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -99,13 +97,11 @@ public class PropostaController {
 
     @PutMapping("/{idProposta}/{idAnalista}")
     public ResponseEntity<Object> edit(
-            @RequestParam("proposta")
-            @Valid String propostaJSON,
-            @RequestParam(value = "files", required = false)
-            MultipartFile[] multipartFiles,
-            @RequestParam(value = "pdfVersaoHistorico", required = false)
-            MultipartFile versaoPDF, @PathVariable(name = "idProposta")
-            Integer idProposta, @PathVariable(name = "idAnalista") Integer idAnalista)
+            @RequestParam("proposta") @Valid String propostaJSON,
+            @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
+            @RequestParam(value = "pdfVersaoHistorico", required = false) MultipartFile versaoPDF,
+            @PathVariable(name = "idProposta") Integer idProposta,
+            @PathVariable(name = "idAnalista") Integer idAnalista)
             throws IOException {
         if (!propostaService.existsById(idProposta)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma proposta com o ID informado");
@@ -166,6 +162,14 @@ public class PropostaController {
         if (!propostaService.existsById(idProposta)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma proposta com o ID informado");
         }
+
+//        ATA ata = ataService.findById(idATA).get();
+//
+//        ata.setUsuariosReuniaoATA(null);
+//
+//        ataService.save(ata);
+
+
         propostaService.deleteById(idProposta);
         return ResponseEntity.status(HttpStatus.OK).body("Proposta deletada com sucesso!");
     }
@@ -220,15 +224,15 @@ public class PropostaController {
 
         if (propostaAtualizou(proposta)) {
             if (versaoPDF == null) {
-                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("PDF da versão não informado");
             } else if (versaoPDF.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("PDF da versão não informado");
             }
         }
 
         if(proposta.getAprovadoWorkflow() != null){
             if(! (usuarioService.findById(idAnalista).get() instanceof GerenteTI)){
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário responsável não pode ser encarregado dessa ação");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Usuário responsável não pode ser encarregado dessa ação");
             }
         }
 
