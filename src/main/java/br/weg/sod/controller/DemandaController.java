@@ -43,6 +43,11 @@ public class DemandaController {
         return ResponseEntity.status(HttpStatus.OK).body(demandaService.findAll());
     }
 
+    @GetMapping("/rascunho/{rascunho}")
+    public ResponseEntity<List<Demanda>> findAllByRascunho(@PathVariable("rascunho") Boolean rascunho) {
+        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandasByRascunho(rascunho));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Object> findById(@PathVariable(name = "id") Integer idDemanda) {
         if (!demandaService.existsById(idDemanda)) {
@@ -160,7 +165,7 @@ public class DemandaController {
     @Transactional
     @PostMapping("/rascunho")
     public ResponseEntity<Object> saveRascunho( @RequestParam("demanda") @Valid String demandaJSON) {
-        Demanda demanda = new DemandaUtil().convertJsonToModel(demandaJSON, 2);
+        Demanda demanda = new DemandaUtil().convertJsonToModel(demandaJSON, 1);
         Demanda demandaSalva = demandaService.save(demanda);
 
         return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
