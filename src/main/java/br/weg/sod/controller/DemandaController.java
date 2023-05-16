@@ -5,7 +5,9 @@ import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.*;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.DemandaUtil;
+import br.weg.sod.util.PDFUtil;
 import br.weg.sod.util.UtilFunctions;
+import com.itextpdf.text.Document;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -124,9 +126,13 @@ public class DemandaController {
             @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
             @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF)
             throws IOException {
+        System.out.println("sajdnsjadnhldshad");
         if (versaoPDF.isEmpty()) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
         }
+
+        System.out.println("PDF: " + versaoPDF.getBytes());
+
 
         Demanda demanda = new DemandaUtil().convertJsonToModel(demandaJSON, 1);
         ResponseEntity<Object> demandaValidada = validarDemanda(demanda);
@@ -143,6 +149,17 @@ public class DemandaController {
 
         Demanda demandaSalva = demandaService.save(demanda);
 
+        PDFUtil pdfUtil = new PDFUtil();
+
+        try {
+            Document document = pdfUtil.criarPDFDemanda(demandaSalva);
+
+            
+
+        }catch (Exception e){
+            System.out.println(e);
+        }
+
         Timestamp momento = new Timestamp(new Date().getTime());
 
         HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(
@@ -158,7 +175,7 @@ public class DemandaController {
         historicoWorkflowService.save(historicoWorkflowCriacao);
         historicoWorkflowService.save(historicoWorkflowAvaliacao);
 
-        return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
+        return ResponseEntity.status(HttpStatus.OK).body("demandaSalva");
     }
 
 
