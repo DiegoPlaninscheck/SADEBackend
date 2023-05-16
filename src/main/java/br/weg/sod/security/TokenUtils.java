@@ -2,7 +2,6 @@ package br.weg.sod.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.Cookie;
@@ -14,9 +13,7 @@ import java.util.Date;
 public class TokenUtils {
     private final String senhaForte = "f9fae8edc4c43f2bdf83b5f3c37a80d8f3c73f559785889e606387be23558867";
 
-    public String gerarToken(Authentication authentication) {
-        UserJPA userJPA = (UserJPA) authentication.getPrincipal();
-
+    public String gerarToken(UserJPA userJPA) {
         return Jwts.builder().setIssuer("Sod")
                 .setSubject(userJPA.getUsuario().getIdUsuario().toString())
                 .setIssuedAt(new Date()).setExpiration(new Date(new Date().getTime() + 1800000))
@@ -24,17 +21,19 @@ public class TokenUtils {
                 ;
     }
 
-    public Cookie gerarCookie(Authentication authentication) {
-        Cookie cookie = new Cookie("jwt", gerarToken(authentication));
+    public Cookie gerarCookie(UserJPA userJPA) {
+        Cookie cookie = new Cookie("jwt", gerarToken(userJPA));
         cookie.setPath("/");
-        cookie.setMaxAge(7200);
+        cookie.setMaxAge(1800);
         return cookie;
     }
 
     public Cookie renovarCookie(HttpServletRequest request, String nome){
         Cookie cookie = WebUtils.getCookie(request, nome);
+
         cookie.setPath("/");
         cookie.setMaxAge(1800);
+
         return cookie;
     }
 

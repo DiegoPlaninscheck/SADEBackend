@@ -42,6 +42,19 @@ public class PautaController {
         return ResponseEntity.status(HttpStatus.OK).body(pautaService.findAll());
     }
 
+    @GetMapping("/criarATA")
+    public ResponseEntity<List<Pauta>> findAllForATA(){
+        List<Pauta> listaPautas = pautaService.findPautasByPertenceUmaATA(false), listaPautasPossiveisCriar = new ArrayList<>();
+
+        for(Pauta pauta : listaPautas){
+            if(pauta.getPropostasPauta().get(0).getAtaPublicada() != null){
+                listaPautasPossiveisCriar.add(pauta);
+            }
+        }
+
+        return ResponseEntity.ok().body(listaPautasPossiveisCriar);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Object> findById(@PathVariable(name = "id") Integer idPauta) {
         if (!pautaService.existsById(idPauta)) {
@@ -125,7 +138,12 @@ public class PautaController {
     }
 
     @PutMapping("/{idPauta}/{idAnalista}")
-    public ResponseEntity<Object> edit(@RequestParam("pauta") @Valid String pautaJSON, @RequestParam(value = "ata", required = false) MultipartFile multipartFile, @PathVariable(name = "idPauta") Integer idPauta, @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
+    public ResponseEntity<Object> edit(
+            @RequestParam("pauta") @Valid String pautaJSON,
+            @RequestParam(value = "arquivos", required = false) MultipartFile multipartFile,
+            @PathVariable(name = "idPauta") Integer idPauta,
+            @PathVariable(name = "idAnalista") Integer idAnalista)
+            throws IOException {
         if (!pautaService.existsById(idPauta)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma pauta com o ID informado");
         }
@@ -183,12 +201,8 @@ public class PautaController {
                 Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
                 historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.INFORMARPARECERFORUM, analistaTIresponsavel, null, null);
 
-                //adicionar histórico de criar ata no lugar
-
-                if (pautaDTO.getDataReuniaoATA() != null) {
-                    historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(pautaDTO.getDataReuniaoATA().getTime()), Tarefa.INFORMARPARECERDG, StatusHistorico.EMAGUARDO, analistaTIresponsavel, demandaDecisao);
-                }
-
+//            iniciar histórico de criar uma ata
+                historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARATA, StatusHistorico.EMANDAMENTO,analistaTIresponsavel, demandaDecisao);
             }
         }
 

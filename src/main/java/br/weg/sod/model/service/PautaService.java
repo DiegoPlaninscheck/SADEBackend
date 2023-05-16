@@ -20,6 +20,10 @@ public class PautaService {
         return pautaRepository.findAll();
     }
 
+    public List<Pauta> findPautasByPertenceUmaATA(boolean pertenceUmaATA) {
+        return pautaRepository.findPautasByPertenceUmaATA(pertenceUmaATA);
+    }
+
     public <S extends Pauta> S save(S entity) {
         return pautaRepository.save(entity);
     }

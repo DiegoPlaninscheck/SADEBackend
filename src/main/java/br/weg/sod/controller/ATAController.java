@@ -52,12 +52,12 @@ public class ATAController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid ATACriacaoDTO ataDTO) {
-        if(!pautaService.existsById(ataDTO.getPauta().getIdPauta())){
+    public ResponseEntity<Object> save(@RequestBody @Valid ATACriacaoDTO ataDTO) throws IOException {
+        if (!pautaService.existsById(ataDTO.getPauta().getIdPauta())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id de pauta informado inválido");
         }
 
-        if(ataDTO.getFinalReuniao().getTime() < ataDTO.getInicioReuniao().getTime()){
+        if (ataDTO.getFinalReuniao().getTime() < ataDTO.getInicioReuniao().getTime()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Horários de reunião inválidos");
         }
 
@@ -65,20 +65,36 @@ public class ATAController {
         BeanUtils.copyProperties(ataDTO, ata);
         ata.setUsuariosReuniaoATA(usuarioService.findGerentesTI());
 
-        Pauta pautaDaAta = pautaService.findById(ata.getPauta().getIdPauta()).get();
-        List<DecisaoPropostaATA> decisoesPropostasATA = new ArrayList<>();
+        ata.setPropostasAta(atualizarPauta(ata, null));
 
-        for(DecisaoPropostaPauta decisaoPropostaPauta : pautaDaAta.getPropostasPauta()){
-            DecisaoPropostaATA decisaoPropostaATA = new DecisaoPropostaATA();
-            decisaoPropostaATA.setProposta(decisaoPropostaPauta.getProposta());
+        return ResponseEntity.status(HttpStatus.OK).body(ataService.save(ata));
+    }
 
-            decisoesPropostasATA.add(decisaoPropostaATA);
+    @PostMapping("/{idAnalista}")
+    public ResponseEntity<Object> save(
+            @RequestParam("ata") @Valid String ataJSON,
+            @RequestParam(value = "arquivos", required = false) MultipartFile[] multipartFiles,
+            @PathVariable(name = "idAnalista") Integer idAnalista) throws IOException {
+        ATACriacaoDTO ataDTO = new ATAUtil().convertJsontoDtoCriacao(ataJSON);
+
+        if (ataDTO.getFinalReuniao().getTime() < ataDTO.getInicioReuniao().getTime()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Horários de reunião inválidos");
         }
 
-        ata.setPropostasAta(decisoesPropostasATA);
+        if (!pautaService.existsById(ataDTO.getPauta().getIdPauta())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id de pauta informado inválido");
+        }
 
-//        pautaDaAta.setPertenceUmaATA(true);
-        pautaService.save(pautaDaAta);
+        ATA ata = new ATA();
+
+        BeanUtils.copyProperties(ataDTO, ata);
+        ata.setUsuariosReuniaoATA(usuarioService.findGerentesTI());
+
+        Usuario usuarioResponsavel = usuarioService.findById(idAnalista).get();
+
+        ata = processoArquivos(ata, multipartFiles, usuarioResponsavel);
+
+        ata.setPropostasAta(atualizarPauta(ata, usuarioResponsavel));
 
         return ResponseEntity.status(HttpStatus.OK).body(ataService.save(ata));
     }
@@ -106,17 +122,9 @@ public class ATAController {
 
         BeanUtils.copyProperties(ataDTO, ata, UtilFunctions.getPropriedadesNulas(ataDTO));
         ata.setIdATA(idATA);
-        Usuario analistaTIresponsavel =  usuarioService.findById(idAnalista).get();
+        Usuario analistaTIresponsavel = usuarioService.findById(idAnalista).get();
 
-        if(multipartFiles != null){
-            List<ArquivoPauta> arquivosAta = ata.getPauta().getArquivosPauta();
-
-            for(int i = 0; i < multipartFiles.length; i++){
-                arquivosAta.add(new ArquivoPauta(multipartFiles[i], analistaTIresponsavel));
-            }
-
-            ata.getPauta().setArquivosPauta(arquivosAta);
-        }
+        ata = processoArquivos(ata, multipartFiles, analistaTIresponsavel);
 
         for (DecisaoPropostaATADTO decisaoPropostaATADTO : ataDTO.getPropostasAta()) {
             DecisaoPropostaATA decisaoPropostaPauta = new DecisaoPropostaATA();
@@ -132,9 +140,9 @@ public class ATAController {
             StatusDemanda statusEscolhidoComissao = deicasaoProposta.getStatusDemandaComissao();
             boolean continuaProcesso = false;
 
-            if(statusEscolhidoComissao == StatusDemanda.TODO){
+            if (statusEscolhidoComissao == StatusDemanda.TODO) {
                 tarefaStatus = Tarefa.FINALIZAR;
-            } else if (statusEscolhidoComissao == StatusDemanda.CANCELED){
+            } else if (statusEscolhidoComissao == StatusDemanda.CANCELED) {
                 tarefaStatus = Tarefa.REPROVARDEMANDA;
             } else {
                 tarefaStatus = Tarefa.CRIARPAUTA;
@@ -147,7 +155,7 @@ public class ATAController {
             //finaliza histórico de informar parecer da DG
             historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, tarefaStatus, analistaTIresponsavel, null, null);
 
-            if(continuaProcesso) {
+            if (continuaProcesso) {
                 //inicia histórico de criar pauta
                 historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPAUTA, StatusHistorico.EMANDAMENTO, analistaTIresponsavel, demandaDecisao);
             }
@@ -172,17 +180,62 @@ public class ATAController {
     }
 
     private ResponseEntity<Object> validacoesEdicaoATA(ATAEdicaoDTO ataDTO, ATA ata, MultipartFile multipartFiles[]) {
-        if(ataDTO.getFinalReuniao() != null && ataDTO.getInicioReuniao() != null) {
+        if (ataDTO.getFinalReuniao() != null && ataDTO.getInicioReuniao() != null) {
             if (ataDTO.getFinalReuniao().getTime() < ataDTO.getInicioReuniao().getTime()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Horários de reunião inválidos");
             }
         }
 
-        if(!decisaoPropostaATAService.decisoesValidas(ata.getPauta().getPropostasPauta(), ataDTO.getPropostasAta())){
+        if (!decisaoPropostaATAService.decisoesValidas(ata.getPauta().getPropostasPauta(), ataDTO.getPropostasAta())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Decisões da ata contém número de id de proposta inválido ou número sequencial já registrado/repetido");
         }
 
         return null;
+    }
+
+    private ATA processoArquivos(ATA ata, MultipartFile[] multipartFiles, Usuario analistaTIresponsavel) throws IOException {
+        if (multipartFiles != null) {
+            List<ArquivoPauta> arquivosAta = ata.getPauta().getArquivosPauta();
+
+            for (int i = 0; i < multipartFiles.length; i++) {
+                arquivosAta.add(new ArquivoPauta(multipartFiles[i], analistaTIresponsavel));
+            }
+
+            ata.getPauta().setArquivosPauta(arquivosAta);
+        }
+
+        return ata;
+    }
+
+    private List<DecisaoPropostaATA> atualizarPauta(ATA ata, Usuario usuarioResponsavel) throws IOException {
+        Pauta pautaDaAta = pautaService.findById(ata.getPauta().getIdPauta()).get();
+        List<DecisaoPropostaATA> decisoesPropostasATA = new ArrayList<>();
+
+        for (DecisaoPropostaPauta decisaoPropostaPauta : pautaDaAta.getPropostasPauta()) {
+            DecisaoPropostaATA decisaoPropostaATA = new DecisaoPropostaATA();
+            decisaoPropostaATA.setProposta(decisaoPropostaPauta.getProposta());
+
+            decisoesPropostasATA.add(decisaoPropostaATA);
+
+            Demanda demandaDecisao = decisaoPropostaATA.getProposta().getDemanda();
+
+            historicoWorkflowService.finishHistoricoByDemanda(
+                    demandaDecisao,
+                    Tarefa.CRIARATA,
+                    usuarioResponsavel,
+                    null,
+                    null
+            );
+
+            Timestamp reuniao = new Timestamp(ata.getDataReuniao().getTime());
+
+            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), reuniao, Tarefa.INFORMARPARECERDG, StatusHistorico.EMAGUARDO, usuarioResponsavel, demandaDecisao);
+        }
+
+        pautaDaAta.setPertenceUmaATA(true);
+        pautaService.save(pautaDaAta);
+
+        return decisoesPropostasATA;
     }
 
 }

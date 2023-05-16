@@ -1,17 +1,11 @@
 package br.weg.sod.util;
 
+import br.weg.sod.dto.ATACriacaoDTO;
 import br.weg.sod.dto.ATAEdicaoDTO;
 import br.weg.sod.model.entities.ATA;
-import br.weg.sod.model.entities.enuns.TipoDocumento;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 
 import javax.validation.Valid;
-import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class ATAUtil {
 
@@ -25,6 +19,14 @@ public class ATAUtil {
     public ATAEdicaoDTO convertJsontoDto(String ataJSON) {
         try {
             return this.objectMapper.readValue(ataJSON, ATAEdicaoDTO.class);
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public ATACriacaoDTO convertJsontoDtoCriacao(String ataJSON) {
+        try {
+            return this.objectMapper.readValue(ataJSON, ATACriacaoDTO.class);
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
