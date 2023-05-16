@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -123,15 +124,9 @@ public class DemandaController {
     @PostMapping
     public ResponseEntity<Object> save(
             @RequestParam("demanda") @Valid String demandaJSON,
-            @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
-            @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF)
+            @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles
+    )
             throws IOException {
-        System.out.println("sajdnsjadnhldshad");
-        if (versaoPDF.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
-        }
-
-        System.out.println("PDF: " + versaoPDF.getBytes());
 
 
         Demanda demanda = new DemandaUtil().convertJsonToModel(demandaJSON, 1);
@@ -147,15 +142,18 @@ public class DemandaController {
             }
         }
 
+        System.out.println("demanda antes: " + demanda.getCentroCustoDemanda());
+
         Demanda demandaSalva = demandaService.save(demanda);
 
-        PDFUtil pdfUtil = new PDFUtil();
+        System.out.println("demanda salva: " + demandaSalva.getCentroCustoDemanda());
+
+        ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
 
         try {
-            Document document = pdfUtil.criarPDFDemanda(demandaSalva);
+            PDFUtil pdfUtil = new PDFUtil();
 
-            
-
+            arquivoHistoricoWorkflow = pdfUtil.criarPDF(demandaSalva, "criacao");
         }catch (Exception e){
             System.out.println(e);
         }
@@ -165,7 +163,7 @@ public class DemandaController {
         HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(
                 Tarefa.CRIARDEMANDA,
                 StatusHistorico.CONCLUIDO,
-                new ArquivoHistoricoWorkflow(versaoPDF),
+                arquivoHistoricoWorkflow,
                 momento,
                 Tarefa.CRIARDEMANDA,
                 demandaSalva
@@ -175,7 +173,7 @@ public class DemandaController {
         historicoWorkflowService.save(historicoWorkflowCriacao);
         historicoWorkflowService.save(historicoWorkflowAvaliacao);
 
-        return ResponseEntity.status(HttpStatus.OK).body("demandaSalva");
+        return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
     }
 
 
@@ -192,7 +190,7 @@ public class DemandaController {
     public ResponseEntity<Object> edit(
             @RequestParam("demanda") @Valid String demandaJSON,
             @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
-            @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF,
+//            @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF,
             @PathVariable(name = "idDemanda") Integer idDemanda,
             @PathVariable(name = "idAnalista") Integer idAnalista)
             throws IOException {
@@ -207,9 +205,9 @@ public class DemandaController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de usuário informado inválido para essa ação");
         }
 
-        if (versaoPDF.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Arquivo de versionamento da demanda não informado");
-        }
+//        if (versaoPDF.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Arquivo de versionamento da demanda não informado");
+//        }
 
         DemandaUtil util = new DemandaUtil();
         DemandaEdicaoDTO demandaDTO = util.convertJsontoDtoEdicao(demandaJSON);
@@ -237,9 +235,14 @@ public class DemandaController {
         Demanda demandaSalva = demandaService.save(demanda);
         Usuario analistaTI = usuarioService.findById(idAnalista).get();
 
+        PDFUtil pdfUtil = new PDFUtil();
+        ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
+
         if (demandaDTO.getClassificando()) {
+            arquivoHistoricoWorkflow = pdfUtil.criarPDF(demandaSalva, "classificacao");
+
             //concluindo histórico da classificacao do analista de TI
-            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, versaoPDF);
+            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, arquivoHistoricoWorkflow);
 
             //iniciando o histórico de avaliacao do gerente de negócio
             Usuario solicitante = usuarioService.findById(demanda.getUsuario().getIdUsuario()).get();
@@ -285,8 +288,10 @@ public class DemandaController {
             simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacaoGerenteNegocio);
 
         } else if (demandaDTO.getAdicionandoInformacoes()) {
+            arquivoHistoricoWorkflow = pdfUtil.criarPDF(demandaSalva, "adicionando");
+
             //conclui o histórico de adicionar informações
-            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOESDEMANDA, analistaTI, null, versaoPDF);
+            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOESDEMANDA, analistaTI, null, arquivoHistoricoWorkflow);
 
             //inicia o histórico de criar proposta
             historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPROPOSTA, StatusHistorico.EMANDAMENTO, analistaTI, demandaSalva);
@@ -311,7 +316,7 @@ public class DemandaController {
 
         } else {
             HistoricoWorkflow ultimoHistoricoConcluido = historicoWorkflowService.findLastHistoricoCompletedByDemanda(demandaSalva);
-            ultimoHistoricoConcluido.setArquivoHistoricoWorkflow(new ArquivoHistoricoWorkflow(versaoPDF));
+            ultimoHistoricoConcluido.setArquivoHistoricoWorkflow(null);
             historicoWorkflowService.save(ultimoHistoricoConcluido);
         }
 
