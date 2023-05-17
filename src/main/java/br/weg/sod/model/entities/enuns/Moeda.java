@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public enum Moeda {
 
-    BRL("Real"),
+    REAL("Real"),
     DOLAR("Dolar"),
     EURO("Euro");
 
