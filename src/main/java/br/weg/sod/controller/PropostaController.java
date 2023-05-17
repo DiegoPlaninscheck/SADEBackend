@@ -4,12 +4,14 @@ import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.*;
+import br.weg.sod.util.PDFUtil;
 import br.weg.sod.util.PropostaUtil;
 import br.weg.sod.util.UtilFunctions;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,10 +55,14 @@ public class PropostaController {
 
     @Transactional
     @PostMapping("/{idAnalista}")
-    public ResponseEntity<Object> save(@RequestParam("proposta") @Valid String propostaJSON, @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles, @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF, @PathVariable("idAnalista") Integer idAnalista) throws IOException {
-        if (versaoPDF.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
-        }
+    public ResponseEntity<Object> save(@RequestParam("proposta") @Valid String propostaJSON,
+                                       @RequestParam(value = "files", required = false)
+                                       MultipartFile[] multipartFiles,
+//                                       @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF,
+                                       @PathVariable("idAnalista") Integer idAnalista) throws IOException {
+//        if (versaoPDF.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
+//        }
 
         PropostaUtil util = new PropostaUtil();
         Proposta proposta = util.convertJsonToModel(propostaJSON, 1);
@@ -77,6 +83,16 @@ public class PropostaController {
         Proposta propostaSalva = propostaService.save(proposta);
         Demanda demandaProposta = demandaService.findById(propostaSalva.getIdProposta()).get();
 
+        PDFUtil pdfUtil = new PDFUtil();
+        ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
+
+        try {
+            System.out.println("POST de proposta");
+            arquivoHistoricoWorkflow = pdfUtil.criarPDFProposta(propostaSalva);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+
         if (multipartFiles != null) {
             for (MultipartFile multipartFile : multipartFiles) {
                 demandaProposta.getArquivosDemanda().add(new ArquivoDemanda(multipartFile, analistaResponsavel));
@@ -86,8 +102,10 @@ public class PropostaController {
         demandaProposta.setPertenceUmaProposta(true);
         demandaService.save(demandaProposta);
 
+        System.out.println("propostaController: " + arquivoHistoricoWorkflow);
+
         //encerra o histórico da criação de proposta
-        historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.CRIARPROPOSTA, analistaResponsavel, null, versaoPDF);
+        historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.CRIARPROPOSTA, analistaResponsavel, null, arquivoHistoricoWorkflow);
 
         //inicia o histórico de criar pauta
         historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPAUTA, StatusHistorico.EMANDAMENTO, analistaResponsavel, propostaSalva.getDemanda());
@@ -126,7 +144,7 @@ public class PropostaController {
 
         Proposta propostaSalva = propostaService.save(propostaDB);
 
-        if(proposta.getEmWorkflow() != null){
+        if (proposta.getEmWorkflow() != null) {
             if (proposta.getEmWorkflow()) {
                 //encerra historico de criar pauta
                 AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
@@ -230,8 +248,8 @@ public class PropostaController {
             }
         }
 
-        if(proposta.getAprovadoWorkflow() != null){
-            if(! (usuarioService.findById(idAnalista).get() instanceof GerenteTI)){
+        if (proposta.getAprovadoWorkflow() != null) {
+            if (!(usuarioService.findById(idAnalista).get() instanceof GerenteTI)) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Usuário responsável não pode ser encarregado dessa ação");
             }
         }

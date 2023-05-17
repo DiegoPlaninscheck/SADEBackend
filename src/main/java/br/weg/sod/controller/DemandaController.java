@@ -153,7 +153,7 @@ public class DemandaController {
         try {
             PDFUtil pdfUtil = new PDFUtil();
 
-            arquivoHistoricoWorkflow = pdfUtil.criarPDF(demandaSalva, "criacao");
+            arquivoHistoricoWorkflow = pdfUtil.criarPDFDemanda(demandaSalva, "criacao");
         }catch (Exception e){
             System.out.println(e);
         }
@@ -194,6 +194,8 @@ public class DemandaController {
             @PathVariable(name = "idDemanda") Integer idDemanda,
             @PathVariable(name = "idAnalista") Integer idAnalista)
             throws IOException {
+
+        System.out.println("Chamouu");
 
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
@@ -239,7 +241,8 @@ public class DemandaController {
         ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
 
         if (demandaDTO.getClassificando()) {
-            arquivoHistoricoWorkflow = pdfUtil.criarPDF(demandaSalva, "classificacao");
+            System.out.println("Classificandoooooo");
+            arquivoHistoricoWorkflow = pdfUtil.criarPDFDemanda(demandaSalva, "classificacao");
 
             //concluindo histórico da classificacao do analista de TI
             historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, arquivoHistoricoWorkflow);
@@ -288,7 +291,7 @@ public class DemandaController {
             simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacaoGerenteNegocio);
 
         } else if (demandaDTO.getAdicionandoInformacoes()) {
-            arquivoHistoricoWorkflow = pdfUtil.criarPDF(demandaSalva, "adicionando");
+            arquivoHistoricoWorkflow = pdfUtil.criarPDFDemanda(demandaSalva, "adicionando");
 
             //conclui o histórico de adicionar informações
             historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOESDEMANDA, analistaTI, null, arquivoHistoricoWorkflow);
