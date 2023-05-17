@@ -87,7 +87,6 @@ public class PropostaController {
         ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
 
         try {
-            System.out.println("POST de proposta");
             arquivoHistoricoWorkflow = pdfUtil.criarPDFProposta(propostaSalva);
         }catch (Exception e){
             System.out.println(e);
@@ -101,8 +100,6 @@ public class PropostaController {
 
         demandaProposta.setPertenceUmaProposta(true);
         demandaService.save(demandaProposta);
-
-        System.out.println("propostaController: " + arquivoHistoricoWorkflow);
 
         //encerra o histórico da criação de proposta
         historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.CRIARPROPOSTA, analistaResponsavel, null, arquivoHistoricoWorkflow);

@@ -7,6 +7,7 @@ import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.*;
+import br.weg.sod.util.PDFUtil;
 import br.weg.sod.util.PautaUtil;
 import br.weg.sod.util.UtilFunctions;
 import lombok.AllArgsConstructor;
@@ -97,18 +98,27 @@ public class PautaController {
             pauta.getPropostasPauta().add(decisaoPropostaPauta);
 
             Proposta propostaDaPauta = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get();
-//            propostaDaPauta.setEstaEmPauta(true);
+            propostaDaPauta.setEstaEmPauta(true);
             propostaService.save(propostaDaPauta);
         }
 
         Pauta pautaSalva = pautaService.save(pauta);
+
+        PDFUtil pdfUtil = new PDFUtil();
+        ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
+
+        try {
+            arquivoHistoricoWorkflow = pdfUtil.criarPDFPauta(pautaSalva);
+        }catch (Exception e){
+            System.out.println(e);
+        }
 
         if (!pautaCriacaoDTO.isTeste()) {
             for (DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()) {
 //            encerrar historico criar pauta
                 Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
                 Usuario analistaResponsavel = usuarioService.findById(idAnalista).get();
-                historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.CRIARPAUTA, analistaResponsavel, null, null);
+                historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.CRIARPAUTA, analistaResponsavel, null, arquivoHistoricoWorkflow);
 
 //            inicio informar parecer da comissao
                 historicoWorkflowService.initializeHistoricoByDemanda(

@@ -7,7 +7,8 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.*;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PDFUtil {
 
@@ -149,8 +150,6 @@ public class PDFUtil {
         try {
             ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
 
-            System.out.println("Entrou criar PDF proposta");
-
             arquivoHistoricoWorkflow = criacaoPDFProposta(proposta);
 
             return arquivoHistoricoWorkflow;
@@ -161,7 +160,6 @@ public class PDFUtil {
     }
 
     private ArquivoHistoricoWorkflow criacaoPDFProposta(Proposta proposta) throws DocumentException {
-        System.out.println("Entrou criacao PDF proposta");
         Document document = new Document();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -170,17 +168,16 @@ public class PDFUtil {
 
         ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = new ArquivoHistoricoWorkflow();
 
-        ConteudoPDFProposta(proposta, document, arquivoHistoricoWorkflow, outputStream);
+        ConteudoPDFProposta(proposta, document);
 
-        System.out.println(Arrays.toString(outputStream.toByteArray()));
-
-        System.out.println("criacaoPDFProposta: " + arquivoHistoricoWorkflow);
+        arquivoHistoricoWorkflow.setArquivo(outputStream.toByteArray());
+        arquivoHistoricoWorkflow.setNome("versaoHistoricoProposta");
+        arquivoHistoricoWorkflow.setTipo("application/pdf");
 
         return arquivoHistoricoWorkflow;
     }
 
-    private void ConteudoPDFProposta(Proposta proposta, Document document, ArquivoHistoricoWorkflow arquivoHistoricoWorkflow, ByteArrayOutputStream outputStream) throws DocumentException {
-        System.out.println("entrou conteudo PDF proposta");
+    private void ConteudoPDFProposta(Proposta proposta, Document document) throws DocumentException {
         document.open();
 
         document.add(new Paragraph(proposta.getDemanda().getTituloDemanda(), tipoFonte("titulo")));
@@ -211,39 +208,48 @@ public class PDFUtil {
 
         addNovaLinha(skipLine, 2);
 
-        for (Beneficio beneficio : proposta.getDemanda().getBeneficiosDemanda()) {
-            if (beneficio.getTipoBeneficio().getNome() == "Qualitativo") {
-                skipLine.add(new Paragraph("Resultados Esperados (Qualitativos): " + beneficio.getDescricao(), tipoFonte("texto")));
-            } else if (beneficio.getTipoBeneficio().getNome() == "Potencial") {
-                skipLine.add(new Paragraph("Resultados Esperados (Ganhos potenciais): " + beneficio.getDescricao(), tipoFonte("texto")));
-            } else if (beneficio.getTipoBeneficio().getNome() == "Real") {
-                skipLine.add(new Paragraph("Resultados Esperados (Ganhos reais): " + beneficio.getDescricao(), tipoFonte("texto")));
-            } else {
-                System.out.println("Beneficio invalido");
+        if (proposta.getDemanda().getBeneficiosDemanda() != null) {
+            for (Beneficio beneficio : proposta.getDemanda().getBeneficiosDemanda()) {
+                switch (beneficio.getTipoBeneficio().getNome()) {
+                    case "Qualitativo" ->
+                            skipLine.add(new Paragraph("Resultados Esperados (Qualitativos): " + beneficio.getDescricao(), tipoFonte("texto")));
+                    case "Potencial" ->
+                            skipLine.add(new Paragraph("Resultados Esperados (Ganhos potenciais): " + beneficio.getDescricao(), tipoFonte("texto")));
+                    case "Real" ->
+                            skipLine.add(new Paragraph("Resultados Esperados (Ganhos reais): " + beneficio.getDescricao(), tipoFonte("texto")));
+                    default -> System.out.println("Beneficio invalido");
+                }
             }
+            addNovaLinha(skipLine, 2);
         }
-
-        addNovaLinha(skipLine, 2);
 
         Double valorTotal = 0.0;
         for (Beneficio beneficio : proposta.getDemanda().getBeneficiosDemanda()) {
-            System.out.println(beneficio);
             if (beneficio.getValor() != null &&
-                    (beneficio.getTipoBeneficio().getNome() == "Real" ||
-                            beneficio.getTipoBeneficio().getNome() == "Potencial")) {
+                    (beneficio.getTipoBeneficio().getNome().equals("Real") ||
+                            beneficio.getTipoBeneficio().getNome().equals("Potencial"))) {
                 valorTotal += beneficio.getValor();
             }
         }
 
-        System.out.println(valorTotal);
+        if (valorTotal != 0.0) {
+            skipLine.add(new Paragraph("Custos Totais: " + valorTotal, tipoFonte("texto")));
 
-        skipLine.add(new Paragraph("Custos Totais: " + valorTotal, tipoFonte("texto")));
+            addNovaLinha(skipLine, 1);
+        }
 
-        addNovaLinha(skipLine, 2);
+        //FALA CO ROMARIO
+        List<Element> tabelas = tabelasDeCustoProposta(proposta);
 
-        tabelasDeCustoProposta(proposta, skipLine);
+        System.out.println(tabelas);
+        if (tabelas.size() > 0) {
+            for (Element tabela : tabelas) {
+                System.out.println(tabela);
+                skipLine.add(tabela);
 
-        addNovaLinha(skipLine, 2);
+                addNovaLinha(skipLine, 2);
+            }
+        }
 
         skipLine.add(new Paragraph("Período Execução: " +
                 proposta.getPeriodoExecucaoInicio() + " à " + proposta.getPeriodoExecucaoFim(), tipoFonte("texto")));
@@ -254,7 +260,7 @@ public class PDFUtil {
 
         addNovaLinha(skipLine, 2);
 
-        skipLine.add(new Paragraph("Responsaveis Negocio: ", tipoFonte("texto")));
+        skipLine.add(new Paragraph("Responsáveis Negocio: ", tipoFonte("texto")));
 
         addNovaLinha(skipLine, 1);
 
@@ -262,13 +268,142 @@ public class PDFUtil {
             skipLine.add(new Paragraph(usuario.getNomeUsuario(), tipoFonte("texto")));
         }
 
-        arquivoHistoricoWorkflow.setArquivo(outputStream.toByteArray());
-        arquivoHistoricoWorkflow.setNome("versaoHistoricoProposta");
-        arquivoHistoricoWorkflow.setTipo("application/pdf");
+
+        document.add(skipLine);
+
+        document.close();
     }
 
-    private void tabelasDeCustoProposta(Proposta proposta, Paragraph skipLine) {
-//        skipLine.add(new Paragraph("Custos Totais: " + valorTotal, tipoFonte("texto")));
+    // PDF Pauta
+    public ArquivoHistoricoWorkflow criarPDFPauta(Pauta pauta) {
+        try {
+            ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
+
+            arquivoHistoricoWorkflow = criacaoPDFPauta(pauta);
+
+            return arquivoHistoricoWorkflow;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    private ArquivoHistoricoWorkflow criacaoPDFPauta(Pauta pauta) throws DocumentException {
+        Document document = new Document();
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        PdfWriter.getInstance(document, outputStream);
+
+        ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = new ArquivoHistoricoWorkflow();
+
+        ConteudoPDFPauta(pauta, document);
+
+        arquivoHistoricoWorkflow.setArquivo(outputStream.toByteArray());
+        arquivoHistoricoWorkflow.setNome("versaoHistoricoPauta");
+        arquivoHistoricoWorkflow.setTipo("application/pdf");
+
+        return arquivoHistoricoWorkflow;
+    }
+
+    private void ConteudoPDFPauta(Pauta pauta, Document document) throws DocumentException {
+        document.open();
+
+        document.add(new Paragraph(pauta.getTituloReuniaoPauta(), tipoFonte("titulo")));
+
+        Paragraph skipLine = new Paragraph();
+
+        for (DecisaoPropostaPauta decisaoProposta : pauta.getPropostasPauta()) {
+            Proposta proposta = decisaoProposta.getProposta();
+
+            document.add(new Paragraph(proposta.getDemanda().getTituloDemanda(), tipoFonte("titulo")));
+
+            addNovaLinha(skipLine, 2);
+
+            skipLine.add(new Paragraph(proposta.getDemanda().getObjetivo(), tipoFonte("texto")));
+
+            addNovaLinha(skipLine, 2);
+
+            skipLine.add(new Paragraph(proposta.getEscopo(), tipoFonte("texto")));
+
+            addNovaLinha(skipLine, 2);
+
+            if (proposta.getDemanda().getBeneficiosDemanda() != null) {
+                for (Beneficio beneficio : proposta.getDemanda().getBeneficiosDemanda()) {
+                    switch (beneficio.getTipoBeneficio().getNome()) {
+                        case "Qualitativo" ->
+                                skipLine.add(new Paragraph("Resultados Esperados (Qualitativos): " + beneficio.getDescricao(), tipoFonte("texto")));
+                        case "Potencial" ->
+                                skipLine.add(new Paragraph("Resultados Esperados (Ganhos potenciais): " + beneficio.getDescricao(), tipoFonte("texto")));
+                        case "Real" ->
+                                skipLine.add(new Paragraph("Resultados Esperados (Ganhos reais): " + beneficio.getDescricao(), tipoFonte("texto")));
+                        default -> System.out.println("Beneficio invalido");
+                    }
+                }
+                addNovaLinha(skipLine, 2);
+            }
+
+            Double valorTotal = 0.0;
+            for (Beneficio beneficio : proposta.getDemanda().getBeneficiosDemanda()) {
+                if (beneficio.getValor() != null &&
+                        (beneficio.getTipoBeneficio().getNome().equals("Real") ||
+                                beneficio.getTipoBeneficio().getNome().equals("Potencial"))) {
+                    valorTotal += beneficio.getValor();
+                }
+            }
+
+            if (valorTotal != 0.0) {
+                skipLine.add(new Paragraph("Custos Totais: " + valorTotal, tipoFonte("texto")));
+
+                addNovaLinha(skipLine, 1);
+            }
+
+            //FALA CO ROMARIO
+            List<Element> tabelas = tabelasDeCustoProposta(proposta);
+
+            System.out.println(tabelas);
+            if (tabelas.size() > 0) {
+                for (Element tabela : tabelas) {
+                    System.out.println(tabela);
+                    skipLine.add(tabela);
+
+                    addNovaLinha(skipLine, 2);
+                }
+            }
+
+            skipLine.add(new Paragraph("Período Execução: " +
+                    proposta.getPeriodoExecucaoInicio() + " à " +
+                    proposta.getPeriodoExecucaoFim(), tipoFonte("texto")));
+
+            addNovaLinha(skipLine, 2);
+
+            skipLine.add(new Paragraph("Payback: " + proposta.getPayback(), tipoFonte("texto")));
+
+            addNovaLinha(skipLine, 2);
+
+            skipLine.add(new Paragraph("Responsável Negocio: " +
+                    proposta.getResponsaveisNegocio(), tipoFonte("texto")));
+
+            addNovaLinha(skipLine, 2);
+
+            skipLine.add(new Paragraph("Parecer Comissão: " +
+                    decisaoProposta.getStatusDemandaComissao(), tipoFonte("texto")));
+
+            addNovaLinha(skipLine, 2);
+
+            skipLine.add(new Paragraph("Comentário: " +
+                    decisaoProposta.getComentario(), tipoFonte("texto")));
+        }
+
+        document.add(skipLine);
+
+        document.close();
+    }
+
+
+    // Funções para construir os PDFs
+    private List<Element> tabelasDeCustoProposta(Proposta proposta) {
+        List<Element> tabelas = new ArrayList<>();
 
         for (TabelaCusto tabelaCusto : proposta.getTabelasCustoProposta()) {
             PdfPTable table = new PdfPTable(5);
@@ -295,15 +430,17 @@ public class PDFUtil {
             table.setHeaderRows(1);
 
             for (LinhaTabela linhaTabela : tabelaCusto.getLinhasTabela()) {
+                System.out.println(linhaTabela);
                 table.addCell(linhaTabela.getNomeRecurso());
                 table.addCell(linhaTabela.getQuantidade().toString());
                 table.addCell(linhaTabela.getValorQuantidade().toString());
             }
+
+            tabelas.add(table);
         }
+        return tabelas;
     }
 
-
-    // Funções para construir os PDFs
     private static Element tabelaCentroCusto(Demanda demanda) {
         PdfPTable table = new PdfPTable(1);
 
@@ -340,7 +477,7 @@ public class PDFUtil {
         table.setHeaderRows(1);
 
         for (Beneficio beneficio : demanda.getBeneficiosDemanda()) {
-            if (beneficio.getTipoBeneficio().getNome() == "Qualitativo") {
+            if (beneficio.getTipoBeneficio().getNome().equals("Qualitativo")) {
                 table.addCell(beneficio.getTipoBeneficio().getNome());
                 table.addCell(beneficio.getDescricao());
                 table.addCell("");
@@ -352,6 +489,7 @@ public class PDFUtil {
                 table.addCell(beneficio.getValor().toString());
             }
         }
+
         return table;
     }
 
