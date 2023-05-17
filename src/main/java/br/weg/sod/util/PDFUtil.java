@@ -275,35 +275,35 @@ public class PDFUtil {
     }
 
     // PDF Pauta
-    public ArquivoHistoricoWorkflow criarPDFPauta(Pauta pauta) {
+    public ArquivoPauta criarPDFPauta(Pauta pauta) {
         try {
-            ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
+            ArquivoPauta arquivoPauta = null;
 
-            arquivoHistoricoWorkflow = criacaoPDFPauta(pauta);
+            arquivoPauta = criacaoPDFPauta(pauta);
 
-            return arquivoHistoricoWorkflow;
+            return arquivoPauta;
         } catch (Exception e) {
             System.out.println(e);
         }
         return null;
     }
 
-    private ArquivoHistoricoWorkflow criacaoPDFPauta(Pauta pauta) throws DocumentException {
+    private ArquivoPauta criacaoPDFPauta(Pauta pauta) throws DocumentException {
         Document document = new Document();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         PdfWriter.getInstance(document, outputStream);
 
-        ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = new ArquivoHistoricoWorkflow();
+        ArquivoPauta arquivoPauta = new ArquivoPauta();
 
         ConteudoPDFPauta(pauta, document);
 
-        arquivoHistoricoWorkflow.setArquivo(outputStream.toByteArray());
-        arquivoHistoricoWorkflow.setNome("versaoHistoricoPauta");
-        arquivoHistoricoWorkflow.setTipo("application/pdf");
+        arquivoPauta.setArquivo(outputStream.toByteArray());
+        arquivoPauta.setNome("arquivoPauta");
+        arquivoPauta.setTipo("application/pdf");
 
-        return arquivoHistoricoWorkflow;
+        return arquivoPauta;
     }
 
     private void ConteudoPDFPauta(Pauta pauta, Document document) throws DocumentException {
@@ -313,30 +313,41 @@ public class PDFUtil {
 
         Paragraph skipLine = new Paragraph();
 
+        int indexTitulo = 1;
+
         for (DecisaoPropostaPauta decisaoProposta : pauta.getPropostasPauta()) {
             Proposta proposta = decisaoProposta.getProposta();
 
-            document.add(new Paragraph(proposta.getDemanda().getTituloDemanda(), tipoFonte("titulo")));
+            document.add(new Paragraph(indexTitulo + ". " + proposta.getDemanda().getTituloDemanda(), tipoFonte("titulo")));
 
             addNovaLinha(skipLine, 2);
 
-            skipLine.add(new Paragraph(proposta.getDemanda().getObjetivo(), tipoFonte("texto")));
+            skipLine.add(new Paragraph("Objetivo: " + proposta.getDemanda().getObjetivo(), tipoFonte("texto")));
 
             addNovaLinha(skipLine, 2);
 
-            skipLine.add(new Paragraph(proposta.getEscopo(), tipoFonte("texto")));
+            skipLine.add(new Paragraph("Escopo projeto: " + proposta.getEscopo(), tipoFonte("texto")));
 
             addNovaLinha(skipLine, 2);
 
             if (proposta.getDemanda().getBeneficiosDemanda() != null) {
                 for (Beneficio beneficio : proposta.getDemanda().getBeneficiosDemanda()) {
                     switch (beneficio.getTipoBeneficio().getNome()) {
-                        case "Qualitativo" ->
-                                skipLine.add(new Paragraph("Resultados Esperados (Qualitativos): " + beneficio.getDescricao(), tipoFonte("texto")));
-                        case "Potencial" ->
-                                skipLine.add(new Paragraph("Resultados Esperados (Ganhos potenciais): " + beneficio.getDescricao(), tipoFonte("texto")));
-                        case "Real" ->
-                                skipLine.add(new Paragraph("Resultados Esperados (Ganhos reais): " + beneficio.getDescricao(), tipoFonte("texto")));
+                        case "Qualitativo" -> {
+                            skipLine.add(new Paragraph("Resultados Esperados (Qualitativos): " + beneficio.getDescricao(), tipoFonte("texto")));
+
+                            addNovaLinha(skipLine, 1);
+                        }
+                        case "Potencial" -> {
+                            skipLine.add(new Paragraph("Resultados Esperados (Ganhos potenciais): " + beneficio.getDescricao(), tipoFonte("texto")));
+
+                            addNovaLinha(skipLine, 1);
+                        }
+                        case "Real" -> {
+                            skipLine.add(new Paragraph("Resultados Esperados (Ganhos reais): " + beneficio.getDescricao(), tipoFonte("texto")));
+
+                            addNovaLinha(skipLine, 1);
+                        }
                         default -> System.out.println("Beneficio invalido");
                     }
                 }
@@ -381,8 +392,13 @@ public class PDFUtil {
 
             addNovaLinha(skipLine, 2);
 
-            skipLine.add(new Paragraph("Responsável Negocio: " +
-                    proposta.getResponsaveisNegocio(), tipoFonte("texto")));
+            skipLine.add(new Paragraph("Responsáveis Negocio: ", tipoFonte("texto")));
+
+            addNovaLinha(skipLine, 1);
+
+            for (Usuario usuario : proposta.getResponsaveisNegocio()) {
+                skipLine.add(new Paragraph(usuario.getNomeUsuario(), tipoFonte("texto")));
+            }
 
             addNovaLinha(skipLine, 2);
 
@@ -393,6 +409,8 @@ public class PDFUtil {
 
             skipLine.add(new Paragraph("Comentário: " +
                     decisaoProposta.getComentario(), tipoFonte("texto")));
+
+            indexTitulo++;
         }
 
         document.add(skipLine);

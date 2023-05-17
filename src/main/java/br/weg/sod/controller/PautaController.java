@@ -104,21 +104,12 @@ public class PautaController {
 
         Pauta pautaSalva = pautaService.save(pauta);
 
-        PDFUtil pdfUtil = new PDFUtil();
-        ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
-
-        try {
-            arquivoHistoricoWorkflow = pdfUtil.criarPDFPauta(pautaSalva);
-        }catch (Exception e){
-            System.out.println(e);
-        }
-
         if (!pautaCriacaoDTO.isTeste()) {
             for (DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()) {
 //            encerrar historico criar pauta
                 Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
                 Usuario analistaResponsavel = usuarioService.findById(idAnalista).get();
-                historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.CRIARPAUTA, analistaResponsavel, null, arquivoHistoricoWorkflow);
+                historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.CRIARPAUTA, analistaResponsavel, null, null);
 
 //            inicio informar parecer da comissao
                 historicoWorkflowService.initializeHistoricoByDemanda(
@@ -184,6 +175,17 @@ public class PautaController {
         }
 
         pauta.setPropostasPauta(decisoesPauta);
+
+        PDFUtil pdfUtil = new PDFUtil();
+        ArquivoPauta arquivoPauta = null;
+
+        try {
+            arquivoPauta = pdfUtil.criarPDFPauta(pauta);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+
+        pauta.getArquivosPauta().add(arquivoPauta);
 
         Pauta pautaSalva = pautaService.save(pauta);
 
