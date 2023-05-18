@@ -178,6 +178,7 @@ public class PDFUtil {
     }
 
     private void ConteudoPDFProposta(Proposta proposta, Document document) throws DocumentException {
+        System.out.println(proposta.getTabelasCustoProposta());
         document.open();
 
         document.add(new Paragraph(proposta.getDemanda().getTituloDemanda(), tipoFonte("titulo")));
@@ -279,6 +280,8 @@ public class PDFUtil {
         try {
             ArquivoPauta arquivoPauta = null;
 
+            System.out.println(pauta.getPropostasPauta());
+
             arquivoPauta = criacaoPDFPauta(pauta);
 
             return arquivoPauta;
@@ -289,6 +292,7 @@ public class PDFUtil {
     }
 
     private ArquivoPauta criacaoPDFPauta(Pauta pauta) throws DocumentException {
+        System.out.println(pauta.getPropostasPauta());
         Document document = new Document();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -307,6 +311,7 @@ public class PDFUtil {
     }
 
     private void ConteudoPDFPauta(Pauta pauta, Document document) throws DocumentException {
+        System.out.println(pauta.getPropostasPauta());
         document.open();
 
         document.add(new Paragraph(pauta.getTituloReuniaoPauta(), tipoFonte("titulo")));
@@ -317,6 +322,8 @@ public class PDFUtil {
 
         for (DecisaoPropostaPauta decisaoProposta : pauta.getPropostasPauta()) {
             Proposta proposta = decisaoProposta.getProposta();
+
+            System.out.println(proposta.getTabelasCustoProposta());
 
             document.add(new Paragraph(indexTitulo + ". " + proposta.getDemanda().getTituloDemanda(), tipoFonte("titulo")));
 
@@ -536,13 +543,7 @@ public class PDFUtil {
 
             addNovaLinha(skipLine, 2);
 
-            skipLine.add(new Paragraph("Responsáveis Negocio: ", tipoFonte("texto")));
-
-            addNovaLinha(skipLine, 1);
-
-            for (Usuario usuario : proposta.getResponsaveisNegocio()) {
-                skipLine.add(new Paragraph(usuario.getNomeUsuario(), tipoFonte("texto")));
-            }
+            skipLine.add(new Paragraph("Número Sequencial: " + decisaoPropostaATA.getNumeroSequencial(), tipoFonte("texto")));
 
             addNovaLinha(skipLine, 2);
 
@@ -555,6 +556,16 @@ public class PDFUtil {
                     decisaoPropostaATA.getComentario(), tipoFonte("texto")));
 
             indexTitulo++;
+
+        }
+        addNovaLinha(skipLine, 2);
+
+        skipLine.add(new Paragraph("Responsáveis Negocio: ", tipoFonte("texto")));
+
+        addNovaLinha(skipLine, 1);
+
+        for (Usuario usuario : ata.getUsuariosReuniaoATA()) {
+            skipLine.add(new Paragraph(usuario.getNomeUsuario(), tipoFonte("texto")));
         }
 
         document.add(skipLine);
