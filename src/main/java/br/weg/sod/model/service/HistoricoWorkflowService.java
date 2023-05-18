@@ -187,7 +187,7 @@ public class HistoricoWorkflowService {
 
 
     //processos
-    public void finishHistoricoByDemanda(Demanda demanda, Tarefa acaoFeita, Usuario usuarioResponsavel, String motivoDevolucao, MultipartFile versaoPDF) throws IOException {
+    public void finishHistoricoByDemanda(Demanda demanda, Tarefa acaoFeita, Usuario usuarioResponsavel, String motivoDevolucao, ArquivoHistoricoWorkflow versaoPDF) throws IOException {
         HistoricoWorkflow historicoWorkflowVelho = findLastHistoricoByDemanda(demanda);
 
         historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(new Date().getTime()));
@@ -198,7 +198,7 @@ public class HistoricoWorkflowService {
         }
         historicoWorkflowVelho.setMotivoDevolucao(motivoDevolucao);
         if (versaoPDF != null) {
-            historicoWorkflowVelho.setArquivoHistoricoWorkflow(new ArquivoHistoricoWorkflow(versaoPDF));
+            historicoWorkflowVelho.setArquivoHistoricoWorkflow(versaoPDF);
         }
 
         save(historicoWorkflowVelho);
