@@ -193,7 +193,9 @@ public class HistoricoWorkflowService {
         historicoWorkflowVelho.setConclusaoTarefa(new Timestamp(new Date().getTime()));
         historicoWorkflowVelho.setStatus(StatusHistorico.CONCLUIDO);
         historicoWorkflowVelho.setAcaoFeita(acaoFeita);
-        historicoWorkflowVelho.setUsuario(usuarioResponsavel);
+        if(usuarioResponsavel != null) {
+            historicoWorkflowVelho.setUsuario(usuarioResponsavel);
+        }
         historicoWorkflowVelho.setMotivoDevolucao(motivoDevolucao);
         if (versaoPDF != null) {
             historicoWorkflowVelho.setArquivoHistoricoWorkflow(new ArquivoHistoricoWorkflow(versaoPDF));
@@ -205,6 +207,9 @@ public class HistoricoWorkflowService {
     public void initializeHistoricoByDemanda(Timestamp recebimento, Tarefa tarefa, StatusHistorico statusHistorico, Usuario usuario, Demanda demanda) {
         Timestamp prazo = new Timestamp(recebimento.getTime() + 86400000 * 5);
 
+        save(new HistoricoWorkflow(recebimento, prazo, tarefa, statusHistorico, usuario, demanda));
+    }
+    public void initializeHistoricoByDemanda(Timestamp recebimento, Timestamp prazo, Tarefa tarefa, StatusHistorico statusHistorico, Usuario usuario, Demanda demanda) {
         save(new HistoricoWorkflow(recebimento, prazo, tarefa, statusHistorico, usuario, demanda));
     }
 }

@@ -220,6 +220,7 @@ public class DemandaController {
         Demanda demandaSalva = demandaService.save(demanda);
         Usuario analistaTI = usuarioService.findById(idAnalista).get();
 
+        System.out.println(demandaDTO.getCriandoDemandaPorRascunho());
         if (demandaDTO.getClassificando()) {
             //concluindo histórico da classificacao do analista de TI
             historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, versaoPDF);
@@ -292,6 +293,19 @@ public class DemandaController {
 
             simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacao);
 
+        } else if(demandaDTO.getCriandoDemandaPorRascunho()){
+            HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(
+                    Tarefa.CRIARDEMANDA,
+                    StatusHistorico.CONCLUIDO,
+                    new ArquivoHistoricoWorkflow(versaoPDF),
+                    new Timestamp(new Date().getTime()),
+                    Tarefa.CRIARDEMANDA,
+                    demandaSalva
+            );
+
+            HistoricoWorkflow historicoWorkflowAvaliacao = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
+            historicoWorkflowService.save(historicoWorkflowCriacao);
+            historicoWorkflowService.save(historicoWorkflowAvaliacao);
         } else {
             HistoricoWorkflow ultimoHistoricoConcluido = historicoWorkflowService.findLastHistoricoCompletedByDemanda(demandaSalva);
             ultimoHistoricoConcluido.setArquivoHistoricoWorkflow(new ArquivoHistoricoWorkflow(versaoPDF));
