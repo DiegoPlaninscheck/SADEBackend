@@ -7,6 +7,7 @@ import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.*;
+import br.weg.sod.util.PDFUtil;
 import br.weg.sod.util.PautaUtil;
 import br.weg.sod.util.UtilFunctions;
 import lombok.AllArgsConstructor;
@@ -110,7 +111,7 @@ public class PautaController {
             pauta.getPropostasPauta().add(decisaoPropostaPauta);
 
             Proposta propostaDaPauta = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get();
-//            propostaDaPauta.setEstaEmPauta(true);
+            propostaDaPauta.setEstaEmPauta(true);
             propostaService.save(propostaDaPauta);
         }
 
@@ -192,6 +193,17 @@ public class PautaController {
         }
 
         pauta.setPropostasPauta(decisoesPauta);
+
+        PDFUtil pdfUtil = new PDFUtil();
+        ArquivoPauta arquivoPauta = null;
+
+        try {
+            arquivoPauta = pdfUtil.criarPDFPauta(pauta);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+
+        pauta.getArquivosPauta().add(arquivoPauta);
 
         Pauta pautaSalva = pautaService.save(pauta);
 

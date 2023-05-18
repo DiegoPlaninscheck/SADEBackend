@@ -5,7 +5,9 @@ import br.weg.sod.model.entities.*;
 import br.weg.sod.model.entities.enuns.*;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.DemandaUtil;
+import br.weg.sod.util.PDFUtil;
 import br.weg.sod.util.UtilFunctions;
+import com.itextpdf.text.Document;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -121,12 +124,10 @@ public class DemandaController {
     @PostMapping
     public ResponseEntity<Object> save(
             @RequestParam("demanda") @Valid String demandaJSON,
-            @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
-            @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF)
+            @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles
+    )
             throws IOException {
-        if (versaoPDF.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
-        }
+
 
         Demanda demanda = new DemandaUtil().convertJsonToModel(demandaJSON, 1);
         ResponseEntity<Object> demandaValidada = validarDemanda(demanda);
@@ -141,14 +142,28 @@ public class DemandaController {
             }
         }
 
+        System.out.println("demanda antes: " + demanda.getCentroCustoDemanda());
+
         Demanda demandaSalva = demandaService.save(demanda);
+
+        System.out.println("demanda salva: " + demandaSalva.getCentroCustoDemanda());
+
+        ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
+
+        try {
+            PDFUtil pdfUtil = new PDFUtil();
+
+            arquivoHistoricoWorkflow = pdfUtil.criarPDFDemanda(demandaSalva, "criacao");
+        }catch (Exception e){
+            System.out.println(e);
+        }
 
         Timestamp momento = new Timestamp(new Date().getTime());
 
         HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(
                 Tarefa.CRIARDEMANDA,
                 StatusHistorico.CONCLUIDO,
-                new ArquivoHistoricoWorkflow(versaoPDF),
+                arquivoHistoricoWorkflow,
                 momento,
                 Tarefa.CRIARDEMANDA,
                 demandaSalva
@@ -175,10 +190,12 @@ public class DemandaController {
     public ResponseEntity<Object> edit(
             @RequestParam("demanda") @Valid String demandaJSON,
             @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
-            @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF,
+//            @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF,
             @PathVariable(name = "idDemanda") Integer idDemanda,
             @PathVariable(name = "idAnalista") Integer idAnalista)
             throws IOException {
+
+        System.out.println("Chamouu");
 
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
@@ -190,9 +207,9 @@ public class DemandaController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("ID de usuário informado inválido para essa ação");
         }
 
-        if (versaoPDF.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Arquivo de versionamento da demanda não informado");
-        }
+//        if (versaoPDF.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Arquivo de versionamento da demanda não informado");
+//        }
 
         DemandaUtil util = new DemandaUtil();
         DemandaEdicaoDTO demandaDTO = util.convertJsontoDtoEdicao(demandaJSON);
@@ -221,9 +238,16 @@ public class DemandaController {
         Usuario analistaTI = usuarioService.findById(idAnalista).get();
 
         System.out.println(demandaDTO.getCriandoDemandaPorRascunho());
+
+        PDFUtil pdfUtil = new PDFUtil();
+        ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
+
         if (demandaDTO.getClassificando()) {
+            System.out.println("Classificandoooooo");
+            arquivoHistoricoWorkflow = pdfUtil.criarPDFDemanda(demandaSalva, "classificacao");
+
             //concluindo histórico da classificacao do analista de TI
-            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, versaoPDF);
+            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.CLASSIFICARDEMANDA, analistaTI, null, arquivoHistoricoWorkflow);
 
             //iniciando o histórico de avaliacao do gerente de negócio
             Usuario solicitante = usuarioService.findById(demanda.getUsuario().getIdUsuario()).get();
@@ -269,8 +293,10 @@ public class DemandaController {
             simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacaoGerenteNegocio);
 
         } else if (demandaDTO.getAdicionandoInformacoes()) {
+            arquivoHistoricoWorkflow = pdfUtil.criarPDFDemanda(demandaSalva, "adicionando");
+
             //conclui o histórico de adicionar informações
-            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOESDEMANDA, analistaTI, null, versaoPDF);
+            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOESDEMANDA, analistaTI, null, arquivoHistoricoWorkflow);
 
             //inicia o histórico de criar proposta
             historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPROPOSTA, StatusHistorico.EMANDAMENTO, analistaTI, demandaSalva);
@@ -308,7 +334,7 @@ public class DemandaController {
             historicoWorkflowService.save(historicoWorkflowAvaliacao);
         } else {
             HistoricoWorkflow ultimoHistoricoConcluido = historicoWorkflowService.findLastHistoricoCompletedByDemanda(demandaSalva);
-            ultimoHistoricoConcluido.setArquivoHistoricoWorkflow(new ArquivoHistoricoWorkflow(versaoPDF));
+            ultimoHistoricoConcluido.setArquivoHistoricoWorkflow(null);
             historicoWorkflowService.save(ultimoHistoricoConcluido);
         }
 
