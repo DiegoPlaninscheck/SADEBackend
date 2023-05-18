@@ -7,9 +7,9 @@ import lombok.Getter;
 @Getter
 public enum Moeda {
 
-    REAL("Real"),
     DOLAR("Dolar"),
-    EURO("Euro");
+    EURO("Euro"),
+    REAL("Real");
 
     private String nome;
 
