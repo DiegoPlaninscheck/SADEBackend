@@ -22,7 +22,5 @@ public class PautaEdicaoDTO {
 
     private List<DecisaoPropostaPautaEdicaoDTO> propostasPauta;
 
-    private Date dataReuniaoATA;
-
     private boolean teste = false;
 }

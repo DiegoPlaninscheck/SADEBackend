@@ -153,11 +153,6 @@ public class PautaController {
         Pauta pauta = pautaService.findById(idPauta).get();
         PautaEdicaoDTO pautaDTO = util.convertJsontoDto(pautaJSON);
 
-        if (!dataFutura(pautaDTO.getDataReuniaoATA())) {
-            System.out.println("entrou if 1");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Data de reunião informada inválida");
-        }
-
         BeanUtils.copyProperties(pautaDTO, pauta, UtilFunctions.getPropriedadesNulas(pautaDTO));
         pauta.setIdPauta(idPauta);
         Usuario analistaTIresponsavel = usuarioService.findById(idAnalista).get();
@@ -204,6 +199,9 @@ public class PautaController {
         }
 
         pauta.getArquivosPauta().add(arquivoPauta);
+
+        System.out.println(pauta.getPropostasPauta());
+        System.out.println(pauta.getForum());
 
         Pauta pautaSalva = pautaService.save(pauta);
 

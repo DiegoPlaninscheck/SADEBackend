@@ -9,6 +9,7 @@ import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.ATAUtil;
+import br.weg.sod.util.PDFUtil;
 import br.weg.sod.util.UtilFunctions;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -131,6 +132,17 @@ public class ATAController {
             BeanUtils.copyProperties(decisaoPropostaATADTO, decisaoPropostaPauta);
             ata.getPropostasAta().add(decisaoPropostaPauta);
         }
+
+        PDFUtil pdfUtil = new PDFUtil();
+        ArquivoPauta arquivoPauta = null;
+
+        try {
+            arquivoPauta = pdfUtil.criarPDFATA(ata);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+
+        ata.getPauta().getArquivosPauta().add(arquivoPauta);
 
         ATA ataSalva = ataService.save(ata);
 
