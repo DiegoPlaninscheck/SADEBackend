@@ -195,8 +195,6 @@ public class DemandaController {
             @PathVariable(name = "idAnalista") Integer idAnalista)
             throws IOException {
 
-        System.out.println("Chamouu");
-
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }
@@ -243,7 +241,6 @@ public class DemandaController {
         ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
 
         if (demandaDTO.getClassificando()) {
-            System.out.println("Classificandoooooo");
             arquivoHistoricoWorkflow = pdfUtil.criarPDFDemanda(demandaSalva, "classificacao");
 
             //concluindo histórico da classificacao do analista de TI
@@ -320,10 +317,16 @@ public class DemandaController {
             simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacao);
 
         } else if(demandaDTO.getCriandoDemandaPorRascunho()){
+            try {
+                arquivoHistoricoWorkflow = pdfUtil.criarPDFDemanda(demandaSalva, "criacao");
+            }catch (Exception e){
+                System.out.println(e);
+            }
+
             HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(
                     Tarefa.CRIARDEMANDA,
                     StatusHistorico.CONCLUIDO,
-                    new ArquivoHistoricoWorkflow(versaoPDF),
+                    arquivoHistoricoWorkflow,
                     new Timestamp(new Date().getTime()),
                     Tarefa.CRIARDEMANDA,
                     demandaSalva
