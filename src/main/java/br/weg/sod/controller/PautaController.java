@@ -4,8 +4,10 @@ import br.weg.sod.dto.DecisaoPropostaPautaEdicaoDTO;
 import br.weg.sod.dto.PautaCriacaoDTO;
 import br.weg.sod.dto.PautaEdicaoDTO;
 import br.weg.sod.model.entities.*;
+import br.weg.sod.model.entities.enuns.AcaoNotificacao;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
+import br.weg.sod.model.entities.enuns.TipoNotificacao;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.PDFUtil;
 import br.weg.sod.util.PautaUtil;
@@ -14,6 +16,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,6 +40,8 @@ public class PautaController {
     private DecisaoPropostaPautaService decisaoPropostaPautaService;
     private PropostaService propostaService;
     private ForumService forumService;
+    private NotificacaoService notificacaoService;
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @GetMapping
     public ResponseEntity<List<Pauta>> findAll() {
@@ -44,11 +49,11 @@ public class PautaController {
     }
 
     @GetMapping("/criarATA")
-    public ResponseEntity<List<Pauta>> findAllForATA(){
+    public ResponseEntity<List<Pauta>> findAllForATA() {
         List<Pauta> listaPautas = pautaService.findPautasByPertenceUmaATA(false), listaPautasPossiveisCriar = new ArrayList<>();
 
-        for(Pauta pauta : listaPautas){
-            if(pauta.getPropostasPauta().get(0).getAtaPublicada() != null){
+        for (Pauta pauta : listaPautas) {
+            if (pauta.getPropostasPauta().get(0).getAtaPublicada() != null) {
                 listaPautasPossiveisCriar.add(pauta);
             }
         }
@@ -117,8 +122,27 @@ public class PautaController {
 
         Pauta pautaSalva = pautaService.save(pauta);
 
+        List<Usuario> usuariosNotificacao = new ArrayList<>();
+
+        Notificacao notificacao = new Notificacao();
+        notificacao.setAcao(AcaoNotificacao.VIROUPAUTA);
+        notificacao.setDescricaoNotificacao("A proposta foi adicionada a uma pauta");
+        notificacao.setTituloNotificacao("Pauta criada");
+        notificacao.setTipoNotificacao(TipoNotificacao.PAUTA);
+        notificacao.setLinkNotificacao("http://localhost:8081/home/agenda");
+        notificacao.setIdComponenteLink(pautaSalva.getIdPauta());
+
         if (!pautaCriacaoDTO.isTeste()) {
             for (DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()) {
+
+                GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(decisaoPropostaPauta.getProposta().
+                        getDemanda().getUsuario().getDepartamento());
+
+                usuariosNotificacao.add(decisaoPropostaPauta.getProposta().getDemanda().getUsuario());
+                usuariosNotificacao.add(gerenteNegocio);
+
+
+
 //            encerrar historico criar pauta
                 Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
                 Usuario analistaResponsavel = usuarioService.findById(idAnalista).get();
@@ -133,7 +157,17 @@ public class PautaController {
                         demandaDecisao
                 );
             }
+
+            notificacao.setUsuariosNotificacao(usuariosNotificacao);
+
+            for(DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()){
+                simpMessagingTemplate.convertAndSend("/notificacao/demanda/" +
+                        decisaoPropostaPauta.getProposta().getDemanda().getIdDemanda(), notificacao);
+            }
+            notificacaoService.save(notificacao);
         }
+
+
 
         return ResponseEntity.status(HttpStatus.OK).body(pautaSalva);
     }
@@ -196,7 +230,7 @@ public class PautaController {
 
         try {
             arquivoPauta = pdfUtil.criarPDFPauta(pauta);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
 
@@ -211,7 +245,7 @@ public class PautaController {
                 historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, Tarefa.INFORMARPARECERFORUM, analistaTIresponsavel, null, null);
 
 //            iniciar histórico de criar uma ata
-                historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARATA, StatusHistorico.EMANDAMENTO,analistaTIresponsavel, demandaDecisao);
+                historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARATA, StatusHistorico.EMANDAMENTO, analistaTIresponsavel, demandaDecisao);
             }
         }
 

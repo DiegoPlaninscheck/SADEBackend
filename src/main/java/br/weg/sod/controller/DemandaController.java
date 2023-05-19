@@ -292,29 +292,51 @@ public class DemandaController {
         } else if (demandaDTO.getAdicionandoInformacoes()) {
             arquivoHistoricoWorkflow = pdfUtil.criarPDFDemanda(demandaSalva, "adicionando");
 
+            GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(demandaSalva.getUsuario().getDepartamento());
+
             //conclui o histórico de adicionar informações
             historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.ADICIONARINFORMACOESDEMANDA, analistaTI, null, arquivoHistoricoWorkflow);
 
             //inicia o histórico de criar proposta
             historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPROPOSTA, StatusHistorico.EMANDAMENTO, analistaTI, demandaSalva);
 
-            Notificacao notificacao = new Notificacao();
-            notificacao.setAcao(AcaoNotificacao.ADICAOINFORMACOESDEMANDA);
-            notificacao.setDescricaoNotificacao("Foram adicionadas informações a sua demanda");
-            notificacao.setTituloNotificacao("Adição de informações a demanda");
-            notificacao.setTipoNotificacao(TipoNotificacao.DEMANDA);
-            notificacao.setLinkNotificacao("http://localhost:8081/home/demand");
-            notificacao.setIdComponenteLink(demandaSalva.getIdDemanda());
+            // Notificação Solicitante
+            Notificacao notificacaoSolicitante = new Notificacao();
+            notificacaoSolicitante.setAcao(AcaoNotificacao.ADICAOINFORMACOESDEMANDA);
+            notificacaoSolicitante.setDescricaoNotificacao("Foram adicionadas informações a sua demanda");
+            notificacaoSolicitante.setTituloNotificacao("Adição de informações a demanda");
+            notificacaoSolicitante.setTipoNotificacao(TipoNotificacao.DEMANDA);
+            notificacaoSolicitante.setLinkNotificacao("http://localhost:8081/home/demand");
+            notificacaoSolicitante.setIdComponenteLink(demandaSalva.getIdDemanda());
 
-            List<Usuario> usuarios = new ArrayList<>();
+            List<Usuario> usuariosSolicitante = new ArrayList<>();
 
-            usuarios.add(demandaSalva.getUsuario());
+            usuariosSolicitante.add(demandaSalva.getUsuario());
 
-            notificacao.setUsuariosNotificacao(usuarios);
+            notificacaoSolicitante.setUsuariosNotificacao(usuariosSolicitante);
 
-            notificacao = notificacaoService.save(notificacao);
+            notificacaoSolicitante = notificacaoService.save(notificacaoSolicitante);
 
-            simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacao);
+            simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacaoSolicitante);
+
+            // Notificação Gerente de Negocio do Solicitante
+            Notificacao notificacaoGerenteNegocio = new Notificacao();
+            notificacaoGerenteNegocio.setAcao(AcaoNotificacao.ADICAOINFORMACOESDEMANDA);
+            notificacaoGerenteNegocio.setDescricaoNotificacao("Foram adicionadas informações a sua demanda");
+            notificacaoGerenteNegocio.setTituloNotificacao("Adição de informações a demanda");
+            notificacaoGerenteNegocio.setTipoNotificacao(TipoNotificacao.DEMANDA);
+            notificacaoGerenteNegocio.setLinkNotificacao("http://localhost:8081/home/demand");
+            notificacaoGerenteNegocio.setIdComponenteLink(demandaSalva.getIdDemanda());
+
+            List<Usuario> usuariosGerenteNegocio = new ArrayList<>();
+
+            usuariosGerenteNegocio.add(gerenteNegocio);
+
+            notificacaoGerenteNegocio.setUsuariosNotificacao(usuariosGerenteNegocio);
+
+            notificacaoGerenteNegocio = notificacaoService.save(notificacaoGerenteNegocio);
+
+            simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacaoGerenteNegocio);
 
         } else if(demandaDTO.getCriandoDemandaPorRascunho()){
             try {

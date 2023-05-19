@@ -1,8 +1,10 @@
 package br.weg.sod.controller;
 
 import br.weg.sod.model.entities.*;
+import br.weg.sod.model.entities.enuns.AcaoNotificacao;
 import br.weg.sod.model.entities.enuns.StatusHistorico;
 import br.weg.sod.model.entities.enuns.Tarefa;
+import br.weg.sod.model.entities.enuns.TipoNotificacao;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.PDFUtil;
 import br.weg.sod.util.PropostaUtil;
@@ -11,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +22,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +38,8 @@ public class PropostaController {
     private DemandaService demandaService;
     private TabelaCustoService tabelaCustoService;
     private CentroCustoService centroCustoService;
+    private NotificacaoService notificacaoService;
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @GetMapping
     public ResponseEntity<List<Proposta>> findAll() {
@@ -100,6 +106,46 @@ public class PropostaController {
 
         demandaProposta.setPertenceUmaProposta(true);
         demandaService.save(demandaProposta);
+
+        GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(demandaProposta.getUsuario().getDepartamento());
+
+        // Notificação Solicitante
+        Notificacao notificacaoSolicitante = new Notificacao();
+        notificacaoSolicitante.setAcao(AcaoNotificacao.VIROUPROPOSTA);
+        notificacaoSolicitante.setDescricaoNotificacao("Sua demanda virou uma proposta");
+        notificacaoSolicitante.setTituloNotificacao("Virou uma proposta");
+        notificacaoSolicitante.setTipoNotificacao(TipoNotificacao.PROPOSTA);
+        notificacaoSolicitante.setLinkNotificacao("http://localhost:8081/home/proposal");
+        notificacaoSolicitante.setIdComponenteLink(propostaSalva.getIdProposta());
+
+        List<Usuario> usuariosSolicitante = new ArrayList<>();
+
+        usuariosSolicitante.add(demandaProposta.getUsuario());
+
+        notificacaoSolicitante.setUsuariosNotificacao(usuariosSolicitante);
+
+        notificacaoSolicitante = notificacaoService.save(notificacaoSolicitante);
+
+        simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + demandaProposta.getIdDemanda(), notificacaoSolicitante);
+
+        // Notificação Gerente de Negocio do Solicitante
+        Notificacao notificacaoGerenteNegocio = new Notificacao();
+        notificacaoGerenteNegocio.setAcao(AcaoNotificacao.VIROUPROPOSTA);
+        notificacaoGerenteNegocio.setDescricaoNotificacao("A demanda virou uma proposta");
+        notificacaoGerenteNegocio.setTituloNotificacao("Virou uma proposta");
+        notificacaoGerenteNegocio.setTipoNotificacao(TipoNotificacao.PROPOSTA);
+        notificacaoGerenteNegocio.setLinkNotificacao("http://localhost:8081/home/proposal");
+        notificacaoGerenteNegocio.setIdComponenteLink(propostaSalva.getIdProposta());
+
+        List<Usuario> usuariosGerenteNegocio = new ArrayList<>();
+
+        usuariosGerenteNegocio.add(gerenteNegocio);
+
+        notificacaoGerenteNegocio.setUsuariosNotificacao(usuariosGerenteNegocio);
+
+        notificacaoGerenteNegocio = notificacaoService.save(notificacaoGerenteNegocio);
+
+        simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + demandaProposta.getIdDemanda(), notificacaoGerenteNegocio);
 
         //encerra o histórico da criação de proposta
         historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.CRIARPROPOSTA, analistaResponsavel, null, arquivoHistoricoWorkflow);

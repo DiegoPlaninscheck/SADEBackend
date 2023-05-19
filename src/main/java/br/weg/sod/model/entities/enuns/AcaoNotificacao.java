@@ -14,7 +14,9 @@ public enum AcaoNotificacao {
     CHAT("Chat"),
     REUNIAO("Reunião"),
     STATUSDEMANDA("Status Demanda"),
-    PRAZOELABORACAO("Prazo de elaboração");
+    PRAZOELABORACAO("Prazo de elaboração"),
+    VIROUPROPOSTA("Virou proposta"),
+    VIROUPAUTA("Virou pauta");
 
     private String nome;
 }
