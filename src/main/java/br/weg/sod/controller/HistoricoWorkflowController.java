@@ -148,6 +148,11 @@ public class HistoricoWorkflowController {
                 null
         );
 
+        if(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior().equals(Tarefa.DEVOLVERDEMANDA)){
+            demandaRelacionada.setDevolvida(true);
+            demandaService.save(demandaRelacionada);
+        }
+
         criarNotificacao(historicoWorkflowService.findLastHistoricoByDemanda(demandaRelacionada));
 
         HistoricoWorkflow historicoSalvo = historicoWorkflowService.save(historicoWorkflow);

@@ -7,7 +7,6 @@ import br.weg.sod.model.service.*;
 import br.weg.sod.util.DemandaUtil;
 import br.weg.sod.util.PDFUtil;
 import br.weg.sod.util.UtilFunctions;
-import com.itextpdf.text.Document;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -64,12 +62,12 @@ public class DemandaController {
         return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandasByUsuario(usuarioService.findById(idUsuario).get()));
     }
 
-    @GetMapping("/usuario/{idUsuario}/rascunho/")
+    @GetMapping("/usuario/{idUsuario}/rascunho")
     public ResponseEntity<List<Demanda>> findRascunho(@PathVariable(name = "idUsuario") Integer idUsuario) {
         List<Demanda> demandasQueSaoRascunho = demandaService.findDemandasByRascunho(true), demandasDoUsuario = new ArrayList<>();
 
-        for (Demanda demanda : demandasQueSaoRascunho){
-            if(demanda.getUsuario().getIdUsuario() == idUsuario){
+        for (Demanda demanda : demandasQueSaoRascunho) {
+            if (demanda.getUsuario().getIdUsuario() == idUsuario) {
                 demandasDoUsuario.add(demanda);
             }
         }
@@ -81,14 +79,40 @@ public class DemandaController {
     public ResponseEntity<Object> findByEstaEmPauta(@PathVariable(name = "pertenceUmaProposta") Boolean pertenceUmaProposta) {
         List<Demanda> demandasSemProposta = demandaService.findDemandaByPertenceUmaProposta(pertenceUmaProposta), demandasAptas = new ArrayList<>();
 
-        for(Demanda demandaSemProposta : demandasSemProposta){
-            if(demandaSemProposta.getLinkJira() != null){
+        for (Demanda demandaSemProposta : demandasSemProposta) {
+            if (demandaSemProposta.getLinkJira() != null) {
                 demandasAptas.add(demandaSemProposta);
             }
         }
 
 
         return ResponseEntity.status(HttpStatus.OK).body(demandasAptas);
+    }
+
+    @GetMapping("/devolvidas/usuario/{idUsuario}")
+    public ResponseEntity<Object> findByDevolvida(@PathVariable("idUsuario") Integer idUsuario) {
+        if (!usuarioService.existsById(idUsuario)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Não foi encontrado nenhum usuario com o ID informado");
+        }
+
+        Usuario usuarioAtual = usuarioService.findById(idUsuario).get();
+        List<Demanda> listaDemandasUsuario = new ArrayList<>(), listaDemandasDevolvidas = new ArrayList<>(), listaDemandas = new ArrayList<>();
+
+        for (Demanda demanda : demandaService.findDemandasByUsuario(usuarioAtual)) {
+            HistoricoWorkflow historicoWorkflowDemanda = historicoWorkflowService.findLastHistoricoByDemanda(demanda);
+
+            if (historicoWorkflowDemanda.getTarefa().equals(Tarefa.REENVIARDEMANDA)) {
+                demanda.setDevolvida(true);
+                listaDemandasDevolvidas.add(demanda);
+            } else {
+                listaDemandasUsuario.add(demanda);
+            }
+        }
+
+        listaDemandas.addAll(listaDemandasDevolvidas);
+        listaDemandas.addAll(listaDemandasUsuario);
+
+        return ResponseEntity.ok().body(listaDemandas);
     }
 
     @GetMapping("/status/{status}")
@@ -154,7 +178,7 @@ public class DemandaController {
             PDFUtil pdfUtil = new PDFUtil();
 
             arquivoHistoricoWorkflow = pdfUtil.criarPDFDemanda(demandaSalva, "criacao");
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
 
@@ -179,7 +203,7 @@ public class DemandaController {
 
     @Transactional
     @PostMapping("/rascunho")
-    public ResponseEntity<Object> saveRascunho( @RequestParam("demanda") @Valid String demandaJSON) {
+    public ResponseEntity<Object> saveRascunho(@RequestParam("demanda") @Valid String demandaJSON) {
         Demanda demanda = new DemandaUtil().convertJsonToModel(demandaJSON, 1);
         Demanda demandaSalva = demandaService.save(demanda);
 
@@ -319,11 +343,11 @@ public class DemandaController {
 
             simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + idDemanda, notificacao);
 
-        } else if(demandaDTO.getCriandoDemandaPorRascunho()){
+        } else if (demandaDTO.getCriandoDemandaPorRascunho()) {
             HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(
                     Tarefa.CRIARDEMANDA,
                     StatusHistorico.CONCLUIDO,
-                    new ArquivoHistoricoWorkflow(versaoPDF),
+                    arquivoHistoricoWorkflow,
                     new Timestamp(new Date().getTime()),
                     Tarefa.CRIARDEMANDA,
                     demandaSalva
@@ -332,6 +356,11 @@ public class DemandaController {
             HistoricoWorkflow historicoWorkflowAvaliacao = new HistoricoWorkflow(Tarefa.AVALIARDEMANDA, StatusHistorico.EMAGUARDO, demandaSalva);
             historicoWorkflowService.save(historicoWorkflowCriacao);
             historicoWorkflowService.save(historicoWorkflowAvaliacao);
+        } else if (demandaDTO.getEditandoDemanda()) {
+            Usuario analistaResponsavel = historicoWorkflowService.findLastHistoricoCompletedByDemanda(demandaSalva).getUsuario();
+            
+            historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.REENVIARDEMANDA, usuario, null, null);
+            historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, analistaResponsavel, demandaSalva);
         } else {
             HistoricoWorkflow ultimoHistoricoConcluido = historicoWorkflowService.findLastHistoricoCompletedByDemanda(demandaSalva);
             ultimoHistoricoConcluido.setArquivoHistoricoWorkflow(null);
