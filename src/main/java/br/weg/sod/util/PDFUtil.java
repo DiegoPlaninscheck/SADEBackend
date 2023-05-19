@@ -178,7 +178,6 @@ public class PDFUtil {
     }
 
     private void ConteudoPDFProposta(Proposta proposta, Document document) throws DocumentException {
-        System.out.println(proposta.getTabelasCustoProposta());
         document.open();
 
         document.add(new Paragraph(proposta.getDemanda().getTituloDemanda(), tipoFonte("titulo")));
@@ -242,10 +241,8 @@ public class PDFUtil {
         //FALA CO ROMARIO
         List<Element> tabelas = tabelasDeCustoProposta(proposta);
 
-        System.out.println(tabelas);
         if (tabelas.size() > 0) {
             for (Element tabela : tabelas) {
-                System.out.println(tabela);
                 skipLine.add(tabela);
 
                 addNovaLinha(skipLine, 2);
@@ -280,8 +277,6 @@ public class PDFUtil {
         try {
             ArquivoPauta arquivoPauta = null;
 
-            System.out.println(pauta.getPropostasPauta());
-
             arquivoPauta = criacaoPDFPauta(pauta);
 
             return arquivoPauta;
@@ -292,7 +287,6 @@ public class PDFUtil {
     }
 
     private ArquivoPauta criacaoPDFPauta(Pauta pauta) throws DocumentException {
-        System.out.println(pauta.getPropostasPauta());
         Document document = new Document();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -379,10 +373,8 @@ public class PDFUtil {
             //FALA CO ROMARIO
             List<Element> tabelas = tabelasDeCustoProposta(proposta);
 
-            System.out.println(tabelas);
             if (tabelas.size() > 0) {
                 for (Element tabela : tabelas) {
-                    System.out.println(tabela);
                     skipLine.add(tabela);
 
                     addNovaLinha(skipLine, 2);
@@ -451,7 +443,7 @@ public class PDFUtil {
         ConteudoPDFATA(ata, document);
 
         arquivoPauta.setArquivo(outputStream.toByteArray());
-        arquivoPauta.setNome("arquivoPauta");
+        arquivoPauta.setNome("arquivoATA");
         arquivoPauta.setTipo("application/pdf");
 
         return arquivoPauta;
@@ -523,10 +515,8 @@ public class PDFUtil {
             //FALA CO ROMARIO
             List<Element> tabelas = tabelasDeCustoProposta(proposta);
 
-            System.out.println(tabelas);
             if (tabelas.size() > 0) {
                 for (Element tabela : tabelas) {
-                    System.out.println(tabela);
                     skipLine.add(tabela);
 
                     addNovaLinha(skipLine, 2);
@@ -602,7 +592,6 @@ public class PDFUtil {
             table.setHeaderRows(1);
 
             for (LinhaTabela linhaTabela : tabelaCusto.getLinhasTabela()) {
-                System.out.println(linhaTabela);
                 table.addCell(linhaTabela.getNomeRecurso());
                 table.addCell(linhaTabela.getQuantidade().toString());
                 table.addCell(linhaTabela.getValorQuantidade().toString());

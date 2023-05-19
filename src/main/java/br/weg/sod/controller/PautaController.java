@@ -145,6 +145,8 @@ public class PautaController {
             @PathVariable(name = "idPauta") Integer idPauta,
             @PathVariable(name = "idAnalista") Integer idAnalista)
             throws IOException {
+        System.out.println("ID Pauta: " + idPauta);
+        System.out.println("ID Analista: " + idAnalista);
         if (!pautaService.existsById(idPauta)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma pauta com o ID informado");
         }
@@ -199,9 +201,6 @@ public class PautaController {
         }
 
         pauta.getArquivosPauta().add(arquivoPauta);
-
-        System.out.println(pauta.getPropostasPauta());
-        System.out.println(pauta.getForum());
 
         Pauta pautaSalva = pautaService.save(pauta);
 
