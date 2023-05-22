@@ -55,7 +55,11 @@ public class DemandaEdicaoDTO {
 
     private Boolean rascunho = false;
 
+    private Boolean devolvida = false;
+
     private Boolean criandoDemandaPorRascunho = false;
+
+    private Boolean editandoDemanda = false;
 
     private Boolean classificando = false;
 

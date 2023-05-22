@@ -68,6 +68,9 @@ public class Demanda {
     @Column
     private boolean temChat = false;
 
+    @Column
+    private boolean devolvida = false;
+
     @ManyToOne
     @JoinColumn(name = "idBU")
     private BU BUSolicitante;
