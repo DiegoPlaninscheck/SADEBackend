@@ -229,7 +229,7 @@ public class PautaController {
         ArquivoPauta arquivoPauta = null;
 
         try {
-            arquivoPauta = pdfUtil.criarPDFPauta(pauta);
+            arquivoPauta = pdfUtil.criarPDFPauta(pauta, analistaTIresponsavel);
         } catch (Exception e) {
             System.out.println(e);
         }

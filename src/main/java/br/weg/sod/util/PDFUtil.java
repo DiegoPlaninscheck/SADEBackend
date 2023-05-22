@@ -273,11 +273,12 @@ public class PDFUtil {
     }
 
     // PDF Pauta
-    public ArquivoPauta criarPDFPauta(Pauta pauta) {
+    public ArquivoPauta criarPDFPauta(Pauta pauta, Usuario usuarioInsersor) {
         try {
             ArquivoPauta arquivoPauta = null;
 
             arquivoPauta = criacaoPDFPauta(pauta);
+            arquivoPauta.setInsersor(usuarioInsersor);
 
             return arquivoPauta;
         } catch (Exception e) {
@@ -418,11 +419,12 @@ public class PDFUtil {
     }
 
     // PDF ATA
-    public ArquivoPauta criarPDFATA(ATA ata) {
+    public ArquivoPauta criarPDFATA(ATA ata, Usuario usuarioInsersor) {
         try {
             ArquivoPauta arquivoPauta = null;
 
             arquivoPauta = criacaoPDFATA(ata);
+            arquivoPauta.setInsersor(usuarioInsersor);
 
             return arquivoPauta;
         } catch (Exception e) {

@@ -137,7 +137,7 @@ public class ATAController {
         ArquivoPauta arquivoPauta = null;
 
         try {
-            arquivoPauta = pdfUtil.criarPDFATA(ata);
+            arquivoPauta = pdfUtil.criarPDFATA(ata, analistaTIresponsavel);
         }catch (Exception e){
             System.out.println(e);
         }

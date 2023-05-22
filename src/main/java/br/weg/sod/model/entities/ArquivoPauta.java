@@ -29,7 +29,7 @@ public class ArquivoPauta {
     private byte[] arquivo;
 
     @ManyToOne
-    @JoinColumn(name = "idUsuario", nullable = false)
+    @JoinColumn(name = "idUsuario")
     private Usuario insersor;
 
     public ArquivoPauta(MultipartFile multipartFile, Usuario insersor) throws IOException {
