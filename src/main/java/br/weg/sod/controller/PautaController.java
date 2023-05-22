@@ -234,6 +234,8 @@ public class PautaController {
             System.out.println(e);
         }
 
+        // ver isso aqui
+//        arquivoPauta.setInsersor();
         pauta.getArquivosPauta().add(arquivoPauta);
 
         Pauta pautaSalva = pautaService.save(pauta);
@@ -247,6 +249,36 @@ public class PautaController {
 //            iniciar histórico de criar uma ata
                 historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARATA, StatusHistorico.EMANDAMENTO, analistaTIresponsavel, demandaDecisao);
             }
+        }
+
+        Notificacao notificacao = new Notificacao();
+        notificacao.setAcao(AcaoNotificacao.VIROUPROPOSTA);
+        notificacao.setDescricaoNotificacao("A comissão adicionou o parecer na pauta. Veja o que foi concluído!");
+        notificacao.setTituloNotificacao("Parecer da comissão adicionado");
+        notificacao.setTipoNotificacao(TipoNotificacao.PAUTA);
+        notificacao.setLinkNotificacao("http://localhost:8081/home/agenda");
+        notificacao.setIdComponenteLink(pautaSalva.getIdPauta());
+
+        List<Usuario> usuarios = new ArrayList<>();
+
+        for (DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()) {
+            Usuario gerenteNegocio = usuarioService.findGerenteByDepartamento(decisaoPropostaPauta.getProposta().
+                    getDemanda().getUsuario().getDepartamento());
+
+            usuarios.add(gerenteNegocio);
+        }
+
+        Usuario analistaTI = usuarioService.findById(idAnalista).get();
+
+        usuarios.add(analistaTI);
+
+        notificacao.setUsuariosNotificacao(usuarios);
+
+        notificacaoService.save(notificacao);
+
+        for(DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()){
+            simpMessagingTemplate.convertAndSend("/notificacao/demanda/" +
+                            decisaoPropostaPauta.getProposta().getDemanda().getIdDemanda(), notificacao);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(pauta);

@@ -31,8 +31,6 @@ public class ChatController {
     private ChatService chatService;
     private UsuarioService usuarioService;
 
-    private NotificacaoController notificacaoController;
-
     private DemandaService demandaService;
 
     private NotificacaoService notificacaoService;
