@@ -20,6 +20,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -93,6 +94,7 @@ public class PautaController {
         return ResponseEntity.ok().body(arquivoPautas);
     }
 
+    @Transactional
     @PostMapping("/{idAnalista}")
     public ResponseEntity<Object> save(
             @RequestBody @Valid PautaCriacaoDTO pautaCriacaoDTO,
@@ -135,13 +137,15 @@ public class PautaController {
         if (!pautaCriacaoDTO.isTeste()) {
             for (DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()) {
 
-                GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(decisaoPropostaPauta.getProposta().
+                Usuario gerenteNegocio = usuarioService.findGerenteByDepartamento(decisaoPropostaPauta.getProposta().
                         getDemanda().getUsuario().getDepartamento());
 
                 usuariosNotificacao.add(decisaoPropostaPauta.getProposta().getDemanda().getUsuario());
                 usuariosNotificacao.add(gerenteNegocio);
 
-
+                System.out.println("Usuarios: " + usuariosNotificacao);
+                notificacao.setUsuariosNotificacao(usuariosNotificacao);
+                System.out.println("UsuariosNotificacao: " + notificacao.getUsuariosNotificacao());
 
 //            encerrar historico criar pauta
                 Demanda demandaDecisao = propostaService.findById(decisaoPropostaPauta.getProposta().getIdProposta()).get().getDemanda();
@@ -157,17 +161,13 @@ public class PautaController {
                         demandaDecisao
                 );
             }
-
-            notificacao.setUsuariosNotificacao(usuariosNotificacao);
-
-            for(DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()){
-                simpMessagingTemplate.convertAndSend("/notificacao/demanda/" +
-                        decisaoPropostaPauta.getProposta().getDemanda().getIdDemanda(), notificacao);
-            }
-            notificacaoService.save(notificacao);
         }
 
-
+        for(DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()){
+            simpMessagingTemplate.convertAndSend("/notificacao/demanda/" +
+                    decisaoPropostaPauta.getProposta().getDemanda().getIdDemanda(), notificacao);
+        }
+        notificacaoService.save(notificacao);
 
         return ResponseEntity.status(HttpStatus.OK).body(pautaSalva);
     }

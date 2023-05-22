@@ -39,7 +39,7 @@ public class Notificacao {
     private AcaoNotificacao acao;
 
     @JsonIgnore
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "usuariosNotificacao", joinColumns = @JoinColumn(name = "idNotificacao", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "idUsuario", nullable = false))
     private List<Usuario> usuariosNotificacao;
