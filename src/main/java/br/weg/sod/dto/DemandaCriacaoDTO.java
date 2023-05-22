@@ -36,4 +36,6 @@ public class DemandaCriacaoDTO {
     private Double score;
 
     private boolean rascunho = false;
+
+    private boolean devolvida = false;
 }
