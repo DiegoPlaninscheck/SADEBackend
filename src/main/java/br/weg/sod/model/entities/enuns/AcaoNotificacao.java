@@ -16,7 +16,9 @@ public enum AcaoNotificacao {
     STATUSDEMANDA("Status Demanda"),
     PRAZOELABORACAO("Prazo de elaboração"),
     VIROUPROPOSTA("Virou proposta"),
-    VIROUPAUTA("Virou pauta");
+    VIROUPAUTA("Virou pauta"),
+    VIROUATA("Virou ATA"),
+    AVALIACAODG("Avaliação Direção Geral");
 
     private String nome;
 }

@@ -64,11 +64,7 @@ public class PropostaController {
     public ResponseEntity<Object> save(@RequestParam("proposta") @Valid String propostaJSON,
                                        @RequestParam(value = "files", required = false)
                                        MultipartFile[] multipartFiles,
-//                                       @RequestParam("pdfVersaoHistorico") MultipartFile versaoPDF,
                                        @PathVariable("idAnalista") Integer idAnalista) throws IOException {
-//        if (versaoPDF.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PDF da versão não informado");
-//        }
 
         PropostaUtil util = new PropostaUtil();
         Proposta proposta = util.convertJsonToModel(propostaJSON, 1);
@@ -94,7 +90,7 @@ public class PropostaController {
 
         try {
             arquivoHistoricoWorkflow = pdfUtil.criarPDFProposta(propostaSalva);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
 
@@ -187,22 +183,36 @@ public class PropostaController {
 
         Proposta propostaSalva = propostaService.save(propostaDB);
 
+
+        Usuario usuarioAprovacao = usuarioService.findById(idAnalista).get();
+
         if (proposta.getEmWorkflow() != null) {
             if (proposta.getEmWorkflow()) {
                 //encerra historico de criar pauta
-                AnalistaTI analistaResponsavel = (AnalistaTI) usuarioService.findById(idAnalista).get();
+                Usuario analistaResponsavel = usuarioService.findById(idAnalista).get();
                 historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.INICIARWORKFLOW, analistaResponsavel, null, null);
 
                 //inicia histórico de em workflow
                 Usuario solicitante = usuarioService.findById(propostaSalva.getDemanda().getUsuario().getIdUsuario()).get();
                 GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
                 historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARWORKFLOW, StatusHistorico.EMANDAMENTO, gerenteNegocio, propostaSalva.getDemanda());
+
+                Notificacao notificacao = new Notificacao();
+
+                List<Usuario> usuarios = new ArrayList<>();
+                usuarios.add(gerenteNegocio);
+                notificacao.setAcao(AcaoNotificacao.NOVOWORKFLOWAPROVACAO);
+                notificacao.setDescricaoNotificacao("O analista iniciou um novo workflow de aprovação!");
+                notificacao.setTituloNotificacao("Novo workflow iniciado");
+                notificacao.setTipoNotificacao(TipoNotificacao.PROPOSTA);
+                notificacao.setLinkNotificacao("http://localhost:8081/home/proposal");
+                notificacao.setIdComponenteLink(propostaSalva.getDemanda().getIdDemanda());
+                notificacao.setUsuariosNotificacao(usuarios);
+                notificacao = notificacaoService.save(notificacao);
+                simpMessagingTemplate.convertAndSend("/notificacao/demanda/" +
+                        propostaSalva.getDemanda().getIdDemanda(), notificacao);
             }
-        }
-
-        Usuario usuarioAprovacao = usuarioService.findById(idAnalista).get();
-
-        if (usuarioAprovacao instanceof GerenteTI) {
+        } else if (usuarioAprovacao instanceof GerenteTI) {
             //encerra historico de avaliação do gerente de TI
             if (proposta.getAprovadoWorkflow()) {
                 historicoWorkflowService.finishHistoricoByDemanda(propostaSalva.getDemanda(), Tarefa.APROVARWORKFLOW, usuarioAprovacao, null, null);

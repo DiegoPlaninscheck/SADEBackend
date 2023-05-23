@@ -10,6 +10,7 @@ public enum TipoNotificacao {
     DEMANDA("Demanda"),
     PROPOSTA("Proposta"),
     PAUTA("Pauta"),
+
     ATA("ATA"),
     CHAT("Chat");
 

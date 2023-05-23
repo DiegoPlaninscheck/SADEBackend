@@ -4,9 +4,7 @@ import br.weg.sod.dto.ATACriacaoDTO;
 import br.weg.sod.dto.ATAEdicaoDTO;
 import br.weg.sod.dto.DecisaoPropostaATADTO;
 import br.weg.sod.model.entities.*;
-import br.weg.sod.model.entities.enuns.StatusDemanda;
-import br.weg.sod.model.entities.enuns.StatusHistorico;
-import br.weg.sod.model.entities.enuns.Tarefa;
+import br.weg.sod.model.entities.enuns.*;
 import br.weg.sod.model.service.*;
 import br.weg.sod.util.ATAUtil;
 import br.weg.sod.util.PDFUtil;
@@ -15,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,6 +36,10 @@ public class ATAController {
     private UsuarioService usuarioService;
     private PautaService pautaService;
     private DemandaService demandaService;
+
+    private NotificacaoService notificacaoService;
+
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @GetMapping
     public ResponseEntity<List<ATA>> findAll() {
@@ -68,7 +71,36 @@ public class ATAController {
 
         ata.setPropostasAta(atualizarPauta(ata, null));
 
-        return ResponseEntity.status(HttpStatus.OK).body(ataService.save(ata));
+        ATA ataSalva = ataService.save(ata);
+
+        Notificacao notificacao = new Notificacao();
+        notificacao.setAcao(AcaoNotificacao.VIROUATA);
+        notificacao.setDescricaoNotificacao("A sua pauta acabou de virar um ATA");
+        notificacao.setTituloNotificacao("Nova ATA criada");
+        notificacao.setTipoNotificacao(TipoNotificacao.ATA);
+        notificacao.setLinkNotificacao("http://localhost:8081/home/ata");
+        notificacao.setIdComponenteLink(ataSalva.getIdATA());
+
+        List<Usuario> usuarios = new ArrayList<>();
+
+        for(DecisaoPropostaATA decisaoPropostaATA : ataSalva.getPropostasAta()){
+            Usuario gerenteNegocio = usuarioService.findGerenteByDepartamento(decisaoPropostaATA.getProposta().
+                    getDemanda().getUsuario().getDepartamento());
+
+            usuarios.add(decisaoPropostaATA.getProposta().getDemanda().getUsuario());
+            usuarios.add(gerenteNegocio);
+        }
+
+        notificacao.setUsuariosNotificacao(usuarios);
+
+        notificacaoService.save(notificacao);
+
+        for (DecisaoPropostaATA decisaoPropostaATA : ataSalva.getPropostasAta()) {
+            simpMessagingTemplate.convertAndSend("/notificacao/demanda/" +
+                    decisaoPropostaATA.getProposta().getDemanda().getIdDemanda(), notificacao);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(ataSalva);
     }
 
     @PostMapping("/{idAnalista}")
@@ -97,7 +129,36 @@ public class ATAController {
 
         ata.setPropostasAta(atualizarPauta(ata, usuarioResponsavel));
 
-        return ResponseEntity.status(HttpStatus.OK).body(ataService.save(ata));
+        ATA ataSalva = ataService.save(ata);
+
+        Notificacao notificacao = new Notificacao();
+        notificacao.setAcao(AcaoNotificacao.VIROUATA);
+        notificacao.setDescricaoNotificacao("A sua pauta acabou de virar um ATA");
+        notificacao.setTituloNotificacao("Nova ATA criada");
+        notificacao.setTipoNotificacao(TipoNotificacao.ATA);
+        notificacao.setLinkNotificacao("http://localhost:8081/home/ata");
+        notificacao.setIdComponenteLink(ataSalva.getIdATA());
+
+        List<Usuario> usuarios = new ArrayList<>();
+
+        for(DecisaoPropostaATA decisaoPropostaATA : ataSalva.getPropostasAta()){
+            Usuario gerenteNegocio = usuarioService.findGerenteByDepartamento(decisaoPropostaATA.getProposta().
+                            getDemanda().getUsuario().getDepartamento());
+
+            usuarios.add(decisaoPropostaATA.getProposta().getDemanda().getUsuario());
+            usuarios.add(gerenteNegocio);
+        }
+
+        notificacao.setUsuariosNotificacao(usuarios);
+
+        notificacaoService.save(notificacao);
+
+        for (DecisaoPropostaATA decisaoPropostaATA : ataSalva.getPropostasAta()) {
+            simpMessagingTemplate.convertAndSend("/notificacao/demanda/" +
+                    decisaoPropostaATA.getProposta().getDemanda().getIdDemanda(), notificacao);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(ataSalva);
     }
 
     @PutMapping("/{idATA}/{idAnalista}")
@@ -146,6 +207,16 @@ public class ATAController {
 
         ATA ataSalva = ataService.save(ata);
 
+        Notificacao notificacao = new Notificacao();
+        notificacao.setAcao(AcaoNotificacao.AVALIACAODG);
+        notificacao.setDescricaoNotificacao("A ATA foi avaliada pela Direção Geral");
+        notificacao.setTituloNotificacao("ATA avaliada pela DG");
+        notificacao.setTipoNotificacao(TipoNotificacao.ATA);
+        notificacao.setLinkNotificacao("http://localhost:8081/home/ata");
+        notificacao.setIdComponenteLink(ataSalva.getIdATA());
+
+        List<Usuario> usuarios = new ArrayList<>();
+
         for (DecisaoPropostaATA deicasaoProposta : ataSalva.getPropostasAta()) {
             Demanda demandaDecisao = demandaService.findById(deicasaoProposta.getProposta().getIdProposta()).get();
             Tarefa tarefaStatus;
@@ -171,6 +242,21 @@ public class ATAController {
                 //inicia histórico de criar pauta
                 historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPAUTA, StatusHistorico.EMANDAMENTO, analistaTIresponsavel, demandaDecisao);
             }
+
+            Usuario gerenteNegocio = usuarioService.findGerenteByDepartamento(deicasaoProposta.getProposta().
+                    getDemanda().getUsuario().getDepartamento());
+
+            usuarios.add(deicasaoProposta.getProposta().getDemanda().getUsuario());
+            usuarios.add(gerenteNegocio);
+        }
+
+        notificacao.setUsuariosNotificacao(usuarios);
+
+        notificacaoService.save(notificacao);
+
+        for (DecisaoPropostaATA decisaoPropostaATA : ataSalva.getPropostasAta()) {
+            simpMessagingTemplate.convertAndSend("/notificacao/demanda/" +
+                    decisaoPropostaATA.getProposta().getDemanda().getIdDemanda(), notificacao);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(ataSalva);

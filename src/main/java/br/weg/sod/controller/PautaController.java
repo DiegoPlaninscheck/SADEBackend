@@ -54,8 +54,10 @@ public class PautaController {
         List<Pauta> listaPautas = pautaService.findPautasByPertenceUmaATA(false), listaPautasPossiveisCriar = new ArrayList<>();
 
         for (Pauta pauta : listaPautas) {
-            if (pauta.getPropostasPauta().get(0).getAtaPublicada() != null) {
-                listaPautasPossiveisCriar.add(pauta);
+            if (pauta.getPropostasPauta().size() > 0) {
+                if (pauta.getPropostasPauta().get(0).getAtaPublicada() != null) {
+                    listaPautasPossiveisCriar.add(pauta);
+                }
             }
         }
 
@@ -163,7 +165,7 @@ public class PautaController {
             }
         }
 
-        for(DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()){
+        for (DecisaoPropostaPauta decisaoPropostaPauta : pauta.getPropostasPauta()) {
             simpMessagingTemplate.convertAndSend("/notificacao/demanda/" +
                     decisaoPropostaPauta.getProposta().getDemanda().getIdDemanda(), notificacao);
         }
@@ -234,8 +236,6 @@ public class PautaController {
             System.out.println(e);
         }
 
-        // ver isso aqui
-//        arquivoPauta.setInsersor();
         pauta.getArquivosPauta().add(arquivoPauta);
 
         Pauta pautaSalva = pautaService.save(pauta);
@@ -252,7 +252,7 @@ public class PautaController {
         }
 
         Notificacao notificacao = new Notificacao();
-        notificacao.setAcao(AcaoNotificacao.VIROUPROPOSTA);
+        notificacao.setAcao(AcaoNotificacao.REUNIAO);
         notificacao.setDescricaoNotificacao("A comissão adicionou o parecer na pauta. Veja o que foi concluído!");
         notificacao.setTituloNotificacao("Parecer da comissão adicionado");
         notificacao.setTipoNotificacao(TipoNotificacao.PAUTA);
@@ -276,9 +276,9 @@ public class PautaController {
 
         notificacaoService.save(notificacao);
 
-        for(DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()){
+        for (DecisaoPropostaPauta decisaoPropostaPauta : pautaSalva.getPropostasPauta()) {
             simpMessagingTemplate.convertAndSend("/notificacao/demanda/" +
-                            decisaoPropostaPauta.getProposta().getDemanda().getIdDemanda(), notificacao);
+                    decisaoPropostaPauta.getProposta().getDemanda().getIdDemanda(), notificacao);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(pauta);

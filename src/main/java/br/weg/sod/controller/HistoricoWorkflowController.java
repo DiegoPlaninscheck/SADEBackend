@@ -123,8 +123,7 @@ public class HistoricoWorkflowController {
 
         if (historicoWorkflowDTO.getUsuario() != null) {
             Usuario usuarioProximoHistorico = usuarioService.findById(historicoWorkflowDTO.getUsuario().getIdUsuario()).get();
-            System.out.println(usuarioProximoHistorico);
-            System.out.println(usuarioProximoHistorico instanceof GerenteNegocio);
+
             historicoValido = historicoWorkflowService.validaCriacaoHistorico(historicoWorkflowDTO, usuarioProximoHistorico);
         } else {
             historicoValido = historicoWorkflowService.validaCriacaoHistorico(historicoWorkflowDTO, null);
@@ -168,6 +167,7 @@ public class HistoricoWorkflowController {
 
     private void criarNotificacao(HistoricoWorkflow historico) {
         Notificacao notificacao = new Notificacao();
+
         switch (historico.getAcaoFeita()){
             case DEVOLVERDEMANDA -> {
                 List<Usuario> usuarios = new ArrayList<>();
@@ -182,6 +182,19 @@ public class HistoricoWorkflowController {
                 notificacao = notificacaoService.save(notificacao);
                 simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + historico.getDemanda().getIdDemanda(), notificacao);
             }
+//            case INICIARWORKFLOW -> {
+//                List<Usuario> usuarios = new ArrayList<>();
+//                usuarios.add(usuarioService.findGerenteByDepartamento(historico.getDemanda().getUsuario().getDepartamento()));
+//                notificacao.setAcao(AcaoNotificacao.NOVOWORKFLOWAPROVACAO);
+//                notificacao.setDescricaoNotificacao("O analista iniciou um novo workflow de aprovação!");
+//                notificacao.setTituloNotificacao("Novo workflow iniciado");
+//                notificacao.setTipoNotificacao(TipoNotificacao.PROPOSTA);
+//                notificacao.setLinkNotificacao("http://localhost:8081/home/proposal");
+//                notificacao.setIdComponenteLink(historico.getDemanda().getIdDemanda());
+//                notificacao.setUsuariosNotificacao(usuarios);
+//                notificacao = notificacaoService.save(notificacao);
+//                simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + historico.getDemanda().getIdDemanda(), notificacao);
+//            }
         }
     }
 
