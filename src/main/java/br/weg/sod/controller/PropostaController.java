@@ -41,6 +41,8 @@ public class PropostaController {
     private NotificacaoService notificacaoService;
     private SimpMessagingTemplate simpMessagingTemplate;
 
+    private EmailSenderService emailSenderService;
+
     @GetMapping
     public ResponseEntity<List<Proposta>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(propostaService.findAll());
@@ -195,6 +197,7 @@ public class PropostaController {
                 //inicia histórico de em workflow
                 Usuario solicitante = usuarioService.findById(propostaSalva.getDemanda().getUsuario().getIdUsuario()).get();
                 GerenteNegocio gerenteNegocio = usuarioService.findGerenteByDepartamento(solicitante.getDepartamento());
+
                 historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARWORKFLOW, StatusHistorico.EMANDAMENTO, gerenteNegocio, propostaSalva.getDemanda());
 
                 Notificacao notificacao = new Notificacao();
@@ -211,6 +214,10 @@ public class PropostaController {
                 notificacao = notificacaoService.save(notificacao);
                 simpMessagingTemplate.convertAndSend("/notificacao/demanda/" +
                         propostaSalva.getDemanda().getIdDemanda(), notificacao);
+
+                emailSenderService.sendEmail("diego_planinscheck@estudante.sc.senai.br", "Gerente Negócio",
+                        "Você tem um novo workflow de aprovação para analisar\n" +
+                                "Segue link para aprovação: http://localhost:8081/home/proposal/" + propostaSalva.getIdProposta());
             }
         } else if (usuarioAprovacao instanceof GerenteTI) {
             //encerra historico de avaliação do gerente de TI

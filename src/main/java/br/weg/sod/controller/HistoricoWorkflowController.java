@@ -33,6 +33,8 @@ public class HistoricoWorkflowController {
     private NotificacaoService notificacaoService;
     private SimpMessagingTemplate simpMessagingTemplate;
 
+    private EmailSenderService emailSenderService;
+
 
     @GetMapping
     public ResponseEntity<List<HistoricoWorkflow>> findAll() {
@@ -156,6 +158,14 @@ public class HistoricoWorkflowController {
 
         HistoricoWorkflow historicoSalvo = historicoWorkflowService.save(historicoWorkflow);
 
+        if(historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior() == Tarefa.APROVARWORKFLOW
+                && historicoSalvo.getTarefa() == Tarefa.AVALIARWORKFLOW){
+            GerenteTI gerenteTI = usuarioService.findGerenteTIByDepartamento(demandaRelacionada.getUsuario().getDepartamento());
+            emailSenderService.sendEmail("diego_planinscheck@estudante.sc.senai.br", "Gerente TI",
+                    "Você tem um novo workflow de aprovação para analisar\n" +
+                    "Segue link para aprovação: http://localhost:8081/home/proposal?" + historicoSalvo.getDemanda().getIdDemanda());
+        }
+
         if (historicoWorkflowDTO.getAcaoFeitaHistoricoAnterior() == Tarefa.REPROVARWORKFLOW) {
             Proposta propostaAlterada = propostaService.findById(historicoSalvo.getDemanda().getIdDemanda()).get();
             propostaAlterada.setEmWorkflow(false);
@@ -182,19 +192,6 @@ public class HistoricoWorkflowController {
                 notificacao = notificacaoService.save(notificacao);
                 simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + historico.getDemanda().getIdDemanda(), notificacao);
             }
-//            case INICIARWORKFLOW -> {
-//                List<Usuario> usuarios = new ArrayList<>();
-//                usuarios.add(usuarioService.findGerenteByDepartamento(historico.getDemanda().getUsuario().getDepartamento()));
-//                notificacao.setAcao(AcaoNotificacao.NOVOWORKFLOWAPROVACAO);
-//                notificacao.setDescricaoNotificacao("O analista iniciou um novo workflow de aprovação!");
-//                notificacao.setTituloNotificacao("Novo workflow iniciado");
-//                notificacao.setTipoNotificacao(TipoNotificacao.PROPOSTA);
-//                notificacao.setLinkNotificacao("http://localhost:8081/home/proposal");
-//                notificacao.setIdComponenteLink(historico.getDemanda().getIdDemanda());
-//                notificacao.setUsuariosNotificacao(usuarios);
-//                notificacao = notificacaoService.save(notificacao);
-//                simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + historico.getDemanda().getIdDemanda(), notificacao);
-//            }
         }
     }
 
