@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "mensagem")
 public class Mensagem {
@@ -34,5 +35,4 @@ public class Mensagem {
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
-
 }

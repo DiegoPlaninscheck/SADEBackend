@@ -2,14 +2,14 @@ package br.weg.sod.dto;
 
 import br.weg.sod.model.entities.Chat;
 import br.weg.sod.model.entities.Usuario;
-import lombok.Getter;
+import lombok.Data;
 
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
-@Getter
+@Data
 public class MensagemDTO {
 
     @NotBlank

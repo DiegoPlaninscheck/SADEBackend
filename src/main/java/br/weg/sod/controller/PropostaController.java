@@ -61,11 +61,10 @@ public class PropostaController {
 
     @Transactional
     @PostMapping("/{idAnalista}")
-    public ResponseEntity<Object> save(@RequestParam("proposta") @Valid String propostaJSON,
-                                       @RequestParam(value = "files", required = false)
-                                       MultipartFile[] multipartFiles,
-                                       @PathVariable("idAnalista") Integer idAnalista) throws IOException {
-
+    public ResponseEntity<Object> save(
+            @RequestParam("proposta") @Valid String propostaJSON,
+            @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
+            @PathVariable("idAnalista") Integer idAnalista) throws IOException {
         PropostaUtil util = new PropostaUtil();
         Proposta proposta = util.convertJsonToModel(propostaJSON, 1);
 
@@ -233,13 +232,6 @@ public class PropostaController {
         if (!propostaService.existsById(idProposta)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma proposta com o ID informado");
         }
-
-//        ATA ata = ataService.findById(idATA).get();
-//
-//        ata.setUsuariosReuniaoATA(null);
-//
-//        ataService.save(ata);
-
 
         propostaService.deleteById(idProposta);
         return ResponseEntity.status(HttpStatus.OK).body("Proposta deletada com sucesso!");

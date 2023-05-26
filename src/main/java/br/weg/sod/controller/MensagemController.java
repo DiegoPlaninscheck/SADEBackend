@@ -15,6 +15,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin
@@ -60,11 +61,16 @@ public class MensagemController {
 
     @MessageMapping("/demanda/{idChat}")
     @SendTo("/demanda/{idChat}/chat")
-    public Mensagem salvarMensagem(@Payload MensagemDTO mensagemDTO){
+    public List<Object> salvarMensagem(@Payload MensagemDTO mensagemDTO){
         Mensagem mensagem = new Mensagem();
         BeanUtils.copyProperties(mensagemDTO, mensagem);
 
-        return mensagemService.save(mensagem);
+        List<Object> listaRetorno = new ArrayList<>();
+
+        listaRetorno.add(mensagemService.save(mensagem));
+        listaRetorno.add(mensagemDTO.getChat().getIdChat());
+
+        return listaRetorno;
     }
 
     @PutMapping("/{id}")
