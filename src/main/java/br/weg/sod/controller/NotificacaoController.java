@@ -6,6 +6,7 @@ import br.weg.sod.model.entities.Notificacao;
 import br.weg.sod.model.entities.Usuario;
 import br.weg.sod.model.entities.enuns.TipoNotificacao;
 import br.weg.sod.model.service.NotificacaoService;
+import br.weg.sod.model.service.UsuarioService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class NotificacaoController {
 
     private NotificacaoService notificacaoService;
     private UsuarioController usuarioController;
+    private UsuarioService usuarioService;
 
     @GetMapping
     public ResponseEntity<List<Notificacao>> findAll() {
@@ -65,13 +67,17 @@ public class NotificacaoController {
         return ResponseEntity.status(HttpStatus.OK).body(notificacaoService.save(notificacao));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteById(@PathVariable(name = "id") Integer idNotificacao) {
+    @DeleteMapping("/{idNotificacao}/{idUsuario}")
+    public ResponseEntity<Object> deleteById(@PathVariable(name = "idNotificacao") Integer idNotificacao, @PathVariable(name = "idUsuario") Integer idUsuario) {
         if (!notificacaoService.existsById(idNotificacao)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma notificacao com o ID informado");
         }
+
+        Usuario usuario = usuarioService.findById(idUsuario).get();
+
         notificacaoService.deleteById(idNotificacao);
-        return ResponseEntity.status(HttpStatus.OK).body("Notificacao deletada com sucesso!");
+
+        return ResponseEntity.status(HttpStatus.OK).body(usuario.getNotificacoesUsuario());
     }
 
 }

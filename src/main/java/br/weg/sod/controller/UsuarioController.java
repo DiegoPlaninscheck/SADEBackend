@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @CrossOrigin
@@ -168,6 +169,23 @@ public class UsuarioController {
         usuarioNotificacao.setNotificacoesUsuario(novasNotificacacoesUsuario);
 
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuarioNotificacao));
+    }
+
+    @PutMapping("/atualizarFoto/{idUsuario}")
+    public ResponseEntity<Object> atualizarFoto(@RequestParam("foto") @Valid MultipartFile foto, @PathVariable(name = "idUsuario") Integer idUsuario) {
+        if (!usuarioService.existsById(idUsuario)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhum usuario com o ID informado");
+        }
+
+        Usuario usuario = usuarioService.findById(idUsuario).get();
+
+        try {
+            usuario.setFoto(foto.getBytes());
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.save(usuario));
     }
 
     @DeleteMapping("/{id}")
