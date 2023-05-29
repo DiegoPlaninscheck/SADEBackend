@@ -3,6 +3,7 @@ package br.weg.sod.util;
 import br.weg.sod.model.entities.Demanda;
 import br.weg.sod.model.service.DemandaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ public class VerificacoesUtil {
 
     // 86400s = 1 dia
     @Scheduled(fixedDelay = 10000)
+//    @Async
     public void verificarDemandaRascunho(){
         List<Demanda> demandas = new ArrayList<>();
         for(Demanda demanda : demandaService.findAll()){
