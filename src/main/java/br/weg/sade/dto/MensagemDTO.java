@@ -3,13 +3,14 @@ package br.weg.sade.dto;
 import br.weg.sade.model.entities.Chat;
 import br.weg.sade.model.entities.Usuario;
 import lombok.Getter;
+import lombok.Data;
 
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
-@Getter
+@Data
 public class MensagemDTO {
 
     @NotBlank
