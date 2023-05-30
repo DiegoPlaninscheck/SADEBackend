@@ -11,22 +11,14 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
+@EnableScheduling
+@EnableAsync
+@EnableTransactionManagement
 public class SadeApplication {
-//@EnableScheduling
-//@EnableAsync
-//@EnableTransactionManagement
-
-//	@Autowired
-//	private VerificacoesUtil verificacoesUtil;
 
 	public static void main(String[] args) {
 		SpringApplication.run(SadeApplication.class, args);
 	}
-
-//	@EventListener(ApplicationEvent.class)
-//	public void verificacoes(){
-//		verificacoesUtil.verificarDemandaRascunho();
-//	}
 
 
 }
