@@ -217,7 +217,7 @@ public class PropostaController {
 
                 emailSenderService.sendEmail("diego_planinscheck@estudante.sc.senai.br", "Gerente Negócio",
                         "Você tem um novo workflow de aprovação para analisar\n" +
-                                "Segue link para aprovação: http://localhost:8081/home/proposal/" + propostaSalva.getIdProposta());
+                                "Segue link para aprovação: http://localhost:8081/home/proposal/?" + propostaSalva.getIdProposta());
             }
         } else if (usuarioAprovacao instanceof GerenteTI) {
             //encerra historico de avaliação do gerente de TI

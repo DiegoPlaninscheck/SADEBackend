@@ -11,9 +11,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
-@EnableScheduling
-@EnableAsync
-@EnableTransactionManagement
+//@EnableScheduling
+//@EnableAsync
+//@EnableTransactionManagement
 public class SodApplication {
 
 //	@Autowired
