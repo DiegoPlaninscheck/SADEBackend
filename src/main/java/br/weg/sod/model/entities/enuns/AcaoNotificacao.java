@@ -18,7 +18,9 @@ public enum AcaoNotificacao {
     VIROUPROPOSTA("Virou proposta"),
     VIROUPAUTA("Virou pauta"),
     VIROUATA("Virou ATA"),
-    AVALIACAODG("Avaliação Direção Geral");
+    AVALIACAODG("Avaliação Direção Geral"),
+
+    RASCUNHO("Rascunho");
 
     private String nome;
 }
