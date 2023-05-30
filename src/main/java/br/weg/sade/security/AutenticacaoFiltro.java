@@ -32,6 +32,7 @@ public class AutenticacaoFiltro extends OncePerRequestFilter {
         String token = tokenUtils.buscarCookie(request);
         Boolean valido = tokenUtils.validarToken(token);
 
+
         if (valido) {
             Integer idUsuario = tokenUtils.getIDUsuario(token);
             UserDetails usuario = jpaService.loadUserByID(idUsuario);

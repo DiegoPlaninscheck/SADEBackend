@@ -187,7 +187,7 @@ public class PDFUtil {
         addNovaLinha(skipLine, 2);
 
         skipLine.add(new Paragraph("Solicitante: " +
-                proposta.getDemanda().getUsuario().getNomeUsuario() +
+                proposta.getDemanda().getUsuario().getNomeUsuario() + " - " +
                 proposta.getDemanda().getUsuario().getDepartamento(), tipoFonte("texto")));
 
         addNovaLinha(skipLine, 2);
