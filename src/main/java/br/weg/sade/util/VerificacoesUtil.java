@@ -31,7 +31,7 @@ public class VerificacoesUtil {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     // 86400s = 1 dia
-    @Scheduled(fixedDelay = 86400)
+    @Scheduled(fixedDelay = 86400000)
     @Async
     @Transactional
     public void verificarDemandaRascunho(){
