@@ -44,17 +44,15 @@ public class VerificacoesUtil {
             }
 
             if(demandas.size() > 0){
-                Notificacao notificacao = new Notificacao();
-                notificacao.setAcao(AcaoNotificacao.RASCUNHO);
-                notificacao.setDescricaoNotificacao("Há rascunho(s) para ser(em) concluido(s)");
-                notificacao.setTituloNotificacao("Rascunho");
-                notificacao.setTipoNotificacao(TipoNotificacao.DEMANDA);
-                notificacao.setLinkNotificacao("http://localhost:8081/continuedemand/?");
-
-                List<Usuario> usuarios = new ArrayList<>();
-
                 for(Demanda demanda : demandas){
-                    System.out.println(demanda);
+                    Notificacao notificacao = new Notificacao();
+                    notificacao.setAcao(AcaoNotificacao.RASCUNHO);
+                    notificacao.setDescricaoNotificacao("Há rascunho(s) para ser(em) concluido(s)");
+                    notificacao.setTituloNotificacao("Rascunho");
+                    notificacao.setTipoNotificacao(TipoNotificacao.DEMANDA);
+                    notificacao.setLinkNotificacao("http://localhost:8081/continuedemand/?");
+
+                    List<Usuario> usuarios = new ArrayList<>();
 
                     usuarios.add(demanda.getUsuario());
 
@@ -62,7 +60,7 @@ public class VerificacoesUtil {
 
                     notificacao.setIdComponenteLink(demanda.getIdDemanda());
 
-                    notificacao = notificacaoService.save(notificacao);
+                    Notificacao notificacaoSalva = notificacaoService.save(notificacao);
 
                     simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + demanda.getIdDemanda(), notificacao);
                 }
