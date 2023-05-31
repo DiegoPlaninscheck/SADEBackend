@@ -62,11 +62,13 @@ public class ChatController {
 
         List<Usuario> usuariosRelacionados = new ArrayList<>();
 
-        usuariosRelacionados.add(demandaChat.getUsuario());
-        usuariosRelacionados.add(usuarioService.findById(idAnalista).get());
-        usuariosRelacionados.add(usuarioService.findGerenteByDepartamento(demandaChat.getUsuario().getDepartamento()));
+        if(chatDTO.getUsuariosChat().size() == 0){
+            usuariosRelacionados.add(demandaChat.getUsuario());
+            usuariosRelacionados.add(usuarioService.findById(idAnalista).get());
+            usuariosRelacionados.add(usuarioService.findGerenteByDepartamento(demandaChat.getUsuario().getDepartamento()));
 
-        chat.setUsuariosChat(usuariosRelacionados);
+            chat.setUsuariosChat(usuariosRelacionados);
+        }
 
         Chat chatSalvo = chatService.save(chat);
         demandaService.save(demandaChat);
@@ -79,7 +81,11 @@ public class ChatController {
         notificacao.setTipoNotificacao(TipoNotificacao.CHAT);
         notificacao.setLinkNotificacao("http://localhost:8081/home/chat");
         notificacao.setIdComponenteLink(chatSalvo.getIdChat());
-        notificacao.setUsuariosNotificacao(usuariosRelacionados);
+        if(usuariosRelacionados.size() > 0){
+            notificacao.setUsuariosNotificacao(usuariosRelacionados);
+        } else {
+            notificacao.setUsuariosNotificacao(chatSalvo.getUsuariosChat());
+        }
 
         notificacao = notificacaoService.save(notificacao);
 
