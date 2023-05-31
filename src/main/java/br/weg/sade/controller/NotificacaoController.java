@@ -1,18 +1,24 @@
 package br.weg.sade.controller;
 
+import br.weg.sade.model.dto.ChatDTO;
 import br.weg.sade.model.dto.NotificacaoDTO;
 import br.weg.sade.model.dto.NotificacaoUsuarioDTO;
+import br.weg.sade.model.entity.Chat;
 import br.weg.sade.model.entity.Notificacao;
 import br.weg.sade.model.entity.Usuario;
+import br.weg.sade.model.enuns.AcaoNotificacao;
+import br.weg.sade.model.enuns.TipoNotificacao;
 import br.weg.sade.service.NotificacaoService;
 import br.weg.sade.service.UsuarioService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin
@@ -24,6 +30,8 @@ public class NotificacaoController {
     private NotificacaoService notificacaoService;
     private UsuarioController usuarioController;
     private UsuarioService usuarioService;
+
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @GetMapping
     public ResponseEntity<List<Notificacao>> findAll() {
@@ -48,6 +56,36 @@ public class NotificacaoController {
             NotificacaoUsuarioDTO notificacaoUsuarioDTO = new NotificacaoUsuarioDTO(notificacaoSalva, usuario);
             usuarioController.novaNotificacao(notificacaoUsuarioDTO);
         }
+
+        return ResponseEntity.status(HttpStatus.OK).body(notificacaoSalva);
+    }
+
+    @PostMapping("/chat/{id}")
+    public ResponseEntity<Object> salvarNotificacaoChat(@RequestBody @Valid ChatDTO chatDTO, @PathVariable(name = "id") Integer idChat){
+        Chat chat = new Chat();
+
+        BeanUtils.copyProperties(chatDTO, chat);
+
+        Notificacao notificacao = new Notificacao();
+        notificacao.setAcao(AcaoNotificacao.CHAT);
+        notificacao.setDescricaoNotificacao("Há nova(s) mensagem(ns) no seu chat!");
+        notificacao.setTituloNotificacao("Chat");
+        notificacao.setTipoNotificacao(TipoNotificacao.CHAT);
+        notificacao.setLinkNotificacao("http://localhost:8081/chats");
+
+        List<Usuario> usuarios = new ArrayList<>();
+
+        for (Usuario usuario : chat.getUsuariosChat()){
+            usuarios.add(usuario);
+        }
+
+        notificacao.setUsuariosNotificacao(usuarios);
+
+        notificacao.setIdComponenteLink(idChat);
+
+        Notificacao notificacaoSalva = notificacaoService.save(notificacao);
+
+        simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + chat.getDemanda().getIdDemanda(), notificacao);
 
         return ResponseEntity.status(HttpStatus.OK).body(notificacaoSalva);
     }
