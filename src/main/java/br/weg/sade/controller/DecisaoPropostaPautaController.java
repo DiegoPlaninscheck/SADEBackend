@@ -1,11 +1,11 @@
 package br.weg.sade.controller;
 
-import br.weg.sade.dto.DecisaoPropostaPautaCriacaoDTO;
-import br.weg.sade.dto.DecisaoPropostaPautaEdicaoDTO;
-import br.weg.sade.model.entities.DecisaoPropostaPauta;
-import br.weg.sade.model.service.DecisaoPropostaPautaService;
-import br.weg.sade.model.service.HistoricoWorkflowService;
-import br.weg.sade.model.service.UsuarioService;
+import br.weg.sade.model.dto.DecisaoPropostaPautaCriacaoDTO;
+import br.weg.sade.model.dto.DecisaoPropostaPautaEdicaoDTO;
+import br.weg.sade.model.entity.DecisaoPropostaPauta;
+import br.weg.sade.service.DecisaoPropostaPautaService;
+import br.weg.sade.service.HistoricoWorkflowService;
+import br.weg.sade.service.UsuarioService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;

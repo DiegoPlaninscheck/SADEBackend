@@ -1,7 +1,7 @@
 package br.weg.sade.util;
 
-import br.weg.sade.dto.PautaEdicaoDTO;
-import br.weg.sade.model.entities.Pauta;
+import br.weg.sade.model.dto.PautaEdicaoDTO;
+import br.weg.sade.model.entity.Pauta;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.validation.Valid;

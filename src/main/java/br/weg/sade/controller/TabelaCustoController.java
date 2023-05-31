@@ -1,8 +1,8 @@
 package br.weg.sade.controller;
 
-import br.weg.sade.dto.TabelaCustoDTO;
-import br.weg.sade.model.entities.TabelaCusto;
-import br.weg.sade.model.service.TabelaCustoService;
+import br.weg.sade.model.dto.TabelaCustoDTO;
+import br.weg.sade.model.entity.TabelaCusto;
+import br.weg.sade.service.TabelaCustoService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;

@@ -1,10 +1,10 @@
 package br.weg.sade.controller;
 
-import br.weg.sade.dto.MensagemDTO;
-import br.weg.sade.model.entities.Chat;
-import br.weg.sade.model.entities.Mensagem;
-import br.weg.sade.model.service.ChatService;
-import br.weg.sade.model.service.MensagemService;
+import br.weg.sade.model.dto.MensagemDTO;
+import br.weg.sade.model.entity.Chat;
+import br.weg.sade.model.entity.Mensagem;
+import br.weg.sade.service.ChatService;
+import br.weg.sade.service.MensagemService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;

@@ -1,8 +1,8 @@
 package br.weg.sade.util;
 
-import br.weg.sade.dto.HistoricoWorkflowCriacaoDTO;
-import br.weg.sade.dto.HistoricoWorkflowEdicaoDTO;
-import br.weg.sade.model.entities.HistoricoWorkflow;
+import br.weg.sade.model.dto.HistoricoWorkflowCriacaoDTO;
+import br.weg.sade.model.dto.HistoricoWorkflowEdicaoDTO;
+import br.weg.sade.model.entity.HistoricoWorkflow;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.validation.Valid;

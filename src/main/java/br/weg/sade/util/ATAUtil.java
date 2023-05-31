@@ -1,8 +1,8 @@
 package br.weg.sade.util;
 
-import br.weg.sade.dto.ATACriacaoDTO;
-import br.weg.sade.dto.ATAEdicaoDTO;
-import br.weg.sade.model.entities.ATA;
+import br.weg.sade.model.dto.ATACriacaoDTO;
+import br.weg.sade.model.dto.ATAEdicaoDTO;
+import br.weg.sade.model.entity.ATA;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.validation.Valid;

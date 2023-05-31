@@ -1,8 +1,8 @@
 package br.weg.sade.controller;
 
-import br.weg.sade.dto.BeneficioDTO;
-import br.weg.sade.model.entities.Beneficio;
-import br.weg.sade.model.service.BeneficioService;
+import br.weg.sade.model.dto.BeneficioDTO;
+import br.weg.sade.model.entity.Beneficio;
+import br.weg.sade.service.BeneficioService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;

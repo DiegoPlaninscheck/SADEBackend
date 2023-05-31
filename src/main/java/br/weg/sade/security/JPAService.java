@@ -1,6 +1,6 @@
 package br.weg.sade.security;
 
-import br.weg.sade.model.entities.Usuario;
+import br.weg.sade.model.entity.Usuario;
 import br.weg.sade.repository.UsuarioRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

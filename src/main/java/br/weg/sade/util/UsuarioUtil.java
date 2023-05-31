@@ -1,7 +1,7 @@
 package br.weg.sade.util;
 
-import br.weg.sade.dto.UsuarioDTO;
-import br.weg.sade.model.entities.*;
+import br.weg.sade.model.dto.UsuarioDTO;
+import br.weg.sade.model.entity.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.validation.Valid;

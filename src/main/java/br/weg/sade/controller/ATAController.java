@@ -1,11 +1,11 @@
 package br.weg.sade.controller;
 
-import br.weg.sade.dto.ATACriacaoDTO;
-import br.weg.sade.dto.ATAEdicaoDTO;
-import br.weg.sade.dto.DecisaoPropostaATADTO;
-import br.weg.sade.model.entities.*;
-import br.weg.sade.model.entities.enuns.*;
-import br.weg.sade.model.service.*;
+import br.weg.sade.model.dto.ATACriacaoDTO;
+import br.weg.sade.model.dto.ATAEdicaoDTO;
+import br.weg.sade.model.dto.DecisaoPropostaATADTO;
+import br.weg.sade.model.entity.*;
+import br.weg.sade.model.enuns.*;
+import br.weg.sade.service.*;
 import br.weg.sade.util.ATAUtil;
 import br.weg.sade.util.PDFUtil;
 import br.weg.sade.util.UtilFunctions;

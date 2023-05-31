@@ -1,8 +1,8 @@
 package br.weg.sade.controller;
 
-import br.weg.sade.dto.CentroCustoDTO;
-import br.weg.sade.model.entities.CentroCusto;
-import br.weg.sade.model.service.CentroCustoService;
+import br.weg.sade.model.dto.CentroCustoDTO;
+import br.weg.sade.model.entity.CentroCusto;
+import br.weg.sade.service.CentroCustoService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;

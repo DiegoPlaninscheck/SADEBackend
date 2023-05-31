@@ -1,9 +1,9 @@
 package br.weg.sade.controller;
 
-import br.weg.sade.dto.DemandaEdicaoDTO;
-import br.weg.sade.model.entities.*;
-import br.weg.sade.model.entities.enuns.*;
-import br.weg.sade.model.service.*;
+import br.weg.sade.model.dto.DemandaEdicaoDTO;
+import br.weg.sade.model.entity.*;
+import br.weg.sade.model.enuns.*;
+import br.weg.sade.service.*;
 import br.weg.sade.util.DemandaUtil;
 import br.weg.sade.util.PDFUtil;
 import br.weg.sade.util.UtilFunctions;

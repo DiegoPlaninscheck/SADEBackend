@@ -1,6 +1,6 @@
 package br.weg.sade.security;
 
-import br.weg.sade.model.entities.Usuario;
+import br.weg.sade.model.entity.Usuario;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

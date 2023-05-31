@@ -1,8 +1,8 @@
 package br.weg.sade.util;
 
-import br.weg.sade.dto.DemandaCriacaoDTO;
-import br.weg.sade.dto.DemandaEdicaoDTO;
-import br.weg.sade.model.entities.Demanda;
+import br.weg.sade.model.dto.DemandaCriacaoDTO;
+import br.weg.sade.model.dto.DemandaEdicaoDTO;
+import br.weg.sade.model.entity.Demanda;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.validation.Valid;

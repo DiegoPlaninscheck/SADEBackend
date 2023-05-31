@@ -1,8 +1,8 @@
 package br.weg.sade.controller;
 
-import br.weg.sade.dto.BUDTO;
-import br.weg.sade.model.entities.BU;
-import br.weg.sade.model.service.BUService;
+import br.weg.sade.model.dto.BUDTO;
+import br.weg.sade.model.entity.BU;
+import br.weg.sade.service.BUService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;

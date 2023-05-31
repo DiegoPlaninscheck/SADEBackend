@@ -1,6 +1,6 @@
 package br.weg.sade.util;
 
-import br.weg.sade.model.entities.*;
+import br.weg.sade.model.entity.*;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;

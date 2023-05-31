@@ -1,8 +1,8 @@
 package br.weg.sade.controller;
 
-import br.weg.sade.dto.ForumDTO;
-import br.weg.sade.model.entities.Forum;
-import br.weg.sade.model.service.ForumService;
+import br.weg.sade.model.dto.ForumDTO;
+import br.weg.sade.model.entity.Forum;
+import br.weg.sade.service.ForumService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;

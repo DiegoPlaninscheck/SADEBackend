@@ -1,16 +1,16 @@
 package br.weg.sade.controller;
 
-import br.weg.sade.dto.ChatDTO;
-import br.weg.sade.model.entities.Chat;
-import br.weg.sade.model.entities.Demanda;
-import br.weg.sade.model.entities.Notificacao;
-import br.weg.sade.model.entities.Usuario;
-import br.weg.sade.model.entities.enuns.AcaoNotificacao;
-import br.weg.sade.model.entities.enuns.TipoNotificacao;
-import br.weg.sade.model.service.ChatService;
-import br.weg.sade.model.service.DemandaService;
-import br.weg.sade.model.service.NotificacaoService;
-import br.weg.sade.model.service.UsuarioService;
+import br.weg.sade.model.dto.ChatDTO;
+import br.weg.sade.model.entity.Chat;
+import br.weg.sade.model.entity.Demanda;
+import br.weg.sade.model.entity.Notificacao;
+import br.weg.sade.model.entity.Usuario;
+import br.weg.sade.model.enuns.AcaoNotificacao;
+import br.weg.sade.model.enuns.TipoNotificacao;
+import br.weg.sade.service.ChatService;
+import br.weg.sade.service.DemandaService;
+import br.weg.sade.service.NotificacaoService;
+import br.weg.sade.service.UsuarioService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;

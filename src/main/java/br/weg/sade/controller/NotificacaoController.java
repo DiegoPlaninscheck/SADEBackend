@@ -1,11 +1,11 @@
 package br.weg.sade.controller;
 
-import br.weg.sade.dto.NotificacaoDTO;
-import br.weg.sade.dto.NotificacaoUsuarioDTO;
-import br.weg.sade.model.entities.Notificacao;
-import br.weg.sade.model.entities.Usuario;
-import br.weg.sade.model.service.NotificacaoService;
-import br.weg.sade.model.service.UsuarioService;
+import br.weg.sade.model.dto.NotificacaoDTO;
+import br.weg.sade.model.dto.NotificacaoUsuarioDTO;
+import br.weg.sade.model.entity.Notificacao;
+import br.weg.sade.model.entity.Usuario;
+import br.weg.sade.service.NotificacaoService;
+import br.weg.sade.service.UsuarioService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;

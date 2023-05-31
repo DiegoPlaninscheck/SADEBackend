@@ -1,7 +1,7 @@
 package br.weg.sade.repository;
 
-import br.weg.sade.model.entities.DecisaoPropostaPauta;
-import br.weg.sade.model.entities.Proposta;
+import br.weg.sade.model.entity.DecisaoPropostaPauta;
+import br.weg.sade.model.entity.Proposta;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

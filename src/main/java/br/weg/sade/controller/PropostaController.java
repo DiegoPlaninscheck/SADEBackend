@@ -1,11 +1,11 @@
 package br.weg.sade.controller;
 
-import br.weg.sade.model.entities.*;
-import br.weg.sade.model.entities.enuns.AcaoNotificacao;
-import br.weg.sade.model.entities.enuns.StatusHistorico;
-import br.weg.sade.model.entities.enuns.Tarefa;
-import br.weg.sade.model.entities.enuns.TipoNotificacao;
-import br.weg.sade.model.service.*;
+import br.weg.sade.model.entity.*;
+import br.weg.sade.model.enuns.AcaoNotificacao;
+import br.weg.sade.model.enuns.StatusHistorico;
+import br.weg.sade.model.enuns.Tarefa;
+import br.weg.sade.model.enuns.TipoNotificacao;
+import br.weg.sade.service.*;
 import br.weg.sade.util.PDFUtil;
 import br.weg.sade.util.PropostaUtil;
 import br.weg.sade.util.UtilFunctions;
@@ -74,10 +74,11 @@ public class PropostaController {
         if (validacao != null) {
             return validacao;
         }
-        if (proposta.getPayback() == null) {
-            Integer valorPayback = 2; //depois fazer a conta com payback e custo totais e os caralho
-            proposta.setPayback(valorPayback);
-        }
+
+//        if (proposta.getPayback() == null) {
+//            String valorPayback = 2; //depois fazer a conta com payback e custo totais e os caralho
+//            proposta.setPayback(valorPayback);
+//        }
 
         proposta.setIdProposta(proposta.getDemanda().getIdDemanda());
         Usuario analistaResponsavel = usuarioService.findById(idAnalista).get();

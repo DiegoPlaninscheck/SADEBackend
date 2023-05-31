@@ -1,8 +1,8 @@
 package br.weg.sade.controller;
 
-import br.weg.sade.dto.ArquivoDemandaDTO;
-import br.weg.sade.model.entities.ArquivoDemanda;
-import br.weg.sade.model.service.ArquivoDemandaService;
+import br.weg.sade.model.dto.ArquivoDemandaDTO;
+import br.weg.sade.model.entity.ArquivoDemanda;
+import br.weg.sade.service.ArquivoDemandaService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

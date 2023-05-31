@@ -1,8 +1,8 @@
 package br.weg.sade.repository;
 
-import br.weg.sade.model.entities.Demanda;
-import br.weg.sade.model.entities.Usuario;
-import br.weg.sade.model.entities.enuns.StatusDemanda;
+import br.weg.sade.model.entity.Demanda;
+import br.weg.sade.model.entity.Usuario;
+import br.weg.sade.model.enuns.StatusDemanda;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

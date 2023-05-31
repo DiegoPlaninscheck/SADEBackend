@@ -1,6 +1,6 @@
 package br.weg.sade.repository;
 
-import br.weg.sade.model.entities.BU;
+import br.weg.sade.model.entity.BU;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
