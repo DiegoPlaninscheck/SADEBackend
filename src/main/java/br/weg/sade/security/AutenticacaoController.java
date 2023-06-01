@@ -31,7 +31,7 @@ public class AutenticacaoController {
 
         if (authentication.isAuthenticated()) {
             UserJPA userJPA = (UserJPA) authentication.getPrincipal();
-            response.addCookie(tokenUtils.gerarCookie(userJPA));
+            response.addCookie(tokenUtils.gerarCookie(userJPA, "jwt", 14400));
             return ResponseEntity.ok(userJPA);
         }
 
@@ -44,7 +44,7 @@ public class AutenticacaoController {
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
         if (authentication.isAuthenticated()) {
-            Cookie cookie = tokenUtils.gerarCookie((UserJPA) authentication.getPrincipal());
+            Cookie cookie = tokenUtils.gerarCookie((UserJPA) authentication.getPrincipal(), "rjwt", 604800);
             response.addCookie(cookie);
             return ResponseEntity.ok(cookie);
         }

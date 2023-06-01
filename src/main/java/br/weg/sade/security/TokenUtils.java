@@ -13,18 +13,21 @@ import java.util.Date;
 public class TokenUtils {
     private final String senhaForte = "f9fae8edc4c43f2bdf83b5f3c37a80d8f3c73f559785889e606387be23558867";
 
-    public String gerarToken(UserJPA userJPA) {
+    public String gerarToken(String subject, Integer expirationDate) {
         return Jwts.builder().setIssuer("Sod")
-                .setSubject(userJPA.getUsuario().getIdUsuario().toString())
-                .setIssuedAt(new Date()).setExpiration(new Date(new Date().getTime() + 14400000))
-                .signWith(SignatureAlgorithm.HS256, senhaForte).compact()
-                ;
+                .setSubject(subject)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(new Date().getTime() + (expirationDate * 1000)))
+                .signWith(SignatureAlgorithm.HS256, senhaForte).compact();
     }
 
-    public Cookie gerarCookie(UserJPA userJPA) {
-        Cookie cookie = new Cookie("jwt", gerarToken(userJPA));
+    public Cookie gerarCookie(UserJPA userJPA, String nomeCookie, Integer maxAge) {
+        Cookie cookie = new Cookie(nomeCookie, gerarToken(userJPA.getUsuario().getIdUsuario().toString(), maxAge));
+
+        cookie.setVersion(cookie.getVersion() + 1);
         cookie.setPath("/");
-        cookie.setMaxAge(14400);
+        cookie.setMaxAge(maxAge);
+
         return cookie;
     }
 
