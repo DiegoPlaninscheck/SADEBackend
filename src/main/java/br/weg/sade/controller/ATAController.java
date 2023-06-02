@@ -4,7 +4,7 @@ import br.weg.sade.model.dto.ATACriacaoDTO;
 import br.weg.sade.model.dto.ATAEdicaoDTO;
 import br.weg.sade.model.dto.DecisaoPropostaATADTO;
 import br.weg.sade.model.entity.*;
-import br.weg.sade.model.enuns.*;
+import br.weg.sade.model.enums.*;
 import br.weg.sade.service.*;
 import br.weg.sade.util.ATAUtil;
 import br.weg.sade.util.PDFUtil;

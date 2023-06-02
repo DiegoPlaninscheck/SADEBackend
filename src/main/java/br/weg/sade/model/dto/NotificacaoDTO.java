@@ -1,8 +1,8 @@
 package br.weg.sade.model.dto;
 
 import br.weg.sade.model.entity.Usuario;
-import br.weg.sade.model.enuns.AcaoNotificacao;
-import br.weg.sade.model.enuns.TipoNotificacao;
+import br.weg.sade.model.enums.AcaoNotificacao;
+import br.weg.sade.model.enums.TipoNotificacao;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

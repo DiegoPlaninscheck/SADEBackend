@@ -1,7 +1,7 @@
 package br.weg.sade.model.entity;
 
-import br.weg.sade.model.enuns.StatusHistorico;
-import br.weg.sade.model.enuns.Tarefa;
+import br.weg.sade.model.enums.StatusHistorico;
+import br.weg.sade.model.enums.Tarefa;
 import lombok.*;
 
 import javax.persistence.*;

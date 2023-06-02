@@ -1,4 +1,4 @@
-package br.weg.sade.model.enuns;
+package br.weg.sade.model.enums;
 
 import lombok.AllArgsConstructor;
 

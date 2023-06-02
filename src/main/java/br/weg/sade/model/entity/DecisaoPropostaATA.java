@@ -1,6 +1,6 @@
 package br.weg.sade.model.entity;
 
-import br.weg.sade.model.enuns.StatusDemanda;
+import br.weg.sade.model.enums.StatusDemanda;
 import lombok.Data;
 
 import javax.persistence.*;

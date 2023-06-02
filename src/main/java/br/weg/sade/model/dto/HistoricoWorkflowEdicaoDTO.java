@@ -2,8 +2,8 @@ package br.weg.sade.model.dto;
 
 import br.weg.sade.model.entity.Demanda;
 import br.weg.sade.model.entity.Usuario;
-import br.weg.sade.model.enuns.StatusHistorico;
-import br.weg.sade.model.enuns.Tarefa;
+import br.weg.sade.model.enums.StatusHistorico;
+import br.weg.sade.model.enums.Tarefa;
 import lombok.Getter;
 
 import javax.validation.constraints.*;

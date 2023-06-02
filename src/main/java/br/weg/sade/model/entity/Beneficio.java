@@ -1,7 +1,7 @@
 package br.weg.sade.model.entity;
 
-import br.weg.sade.model.enuns.Moeda;
-import br.weg.sade.model.enuns.TipoBeneficio;
+import br.weg.sade.model.enums.Moeda;
+import br.weg.sade.model.enums.TipoBeneficio;
 import lombok.*;
 
 import javax.persistence.*;

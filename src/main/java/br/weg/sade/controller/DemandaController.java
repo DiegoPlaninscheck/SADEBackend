@@ -2,7 +2,7 @@ package br.weg.sade.controller;
 
 import br.weg.sade.model.dto.DemandaEdicaoDTO;
 import br.weg.sade.model.entity.*;
-import br.weg.sade.model.enuns.*;
+import br.weg.sade.model.enums.*;
 import br.weg.sade.service.*;
 import br.weg.sade.util.DemandaUtil;
 import br.weg.sade.util.PDFUtil;

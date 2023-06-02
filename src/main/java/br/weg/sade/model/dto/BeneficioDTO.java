@@ -1,7 +1,7 @@
 package br.weg.sade.model.dto;
 
-import br.weg.sade.model.enuns.Moeda;
-import br.weg.sade.model.enuns.TipoBeneficio;
+import br.weg.sade.model.enums.Moeda;
+import br.weg.sade.model.enums.TipoBeneficio;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;

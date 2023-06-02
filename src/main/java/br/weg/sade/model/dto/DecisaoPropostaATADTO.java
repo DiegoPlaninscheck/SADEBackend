@@ -1,7 +1,7 @@
 package br.weg.sade.model.dto;
 
 import br.weg.sade.model.entity.Proposta;
-import br.weg.sade.model.enuns.StatusDemanda;
+import br.weg.sade.model.enums.StatusDemanda;
 import lombok.Data;
 
 import javax.validation.constraints.Digits;

@@ -1,7 +1,7 @@
 package br.weg.sade.service;
 
 import br.weg.sade.model.entity.*;
-import br.weg.sade.model.enuns.StatusDemanda;
+import br.weg.sade.model.enums.StatusDemanda;
 import br.weg.sade.repository.DecisaoPropostaPautaRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

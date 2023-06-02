@@ -3,7 +3,7 @@ package br.weg.sade.controller;
 import br.weg.sade.model.dto.HistoricoWorkflowCriacaoDTO;
 import br.weg.sade.model.dto.HistoricoWorkflowEdicaoDTO;
 import br.weg.sade.model.entity.*;
-import br.weg.sade.model.enuns.*;
+import br.weg.sade.model.enums.*;
 import br.weg.sade.service.*;
 import br.weg.sade.util.HistoricoWorkflowUtil;
 import br.weg.sade.util.UtilFunctions;

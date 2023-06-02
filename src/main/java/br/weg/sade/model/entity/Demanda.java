@@ -1,9 +1,9 @@
 package br.weg.sade.model.entity;
 
-import br.weg.sade.model.enuns.Frequencia;
-import br.weg.sade.model.enuns.SecaoTI;
-import br.weg.sade.model.enuns.StatusDemanda;
-import br.weg.sade.model.enuns.Tamanho;
+import br.weg.sade.model.enums.Frequencia;
+import br.weg.sade.model.enums.SecaoTI;
+import br.weg.sade.model.enums.StatusDemanda;
+import br.weg.sade.model.enums.Tamanho;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 

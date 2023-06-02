@@ -1,10 +1,10 @@
 package br.weg.sade.controller;
 
 import br.weg.sade.model.entity.*;
-import br.weg.sade.model.enuns.AcaoNotificacao;
-import br.weg.sade.model.enuns.StatusHistorico;
-import br.weg.sade.model.enuns.Tarefa;
-import br.weg.sade.model.enuns.TipoNotificacao;
+import br.weg.sade.model.enums.AcaoNotificacao;
+import br.weg.sade.model.enums.StatusHistorico;
+import br.weg.sade.model.enums.Tarefa;
+import br.weg.sade.model.enums.TipoNotificacao;
 import br.weg.sade.service.*;
 import br.weg.sade.util.PDFUtil;
 import br.weg.sade.util.PropostaUtil;

@@ -1,8 +1,8 @@
 package br.weg.sade.service;
 
 import br.weg.sade.model.entity.Beneficio;
-import br.weg.sade.model.enuns.Moeda;
-import br.weg.sade.model.enuns.TipoBeneficio;
+import br.weg.sade.model.enums.Moeda;
+import br.weg.sade.model.enums.TipoBeneficio;
 import br.weg.sade.repository.BeneficioRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

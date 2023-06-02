@@ -1,7 +1,7 @@
 package br.weg.sade.model.dto;
 
 import br.weg.sade.model.entity.*;
-import br.weg.sade.model.enuns.Frequencia;
+import br.weg.sade.model.enums.Frequencia;
 import lombok.Data;
 import lombok.ToString;
 

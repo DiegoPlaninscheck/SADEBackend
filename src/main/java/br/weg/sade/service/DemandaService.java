@@ -2,7 +2,7 @@ package br.weg.sade.service;
 
 import br.weg.sade.model.entity.Demanda;
 import br.weg.sade.model.entity.Usuario;
-import br.weg.sade.model.enuns.StatusDemanda;
+import br.weg.sade.model.enums.StatusDemanda;
 import br.weg.sade.repository.DemandaRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

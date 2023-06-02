@@ -1,12 +1,12 @@
 package br.weg.sade.util;
 
-import br.weg.sade.model.entities.Demanda;
-import br.weg.sade.model.entities.Notificacao;
-import br.weg.sade.model.entities.Usuario;
-import br.weg.sade.model.entities.enuns.AcaoNotificacao;
-import br.weg.sade.model.entities.enuns.TipoNotificacao;
-import br.weg.sade.model.service.DemandaService;
-import br.weg.sade.model.service.NotificacaoService;
+import br.weg.sade.model.entity.Demanda;
+import br.weg.sade.model.entity.Notificacao;
+import br.weg.sade.model.entity.Usuario;
+import br.weg.sade.model.enums.AcaoNotificacao;
+import br.weg.sade.model.enums.TipoNotificacao;
+import br.weg.sade.service.DemandaService;
+import br.weg.sade.service.NotificacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -14,7 +14,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
