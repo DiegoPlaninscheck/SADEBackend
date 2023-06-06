@@ -59,15 +59,6 @@ public class Usuario {
 
     @Override
     public String toString() {
-        return "Usuario{" +
-                "idUsuario=" + idUsuario +
-                ", numeroCadastro=" + numeroCadastro +
-                ", nomeUsuario='" + nomeUsuario + '\'' +
-                ", departamento='" + departamento + '\'' +
-                ", email='" + email + '\'' +
-                ", senha='" + senha + '\'' +
-                ", setor='" + setor + '\'' +
-                ", cargo='" + cargo + '\'' +
-                '}';
+        return "{'idUsuario':" + idUsuario + ",'numeroCadastro':" + numeroCadastro + ",'nomeUsuario': '" + nomeUsuario + "'" + ",'departamento': '" + departamento + "'" + ",'email':'" + email + "'" + ",'senha':'" + senha + "'" + ",'setor':'" + setor + "'" + ",'cargo':'" + cargo + "'}";
     }
 }

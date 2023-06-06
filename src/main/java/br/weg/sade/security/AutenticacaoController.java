@@ -6,10 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +21,15 @@ public class AutenticacaoController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @GetMapping("/cookie/{token}")
+    public ResponseEntity<Object> transformarToken(@PathVariable("token") String token){
+
+
+
+
+        return ResponseEntity.ok().body(tokenUtils.decodarToken(token));
+    }
+
     @PostMapping("/auth")
     public ResponseEntity<Object> autenticacao(@RequestBody @Valid UsuarioDTO usuarioDTO, HttpServletResponse response) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(), usuarioDTO.getSenha());
@@ -31,7 +37,7 @@ public class AutenticacaoController {
 
         if (authentication.isAuthenticated()) {
             UserJPA userJPA = (UserJPA) authentication.getPrincipal();
-            response.addCookie(tokenUtils.gerarCookie(userJPA));
+            response.addCookie(tokenUtils.gerarCookie(userJPA.getUsuario().getIdUsuario().toString(), "jwt", 14400));
             return ResponseEntity.ok(userJPA);
         }
 
@@ -44,7 +50,7 @@ public class AutenticacaoController {
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
         if (authentication.isAuthenticated()) {
-            Cookie cookie = tokenUtils.gerarCookie((UserJPA) authentication.getPrincipal());
+            Cookie cookie = tokenUtils.gerarCookie(usuarioDTO.getStringUsuario(), "rjwt", 604800);
             response.addCookie(cookie);
             return ResponseEntity.ok(cookie);
         }

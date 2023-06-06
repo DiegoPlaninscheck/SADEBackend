@@ -14,13 +14,13 @@ public enum AcaoNotificacao {
     CHAT("Chat"),
     REUNIAO("Reunião"),
     STATUSDEMANDA("Status Demanda"),
-    PRAZOELABORACAO("Prazo de elaboração"),
+    PRAZOELABORACAOPROPOSTA("Prazo de elaboração"),
     VIROUPROPOSTA("Virou proposta"),
     VIROUPAUTA("Virou pauta"),
     VIROUATA("Virou ATA"),
     AVALIACAODG("Avaliação Direção Geral"),
-
-    RASCUNHO("Rascunho");
+    RASCUNHO("Rascunho"),
+    PRAZOELABORACAOPROPOSTA("Prazo Elaboração Proposta");
 
     private String nome;
 }
