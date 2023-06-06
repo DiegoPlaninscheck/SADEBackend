@@ -64,7 +64,7 @@ public class VerificacoesUtil {
                     simpMessagingTemplate.convertAndSend("/notificacao/demanda/" + demanda.getIdDemanda(), notificacao);
                 }
 
-                System.out.println("FOI");
+//                System.out.println("FOI");
             } else {
 
                 System.out.println("SEM RASCUNHOS DEMANDA");

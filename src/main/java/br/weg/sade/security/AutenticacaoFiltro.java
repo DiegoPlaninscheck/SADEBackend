@@ -39,13 +39,13 @@ public class AutenticacaoFiltro extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(usuario.getUsername(), usuario.getPassword(), usuario.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
-            Cookie jwtCookie = tokenUtils.gerarCookie((UserJPA) usuario, "jwt", 14400);
+            Cookie jwtCookie = tokenUtils.gerarCookie(((UserJPA) usuario).getUsuario().getIdUsuario().toString(), "jwt", 14400);
             response.addCookie(jwtCookie);
 
             if(request.getCookies() != null){
                 for(Cookie cookie : request.getCookies()){
                     if(cookie.getName() == "rjwt"){
-                        Cookie rjwtCookie = tokenUtils.gerarCookie((UserJPA) usuario, "rjwt", 604800);
+                        Cookie rjwtCookie = tokenUtils.gerarCookie(tokenUtils.buscarCookie(request, "rjwt"), "rjwt", 604800);
                         response.addCookie(rjwtCookie);
                     }
                 }

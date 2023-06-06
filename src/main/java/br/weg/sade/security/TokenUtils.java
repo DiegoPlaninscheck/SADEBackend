@@ -17,12 +17,12 @@ public class TokenUtils {
         return Jwts.builder().setIssuer("Sod")
                 .setSubject(subject)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + (expirationDate * 1000)))
+                .setExpiration(new Date(new Date().getTime() + expirationDate))
                 .signWith(SignatureAlgorithm.HS256, senhaForte).compact();
     }
 
-    public Cookie gerarCookie(UserJPA userJPA, String nomeCookie, Integer maxAge) {
-        Cookie cookie = new Cookie(nomeCookie, gerarToken(userJPA.getUsuario().getIdUsuario().toString(), maxAge));
+    public Cookie gerarCookie(String subject, String nomeCookie, Integer maxAge) {
+        Cookie cookie = new Cookie(nomeCookie, gerarToken(subject, maxAge * 1000));
 
         cookie.setVersion(cookie.getVersion() + 1);
         cookie.setPath("/");
@@ -31,22 +31,17 @@ public class TokenUtils {
         return cookie;
     }
 
-    public Cookie renovarCookie(HttpServletRequest request, String nome){
-        Cookie cookie = WebUtils.getCookie(request, nome);
-
-        cookie.setPath("/");
-        cookie.setMaxAge(14400);
-
-        return cookie;
-    }
-
     public Boolean validarToken(String token) {
         try {
-            Jwts.parser().setSigningKey(senhaForte).parseClaimsJws(token);
+            decodarToken(token);
             return true;
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public Object decodarToken(String token){
+        return Jwts.parser().setSigningKey(senhaForte).parseClaimsJws(token);
     }
 
     public Integer getIDUsuario(String token) {
@@ -59,6 +54,22 @@ public class TokenUtils {
         if (cookie != null) {
             return cookie.getValue();
         }
+
+        cookie = WebUtils.getCookie(request, "rjwt");
+        if (cookie != null) {
+            return cookie.getValue();
+        }
+
+        throw new RuntimeException("Cookie não encontrado!");
+    }
+
+    public String buscarCookie(HttpServletRequest request, String nomeCookie) {
+        Cookie cookie = WebUtils.getCookie(request, nomeCookie);
+
+        if (cookie != null) {
+            return cookie.getValue();
+        }
+
         throw new RuntimeException("Cookie não encontrado!");
     }
 }
