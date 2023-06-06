@@ -78,6 +78,7 @@ public class HistoricoWorkflowController {
 
     @GetMapping("/aprovadaGerente/{id}")
     public ResponseEntity<Object> demandaIsAprovadaByGerente(@PathVariable(name = "id") Integer idDemanda) {
+        System.out.println("Entrou historico workflow aprovado gerente de TI");
         if (!demandaService.existsById(idDemanda)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
         }
@@ -96,6 +97,8 @@ public class HistoricoWorkflowController {
                 return ResponseEntity.status(HttpStatus.OK).body(true);
             }
         }
+
+        System.out.println("Acabou historico workflow aprovado gerente de TI");
 
         return ResponseEntity.status(HttpStatus.OK).body(false);
     }

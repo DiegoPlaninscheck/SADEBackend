@@ -152,9 +152,12 @@ public class DemandaController {
     )
             throws IOException {
 
-
+        System.out.println("Entrou criar demanda controller");
         Demanda demanda = new DemandaUtil().convertJsonToModel(demandaJSON, 1);
+        System.out.println("Passou convertjsontomodel");
         ResponseEntity<Object> demandaValidada = validarDemanda(demanda);
+        System.out.println("Passou validar demanda");
+        System.out.println("demanda validada: " + demandaValidada);
 
         if (demandaValidada != null) {
             return demandaValidada;
@@ -261,7 +264,7 @@ public class DemandaController {
         Demanda demandaSalva = demandaService.save(demanda);
         Usuario analistaTI = usuarioService.findById(idAnalista).get();
 
-        System.out.println(demandaDTO.getCriandoDemandaPorRascunho());
+//        System.out.println(demandaDTO.getCriandoDemandaPorRascunho());
 
         PDFUtil pdfUtil = new PDFUtil();
         ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
@@ -382,6 +385,7 @@ public class DemandaController {
 
     private ResponseEntity<Object> validarDemanda(Demanda demanda) {
         List<Beneficio> beneficiosDemanda = demanda.getBeneficiosDemanda();
+        System.out.println("beneficios demanda: " + beneficiosDemanda);
 
         if (beneficiosDemanda != null && beneficiosDemanda.size() != 0) {
             try {
