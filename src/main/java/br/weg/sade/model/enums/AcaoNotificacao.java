@@ -14,7 +14,7 @@ public enum AcaoNotificacao {
     CHAT("Chat"),
     REUNIAO("Reunião"),
     STATUSDEMANDA("Status Demanda"),
-    PRAZOELABORACAOPROPOSTA("Prazo de elaboração"),
+    PRAZOELABORACAO("Prazo de elaboração"),
     VIROUPROPOSTA("Virou proposta"),
     VIROUPAUTA("Virou pauta"),
     VIROUATA("Virou ATA"),
