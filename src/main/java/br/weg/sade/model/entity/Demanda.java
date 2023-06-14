@@ -76,7 +76,7 @@ public class Demanda {
     private BU BUSolicitante;
 
     @ManyToOne
-    @JoinColumn(name = "idUsuario", nullable = false)
+    @JoinColumn(name = "idUsuario")
     private Usuario usuario;
 
     @OneToMany(cascade = CascadeType.ALL)

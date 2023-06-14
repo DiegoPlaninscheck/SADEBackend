@@ -101,6 +101,10 @@ public class DemandaController {
         for (Demanda demanda : demandaService.findDemandasByUsuario(usuarioAtual)) {
             HistoricoWorkflow historicoWorkflowDemanda = historicoWorkflowService.findLastHistoricoByDemanda(demanda);
 
+            if(historicoWorkflowDemanda == null){
+                continue;
+            }
+
             if (historicoWorkflowDemanda.getTarefa().equals(Tarefa.REENVIARDEMANDA)) {
                 demanda.setDevolvida(true);
                 listaDemandasDevolvidas.add(demanda);
