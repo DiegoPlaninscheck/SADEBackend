@@ -23,10 +23,6 @@ public class AutenticacaoController {
 
     @GetMapping("/cookie/{token}")
     public ResponseEntity<Object> transformarToken(@PathVariable("token") String token){
-
-
-
-
         return ResponseEntity.ok().body(tokenUtils.decodarToken(token));
     }
 
