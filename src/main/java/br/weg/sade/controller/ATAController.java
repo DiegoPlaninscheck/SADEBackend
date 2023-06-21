@@ -225,7 +225,7 @@ public class ATAController {
 
             if (statusEscolhidoComissao == StatusDemanda.TODO) {
                 tarefaStatus = Tarefa.FINALIZAR;
-            } else if (statusEscolhidoComissao == StatusDemanda.CANCELED) {
+            } else if (statusEscolhidoComissao == StatusDemanda.CANCELLED) {
                 tarefaStatus = Tarefa.REPROVARDEMANDA;
             } else {
                 tarefaStatus = Tarefa.CRIARPAUTA;
