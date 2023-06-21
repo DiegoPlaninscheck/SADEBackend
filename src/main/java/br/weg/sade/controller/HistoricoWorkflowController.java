@@ -255,7 +255,7 @@ public class HistoricoWorkflowController {
 
         if (historicoWorkflowDTO.getAcaoFeita() == Tarefa.REPROVARDEMANDA) {
             Demanda demandaAtualizar = demandaService.findById(historicoWorkflowDTO.getDemanda().getIdDemanda()).get();
-            demandaAtualizar.setStatusDemanda(StatusDemanda.CANCELED);
+            demandaAtualizar.setStatusDemanda(StatusDemanda.CANCELLED);
             demandaService.save(demandaAtualizar);
 
             Notificacao notificacao = new Notificacao();
