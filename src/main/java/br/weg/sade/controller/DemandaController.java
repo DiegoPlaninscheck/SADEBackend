@@ -451,7 +451,7 @@ public class DemandaController {
     }
 
     private ResponseEntity<Object> validarAdicionandoInformacoes(Demanda demanda) {
-        if (demanda.getStatusDemanda() != StatusDemanda.ASSESMENT && demanda.getStatusDemanda() != StatusDemanda.BUSINESSCASE) {
+        if (demanda.getStatusDemanda() != StatusDemanda.ASSESSMENT && demanda.getStatusDemanda() != StatusDemanda.BUSINESSCASE) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Status informado inválido");
         }
 
