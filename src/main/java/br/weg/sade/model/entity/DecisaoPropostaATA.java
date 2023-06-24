@@ -22,7 +22,7 @@ public class DecisaoPropostaATA {
     @Enumerated(EnumType.STRING)
     private StatusDemanda statusDemandaComissao;
 
-    @Column
+    @Column(length = 2000)
     private String comentario;
 
     @ManyToOne

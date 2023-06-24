@@ -23,7 +23,7 @@ public class DecisaoPropostaPauta {
     @Column
     private Boolean ataPublicada;
 
-    @Column
+    @Column(length = 2000)
     private String comentario;
 
     @ManyToOne

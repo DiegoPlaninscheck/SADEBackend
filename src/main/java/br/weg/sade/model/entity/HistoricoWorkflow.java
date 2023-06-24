@@ -36,7 +36,7 @@ public class HistoricoWorkflow {
     @JoinColumn(name = "idArquivoHistorico")
     private ArquivoHistoricoWorkflow arquivoHistoricoWorkflow;
 
-    @Column
+    @Column(length = 2000)
     private String motivoDevolucao;
 
     @Column

@@ -17,7 +17,7 @@ public class Mensagem {
     @Column
     private Integer idMensagem;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2000)
     private String mensagem;
 
     @Column

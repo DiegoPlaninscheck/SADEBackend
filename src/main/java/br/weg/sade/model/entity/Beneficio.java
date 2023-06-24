@@ -20,7 +20,7 @@ public class Beneficio {
     @Enumerated(EnumType.STRING)
     private TipoBeneficio tipoBeneficio;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, length = 2000)
     private String descricao;
 
     @Column

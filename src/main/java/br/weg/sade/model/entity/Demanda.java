@@ -33,14 +33,14 @@ public class Demanda {
     @Enumerated(EnumType.STRING)
     private Tamanho tamanho;
 
-    @Column(length = 1000)
+    @Column(length = 2000)
     private String objetivo;
 
     @Enumerated(EnumType.STRING)
     @Column
     private SecaoTI secaoTIResponsavel;
 
-    @Column(length = 1000)
+    @Column(length = 2000)
     private String situacaoAtual;
 
     @Column

@@ -16,7 +16,7 @@ public class Proposta {
     @Column
     private Integer idProposta;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2000)
     private String escopo;
 
     @Column(nullable = false)
