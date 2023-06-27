@@ -6,7 +6,8 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class PDFUtil {
         return null;
     }
 
-    private ArquivoHistoricoWorkflow criacaoPDFDemanda(Demanda demanda, String tipoPDF) throws DocumentException {
+    private ArquivoHistoricoWorkflow criacaoPDFDemanda(Demanda demanda, String tipoPDF) throws DocumentException, IOException {
         Document document = new Document();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -47,8 +48,14 @@ public class PDFUtil {
         return arquivoHistoricoWorkflow;
     }
 
-    private void conteudoPDFDemanda(Demanda demanda, Document document, String tipoPDF, ArquivoHistoricoWorkflow arquivoHistoricoWorkflow) throws DocumentException {
+    private void conteudoPDFDemanda(Demanda demanda, Document document, String tipoPDF, ArquivoHistoricoWorkflow arquivoHistoricoWorkflow) throws DocumentException, IOException {
         document.open();
+
+        System.out.println("Entrou conteudo PDF Demanda");
+
+        addLogoImagem(document);
+
+        System.out.println("Passou add de imagem ao PDF");
 
         document.add(new Paragraph(demanda.getTituloDemanda(), tipoFonte("titulo")));
 
@@ -159,7 +166,7 @@ public class PDFUtil {
         return null;
     }
 
-    private ArquivoHistoricoWorkflow criacaoPDFProposta(Proposta proposta) throws DocumentException {
+    private ArquivoHistoricoWorkflow criacaoPDFProposta(Proposta proposta) throws DocumentException, IOException {
         Document document = new Document();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -177,8 +184,10 @@ public class PDFUtil {
         return arquivoHistoricoWorkflow;
     }
 
-    private void ConteudoPDFProposta(Proposta proposta, Document document) throws DocumentException {
+    private void ConteudoPDFProposta(Proposta proposta, Document document) throws DocumentException, IOException {
         document.open();
+
+        addLogoImagem(document);
 
         document.add(new Paragraph(proposta.getDemanda().getTituloDemanda(), tipoFonte("titulo")));
 
@@ -287,7 +296,7 @@ public class PDFUtil {
         return null;
     }
 
-    private ArquivoPauta criacaoPDFPauta(Pauta pauta) throws DocumentException {
+    private ArquivoPauta criacaoPDFPauta(Pauta pauta) throws DocumentException, IOException {
         Document document = new Document();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -305,9 +314,11 @@ public class PDFUtil {
         return arquivoPauta;
     }
 
-    private void ConteudoPDFPauta(Pauta pauta, Document document) throws DocumentException {
+    private void ConteudoPDFPauta(Pauta pauta, Document document) throws DocumentException, IOException {
         System.out.println(pauta.getPropostasPauta());
         document.open();
+
+        addLogoImagem(document);
 
         document.add(new Paragraph(pauta.getTituloReuniaoPauta(), tipoFonte("titulo")));
 
@@ -433,7 +444,7 @@ public class PDFUtil {
         return null;
     }
 
-    private ArquivoPauta criacaoPDFATA(ATA ata) throws DocumentException {
+    private ArquivoPauta criacaoPDFATA(ATA ata) throws DocumentException, IOException {
         Document document = new Document();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -451,8 +462,10 @@ public class PDFUtil {
         return arquivoPauta;
     }
 
-    private void ConteudoPDFATA(ATA ata, Document document) throws DocumentException {
+    private void ConteudoPDFATA(ATA ata, Document document) throws DocumentException, IOException {
         document.open();
+
+        addLogoImagem(document);
 
         document.add(new Paragraph(ata.getTituloReuniaoATA(), tipoFonte("titulo")));
 
@@ -676,6 +689,17 @@ public class PDFUtil {
     private static void addNovaLinha(Paragraph paragraph, int number) {
         for (int i = 0; i < number; i++) {
             paragraph.add(new Paragraph(" "));
+        }
+    }
+
+    private static void addLogoImagem(Document document) throws DocumentException, IOException {
+        try {
+            Image logo = Image.getInstance("src/main/resources/wegLogoAzul.png");
+            logo.scaleAbsolute(40, 40);
+            logo.setAbsolutePosition(document.getPageSize().getWidth() - 50, document.getPageSize().getHeight() - 70);
+            document.add(logo);
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 }
