@@ -79,7 +79,7 @@ public class ChatController {
         notificacao.setDescricaoNotificacao("Sua demanda tem um novo chat");
         notificacao.setTituloNotificacao("Chat Criado");
         notificacao.setTipoNotificacao(TipoNotificacao.CHAT);
-        notificacao.setLinkNotificacao("http://localhost:8081/home/chat");
+        notificacao.setLinkNotificacao("http://localhost:8081/chats");
         notificacao.setIdComponenteLink(chatSalvo.getIdChat());
         if(usuariosRelacionados.size() > 0){
             notificacao.setUsuariosNotificacao(usuariosRelacionados);
