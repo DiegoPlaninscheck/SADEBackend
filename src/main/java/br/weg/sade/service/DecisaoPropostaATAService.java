@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -45,13 +46,11 @@ public class DecisaoPropostaATAService {
         //vê se o número sequencial informado já existe ou está repetido na lista
         for(DecisaoPropostaATADTO decisaoATADTO : propostasAta){
             if(existsByNumeroSequencial(decisaoATADTO.getNumeroSequencial())){
-                System.out.println("1");
                 return false;
             }
 
             for(DecisaoPropostaATADTO decisaoATADTOconferir : propostasAta){
                 if(decisaoATADTOconferir.getNumeroSequencial() == decisaoATADTO.getNumeroSequencial() && !decisaoATADTOconferir.getProposta().equals(decisaoATADTO.getProposta())){
-                    System.out.println("2");
                     return false;
                 }
             }
@@ -62,7 +61,7 @@ public class DecisaoPropostaATAService {
             boolean existe = false;
 
             for(DecisaoPropostaPauta decisaoPauta : propostasPauta){
-                if(decisaoPauta.getProposta().getIdProposta() == decisaoATADTO.getProposta().getIdProposta()){
+                if(Objects.equals(decisaoPauta.getProposta().getIdProposta(), decisaoATADTO.getProposta().getIdProposta())){
                     existe = true;
                 }
             }
