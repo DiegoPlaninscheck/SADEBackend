@@ -76,6 +76,15 @@ public class HistoricoWorkflowController {
         return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowService.findArquivoLastHistoricoByDemanda(demandaService.findById(idDemanda).get()));
     }
 
+    @GetMapping("/ultimoconcluido/{idDemanda}")
+    public ResponseEntity<Object> findLastHisotirocConcluidoByDemanda(@PathVariable(name = "idDemanda") Integer idDemanda) {
+        if (!demandaService.existsById(idDemanda)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi encontrado nenhuma demanda com o ID informado");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(historicoWorkflowService.findLastHistoricoCompletedByDemanda(demandaService.findById(idDemanda).get()));
+    }
+
     @GetMapping("/aprovadaGerente/{id}")
     public ResponseEntity<Object> demandaIsAprovadaByGerente(@PathVariable(name = "id") Integer idDemanda) {
         if (!demandaService.existsById(idDemanda)) {

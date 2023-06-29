@@ -5,7 +5,6 @@ import br.weg.sade.model.entity.Pauta;
 import br.weg.sade.model.entity.Usuario;
 import lombok.Data;
 
-import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.sql.Time;
@@ -21,7 +20,7 @@ public class ATACriacaoDTO {
     @NotBlank
     private String tituloReuniaoATA;
 
-    @FutureOrPresent
+
     private Date dataReuniao;
 
     @NotNull

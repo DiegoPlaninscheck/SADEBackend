@@ -1,6 +1,7 @@
 package br.weg.sade.model.entity;
 
-import lombok.*;
+
+import lombok.Data;
 
 import javax.persistence.*;
 
@@ -16,5 +17,8 @@ public class CentroCusto {
 
     @Column(nullable = false)
     private String nomeCentroCusto;
+
+    @Column(nullable = false)
+    private Long numeroCentroCusto;
 
 }

@@ -316,7 +316,4 @@ public class PautaController {
         return true;
     }
 
-    private boolean dataFutura(Date dataReuniao) {
-        return dataReuniao.getTime() > new Date().getTime();
-    }
 }
