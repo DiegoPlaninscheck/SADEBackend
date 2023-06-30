@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static br.weg.sade.util.UtilFunctions.transformStringArray;
+
 @CrossOrigin
 @AllArgsConstructor
 @RestController
@@ -216,7 +218,6 @@ public class DemandaController {
     @Transactional
     @PostMapping("/checardemanda")
     public ResponseEntity<Object> testarPython(@RequestBody @Valid DemandaCriacaoDTO demandaDTO) throws IOException {
-        System.out.println(demandaDTO);
         URL url = new URL("http://localhost:5000/checar");
         HttpURLConnection con = (HttpURLConnection)url.openConnection();
 
@@ -232,19 +233,27 @@ public class DemandaController {
             os.write(input, 0, input.length);
         }
 
-        String resposta = "";
+        String resposta;
 
         try(BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
             StringBuilder response = new StringBuilder();
             String responseLine;
+
             while ((responseLine = br.readLine()) != null) {
                 response.append(responseLine.trim());
             }
-            System.out.println(response);
+
             resposta = response.toString();
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(resposta);
+        ArrayList<Integer> listaIdDemandas = transformStringArray(resposta);
+        ArrayList<Demanda> listaDemandas = new ArrayList<>();
+
+        for(Integer idDemanda : listaIdDemandas){
+            listaDemandas.add(demandaService.findById(idDemanda).get());
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(listaDemandas);
     }
 
     @PutMapping("/{idDemanda}/{idAnalista}")
