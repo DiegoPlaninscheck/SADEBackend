@@ -232,6 +232,8 @@ public class DemandaController {
             os.write(input, 0, input.length);
         }
 
+        String resposta = "";
+
         try(BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
             StringBuilder response = new StringBuilder();
             String responseLine;
@@ -239,9 +241,10 @@ public class DemandaController {
                 response.append(responseLine.trim());
             }
             System.out.println(response);
+            resposta = response.toString();
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body("Demanda chegou");
+        return ResponseEntity.status(HttpStatus.OK).body(resposta);
     }
 
     @PutMapping("/{idDemanda}/{idAnalista}")
