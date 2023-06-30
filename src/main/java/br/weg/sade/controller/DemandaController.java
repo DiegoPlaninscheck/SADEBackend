@@ -1,5 +1,6 @@
 package br.weg.sade.controller;
 
+import br.weg.sade.model.dto.DemandaCriacaoDTO;
 import br.weg.sade.model.dto.DemandaEdicaoDTO;
 import br.weg.sade.model.entity.*;
 import br.weg.sade.model.enums.*;
@@ -7,6 +8,7 @@ import br.weg.sade.service.*;
 import br.weg.sade.util.DemandaUtil;
 import br.weg.sade.util.PDFUtil;
 import br.weg.sade.util.UtilFunctions;
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -17,7 +19,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -170,19 +177,16 @@ public class DemandaController {
         }
 
         Demanda demandaSalva = demandaService.save(demanda);
-
         ArquivoHistoricoWorkflow arquivoHistoricoWorkflow = null;
 
         try {
             PDFUtil pdfUtil = new PDFUtil();
-
             arquivoHistoricoWorkflow = pdfUtil.criarPDFDemanda(demandaSalva, "criacao");
         } catch (Exception e) {
             System.out.println(e);
         }
 
         Timestamp momento = new Timestamp(new Date().getTime());
-
         HistoricoWorkflow historicoWorkflowCriacao = new HistoricoWorkflow(
                 Tarefa.CRIARDEMANDA,
                 StatusHistorico.CONCLUIDO,
@@ -207,6 +211,37 @@ public class DemandaController {
         Demanda demandaSalva = demandaService.save(demanda);
 
         return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
+    }
+
+    @Transactional
+    @PostMapping("/checardemanda")
+    public ResponseEntity<Object> testarPython(@RequestBody @Valid DemandaCriacaoDTO demandaDTO) throws IOException {
+        System.out.println(demandaDTO);
+        URL url = new URL("http://localhost:5000/checar");
+        HttpURLConnection con = (HttpURLConnection)url.openConnection();
+
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Accept", "application/json");
+        con.setDoOutput(true);
+
+        String demandaJson = new Gson().toJson(demandaDTO);
+
+        try(OutputStream os = con.getOutputStream()) {
+            byte[] input = demandaJson.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            System.out.println(response);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body("Demanda chegou");
     }
 
     @PutMapping("/{idDemanda}/{idAnalista}")
