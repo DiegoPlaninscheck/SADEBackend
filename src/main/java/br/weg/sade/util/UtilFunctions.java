@@ -25,6 +25,10 @@ public class UtilFunctions {
     }
 
     public static ArrayList<Integer> transformStringArray(String lista){
+        if(lista.equals("[]")){
+            return new ArrayList<>();
+        }
+
         StringBuilder sb = new StringBuilder(lista);
         ArrayList<Integer> listaNumeros = new ArrayList<>();
 

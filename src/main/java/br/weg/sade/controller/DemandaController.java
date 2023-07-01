@@ -1,6 +1,5 @@
 package br.weg.sade.controller;
 
-import br.weg.sade.model.dto.DemandaCriacaoDTO;
 import br.weg.sade.model.dto.DemandaEdicaoDTO;
 import br.weg.sade.model.entity.*;
 import br.weg.sade.model.enums.*;
@@ -110,7 +109,7 @@ public class DemandaController {
         for (Demanda demanda : demandaService.findDemandasByUsuario(usuarioAtual)) {
             HistoricoWorkflow historicoWorkflowDemanda = historicoWorkflowService.findLastHistoricoByDemanda(demanda);
 
-            if(historicoWorkflowDemanda == null){
+            if (historicoWorkflowDemanda == null) {
                 continue;
             }
 
@@ -158,12 +157,14 @@ public class DemandaController {
     }
 
     @Transactional
-    @PostMapping
+    @PostMapping("/{forcarCriacao}")
     public ResponseEntity<Object> save(
             @RequestParam("demanda") @Valid String demandaJSON,
-            @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles
+            @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
+            @PathVariable("forcarCriacao") Boolean forcarCriacao
     )
             throws IOException {
+        System.out.println("chegou no back");
 
         Demanda demanda = new DemandaUtil().convertJsonToModel(demandaJSON, 1);
         ResponseEntity<Object> demandaValidada = validarDemanda(demanda);
@@ -171,6 +172,17 @@ public class DemandaController {
         if (demandaValidada != null) {
             return demandaValidada;
         }
+
+        if (!forcarCriacao) {
+            ArrayList<Demanda> listaDemandasSimilares = checarSimilaridade(demanda);
+
+            System.out.println(listaDemandasSimilares);
+
+            if (listaDemandasSimilares.size() != 0) {
+                return ResponseEntity.ok().body(listaDemandasSimilares);
+            }
+        }
+
 
         if (multipartFiles != null) {
             for (MultipartFile multipartFile : multipartFiles) {
@@ -213,47 +225,6 @@ public class DemandaController {
         Demanda demandaSalva = demandaService.save(demanda);
 
         return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
-    }
-
-    @Transactional
-    @PostMapping("/checardemanda")
-    public ResponseEntity<Object> testarPython(@RequestBody @Valid DemandaCriacaoDTO demandaDTO) throws IOException {
-        URL url = new URL("http://localhost:5000/checar");
-        HttpURLConnection con = (HttpURLConnection)url.openConnection();
-
-        con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("Accept", "application/json");
-        con.setDoOutput(true);
-
-        String demandaJson = new Gson().toJson(demandaDTO);
-
-        try(OutputStream os = con.getOutputStream()) {
-            byte[] input = demandaJson.getBytes("utf-8");
-            os.write(input, 0, input.length);
-        }
-
-        String resposta;
-
-        try(BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
-            StringBuilder response = new StringBuilder();
-            String responseLine;
-
-            while ((responseLine = br.readLine()) != null) {
-                response.append(responseLine.trim());
-            }
-
-            resposta = response.toString();
-        }
-
-        ArrayList<Integer> listaIdDemandas = transformStringArray(resposta);
-        ArrayList<Demanda> listaDemandas = new ArrayList<>();
-
-        for(Integer idDemanda : listaIdDemandas){
-            listaDemandas.add(demandaService.findById(idDemanda).get());
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(listaDemandas);
     }
 
     @PutMapping("/{idDemanda}/{idAnalista}")
@@ -399,7 +370,7 @@ public class DemandaController {
             historicoWorkflowService.save(historicoWorkflowAvaliacao);
         } else if (demandaDTO.getEditandoDemanda()) {
             Usuario analistaResponsavel = historicoWorkflowService.findLastHistoricoCompletedByDemanda(demandaSalva).getUsuario();
-            
+
             historicoWorkflowService.finishHistoricoByDemanda(demandaSalva, Tarefa.REENVIARDEMANDA, usuario, null, null);
             historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.AVALIARDEMANDA, StatusHistorico.EMANDAMENTO, analistaResponsavel, demandaSalva);
         } else {
@@ -501,5 +472,44 @@ public class DemandaController {
         }
 
         return null;
+    }
+
+    public ArrayList<Demanda> checarSimilaridade(@RequestBody @Valid Demanda demanda) throws IOException {
+        URL url = new URL("http://localhost:5000/checar");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Accept", "application/json");
+        con.setDoOutput(true);
+
+        String demandaJson = new Gson().toJson(demanda);
+
+        try (OutputStream os = con.getOutputStream()) {
+            byte[] input = demandaJson.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+
+        String resposta;
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine;
+
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+
+            resposta = response.toString();
+        }
+
+        ArrayList<Integer> listaIdDemandas = transformStringArray(resposta);
+        ArrayList<Demanda> listaDemandas = new ArrayList<>();
+
+        for (Integer idDemanda : listaIdDemandas) {
+            listaDemandas.add(demandaService.findById(idDemanda).get());
+        }
+
+        return listaDemandas;
     }
 }
