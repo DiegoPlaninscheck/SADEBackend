@@ -15,10 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAsync
 @EnableTransactionManagement
 public class SadeApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(SadeApplication.class, args);
 	}
-
-
 }
