@@ -174,12 +174,17 @@ public class DemandaController {
         }
 
         if (!forcarCriacao) {
-            ArrayList<Demanda> listaDemandasSimilares = checarSimilaridade(demanda);
+            try{
 
-            System.out.println(listaDemandasSimilares);
+                ArrayList<Demanda> listaDemandasSimilares = checarSimilaridade(demanda);
 
-            if (listaDemandasSimilares.size() != 0) {
-                return ResponseEntity.ok().body(listaDemandasSimilares);
+                System.out.println(listaDemandasSimilares);
+
+                if (listaDemandasSimilares.size() != 0) {
+                    return ResponseEntity.ok().body(listaDemandasSimilares);
+                }
+            } catch (Exception exception){
+                System.out.println(exception);
             }
         }
 
