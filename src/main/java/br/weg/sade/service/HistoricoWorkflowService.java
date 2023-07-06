@@ -161,9 +161,9 @@ public class HistoricoWorkflowService {
     }
 
     private ResponseEntity<Object> validarHistoricoWorkflowAprovado(Tarefa acaoFeitaHistoricoAnterior, Usuario usuario) {
-        if (acaoFeitaHistoricoAnterior != Tarefa.APROVARWORKFLOW && acaoFeitaHistoricoAnterior != Tarefa.INICIARWORKFLOW) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Status da ação anterior inválido para ação do próximo histórico");
-        }
+//        if (acaoFeitaHistoricoAnterior != Tarefa.APROVARWORKFLOW && acaoFeitaHistoricoAnterior != Tarefa.INICIARWORKFLOW) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Status da ação anterior inválido para ação do próximo histórico");
+//        }
 
         if (!(usuario instanceof GerenteTI) && !(usuario instanceof GerenteNegocio)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário responsável não pode ser encarregado dessa ação");
@@ -173,17 +173,17 @@ public class HistoricoWorkflowService {
     }
 
     private ResponseEntity<Object> validarHistoricoWorkflowReprovado(Tarefa acaoFeitaHistoricoAnterior, String motivoDevolucaoAnterior, Usuario usuario) {
-        if (acaoFeitaHistoricoAnterior != Tarefa.REPROVARWORKFLOW) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Status da ação anterior inválido para ação do próximo histórico");
-        }
+//        if (acaoFeitaHistoricoAnterior != Tarefa.REPROVARWORKFLOW) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Status da ação anterior inválido para ação do próximo histórico");
+//        }
 
-        if (motivoDevolucaoAnterior == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Essa ação necessita de um motivo de devolução");
-        }
-
-        if (!(usuario instanceof AnalistaTI)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário responsável não pode ser encarregado dessa ação");
-        }
+//        if (motivoDevolucaoAnterior == null) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Essa ação necessita de um motivo de devolução");
+//        }
+//
+//        if (!(usuario instanceof AnalistaTI)) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário responsável não pode ser encarregado dessa ação");
+//        }
 
         return null;
     }
