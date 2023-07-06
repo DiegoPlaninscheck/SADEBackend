@@ -221,15 +221,11 @@ public class ATAController {
             Demanda demandaDecisao = demandaService.findById(deicasaoProposta.getProposta().getIdProposta()).get();
             Tarefa tarefaStatus;
             StatusDemanda statusEscolhidoComissao = deicasaoProposta.getStatusDemandaComissao();
-            boolean continuaProcesso = false;
 
             if (statusEscolhidoComissao == StatusDemanda.TODO) {
                 tarefaStatus = Tarefa.FINALIZAR;
-            } else if (statusEscolhidoComissao == StatusDemanda.CANCELLED) {
-                tarefaStatus = Tarefa.REPROVARDEMANDA;
             } else {
-                tarefaStatus = Tarefa.CRIARPAUTA;
-                continuaProcesso = true;
+                tarefaStatus = Tarefa.REPROVARDEMANDA;
             }
 
             demandaDecisao.setStatusDemanda(statusEscolhidoComissao);
@@ -238,7 +234,7 @@ public class ATAController {
             //finaliza histórico de informar parecer da DG
             historicoWorkflowService.finishHistoricoByDemanda(demandaDecisao, tarefaStatus, analistaTIresponsavel, null, null);
 
-            if (continuaProcesso) {
+            if (statusEscolhidoComissao == StatusDemanda.ASSESSMENT || statusEscolhidoComissao == StatusDemanda.BUSINESSCASE) {
                 //inicia histórico de criar pauta
                 historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPAUTA, StatusHistorico.EMANDAMENTO, analistaTIresponsavel, demandaDecisao);
             }
