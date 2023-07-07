@@ -164,22 +164,16 @@ public class DemandaController {
             @PathVariable("forcarCriacao") Boolean forcarCriacao
     )
             throws IOException {
-        System.out.println("chegou no back");
-
         Demanda demanda = new DemandaUtil().convertJsonToModel(demandaJSON, 1);
         ResponseEntity<Object> demandaValidada = validarDemanda(demanda);
 
         if (demandaValidada != null) {
             return demandaValidada;
         }
-        System.out.println("Chegoou antes conexao com python");
 
         if (!forcarCriacao) {
             try{
-
                 ArrayList<Demanda> listaDemandasSimilares = checarSimilaridade(demanda);
-
-                System.out.println(listaDemandasSimilares);
 
                 if (listaDemandasSimilares.size() != 0) {
                     return ResponseEntity.ok().body(listaDemandasSimilares);
@@ -188,9 +182,6 @@ public class DemandaController {
                 System.out.println(exception);
             }
         }
-
-        System.out.println("Passou conexao python");
-
 
         if (multipartFiles != null) {
             for (MultipartFile multipartFile : multipartFiles) {
@@ -474,33 +465,23 @@ public class DemandaController {
     }
 
     public ArrayList<Demanda> checarSimilaridade(@RequestBody @Valid Demanda demanda) throws IOException {
-        System.out.println("Entrou aqui");
         URL url = new URL("http://localhost:5000/checar");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
-        System.out.println("Passsou http connection");
 
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
         con.setRequestProperty("Accept", "application/json");
         con.setDoOutput(true);
 
-        String demandaJson = new Gson().toJson(demanda);
-
-        System.out.println("Passou demanda json");
+        String demandaJson = new Gson().toJson(demanda), resposta = "";
 
         try (OutputStream os = con.getOutputStream()) {
             byte[] input = demandaJson.getBytes("utf-8");
             os.write(input, 0, input.length);
-            System.out.println("Passou try");
         }
 
-        String resposta;
-
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
-            System.out.println("BufferedReader: " + br);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))){
             StringBuilder response = new StringBuilder();
-            System.out.println("Response: "+ response);
             String responseLine;
 
             while ((responseLine = br.readLine()) != null) {
@@ -508,11 +489,9 @@ public class DemandaController {
             }
 
             resposta = response.toString();
-            System.out.println("Resposta: " + resposta);
-            System.out.println("Passou try 2");
+        } catch (Exception e){
+            System.out.println(e);
         }
-
-        System.out.println("Passou resposta");
 
         ArrayList<Integer> listaIdDemandas = transformStringArray(resposta);
         ArrayList<Demanda> listaDemandas = new ArrayList<>();
