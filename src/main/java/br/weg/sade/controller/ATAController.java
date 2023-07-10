@@ -78,7 +78,7 @@ public class ATAController {
         notificacao.setDescricaoNotificacao("A sua pauta acabou de virar um ATA");
         notificacao.setTituloNotificacao("Nova ATA criada");
         notificacao.setTipoNotificacao(TipoNotificacao.ATA);
-        notificacao.setLinkNotificacao("http://localhost:8081/home/ata");
+        notificacao.setLinkNotificacao("http://localhost:8081/notifications/ata");
         notificacao.setIdComponenteLink(ataSalva.getIdATA());
 
         List<Usuario> usuarios = new ArrayList<>();
@@ -136,7 +136,7 @@ public class ATAController {
         notificacao.setDescricaoNotificacao("A sua pauta acabou de virar um ATA");
         notificacao.setTituloNotificacao("Nova ATA criada");
         notificacao.setTipoNotificacao(TipoNotificacao.ATA);
-        notificacao.setLinkNotificacao("http://localhost:8081/home/ata");
+        notificacao.setLinkNotificacao("http://localhost:8081/notifications/ata");
         notificacao.setIdComponenteLink(ataSalva.getIdATA());
 
         List<Usuario> usuarios = new ArrayList<>();
@@ -212,7 +212,7 @@ public class ATAController {
         notificacao.setDescricaoNotificacao("A ATA foi avaliada pela Direção Geral");
         notificacao.setTituloNotificacao("ATA avaliada pela DG");
         notificacao.setTipoNotificacao(TipoNotificacao.ATA);
-        notificacao.setLinkNotificacao("http://localhost:8081/home/ata");
+        notificacao.setLinkNotificacao("http://localhost:8081/notifications/ata");
         notificacao.setIdComponenteLink(ataSalva.getIdATA());
 
         List<Usuario> usuarios = new ArrayList<>();
