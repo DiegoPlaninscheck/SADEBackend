@@ -25,6 +25,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -162,8 +167,7 @@ public class DemandaController {
             @RequestParam("demanda") @Valid String demandaJSON,
             @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
             @PathVariable("forcarCriacao") Boolean forcarCriacao
-    )
-            throws IOException {
+    ) throws IOException {
         Demanda demanda = new DemandaUtil().convertJsonToModel(demandaJSON, 1);
         ResponseEntity<Object> demandaValidada = validarDemanda(demanda);
 
@@ -171,14 +175,16 @@ public class DemandaController {
             return demandaValidada;
         }
 
+        demanda.setScore(gerarScore(demanda));
+
         if (!forcarCriacao) {
-            try{
+            try {
                 ArrayList<Demanda> listaDemandasSimilares = checarSimilaridade(demanda);
 
                 if (listaDemandasSimilares.size() != 0) {
                     return ResponseEntity.ok().body(listaDemandasSimilares);
                 }
-            } catch (Exception exception){
+            } catch (Exception exception) {
                 System.out.println(exception);
             }
         }
@@ -216,7 +222,6 @@ public class DemandaController {
         return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
     }
 
-
     @Transactional
     @PostMapping("/rascunho")
     public ResponseEntity<Object> saveRascunho(@RequestParam("demanda") @Valid String demandaJSON) {
@@ -252,6 +257,8 @@ public class DemandaController {
         if (demandaValidada != null) {
             return demandaValidada;
         }
+
+        demanda.setScore(gerarScore(demanda));
 
         if (multipartFiles != null) {
             for (MultipartFile multipartFile : multipartFiles) {
@@ -464,6 +471,70 @@ public class DemandaController {
         return null;
     }
 
+
+    private Double gerarScore(Demanda demanda) {
+        double score, valorBeneficiosReais = 0.0, valorBeneficiosPotenciais = 0.0;
+        int indiceTamanho = 1000000000, indicePrioridade;
+        long diasNaFila = 0;
+
+        if(demanda.getTamanho() != null){
+            indiceTamanho = switch (demanda.getTamanho().getNome()) {
+                case "Muito Pequeno" -> 40;
+                case "Pequeno" -> 300;
+                case "Médio" -> 1000;
+                case "Grande" -> 3000;
+                case "Muito Grande" -> 5000;
+                default -> 1000000000;
+            };
+
+            List<HistoricoWorkflow> historicosDemanda = historicoWorkflowService.findHistoricoWorkflowByDemanda(demanda);
+
+            if(historicosDemanda.size() > 0){
+                LocalDateTime recebimento = LocalDateTime.ofInstant(
+                                Instant.ofEpochMilli(historicosDemanda.get(0).getConclusaoTarefa().getTime()),
+                                ZoneId.systemDefault())
+                        .truncatedTo(ChronoUnit.DAYS);
+
+                LocalDateTime hoje = LocalDateTime.ofInstant(
+                                Instant.ofEpochMilli(new Date().getTime()),
+                                ZoneId.systemDefault())
+                        .truncatedTo(ChronoUnit.DAYS);
+
+                diasNaFila = Duration.between(recebimento, hoje).toDays();
+            }
+        }
+
+        indicePrioridade = switch (demanda.getUsuario().getClass().getSimpleName()) {
+            case "GerenteNegocio" -> 2;
+            case "AnalistaTI" -> 4;
+            case "GerenteTI" -> 16;
+            default -> 1;
+        };
+
+        for(Beneficio beneficio : demanda.getBeneficiosDemanda()){
+            switch (beneficio.getTipoBeneficio().getNome()) {
+                case "Real" -> valorBeneficiosReais += valorTransformado(beneficio);
+                case "Potencial" -> valorBeneficiosPotenciais += valorTransformado(beneficio);
+            }
+        }
+
+        score = (((2 * valorBeneficiosReais) + (1 * valorBeneficiosPotenciais) + diasNaFila) / indiceTamanho) * indicePrioridade;
+
+        return score;
+    }
+
+    private double valorTransformado(Beneficio beneficio) {
+        double cotacao = 1;
+
+        switch (beneficio.getMoeda().getNome()){
+            case "Dolar" -> cotacao = 4.9;
+            case "Euro" -> cotacao = 5.39;
+        }
+
+        return beneficio.getValor() * cotacao;
+    }
+
+
     public ArrayList<Demanda> checarSimilaridade(@RequestBody @Valid Demanda demanda) throws IOException {
         URL url = new URL("http://localhost:5000/checar");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -480,7 +551,7 @@ public class DemandaController {
             os.write(input, 0, input.length);
         }
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))){
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
             StringBuilder response = new StringBuilder();
             String responseLine;
 
@@ -489,7 +560,7 @@ public class DemandaController {
             }
 
             resposta = response.toString();
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
 
