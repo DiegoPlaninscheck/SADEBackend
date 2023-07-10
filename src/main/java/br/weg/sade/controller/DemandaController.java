@@ -293,7 +293,7 @@ public class DemandaController {
             notificacaoSolicitante.setDescricaoNotificacao("Demanda aprovado pelo analista de TI");
             notificacaoSolicitante.setTituloNotificacao("Demanda Aprovada");
             notificacaoSolicitante.setTipoNotificacao(TipoNotificacao.DEMANDA);
-            notificacaoSolicitante.setLinkNotificacao("http://localhost:8081/home/demand");
+            notificacaoSolicitante.setLinkNotificacao("http://localhost:8081/notifications/demand");
             notificacaoSolicitante.setIdComponenteLink(demandaSalva.getIdDemanda());
 
             List<Usuario> usuariosSolicitante = new ArrayList<>();
@@ -312,7 +312,7 @@ public class DemandaController {
             notificacaoGerenteNegocio.setDescricaoNotificacao("Há uma nova demanda para ser avaliada");
             notificacaoGerenteNegocio.setTituloNotificacao("Avaliar Demanda");
             notificacaoGerenteNegocio.setTipoNotificacao(TipoNotificacao.DEMANDA);
-            notificacaoGerenteNegocio.setLinkNotificacao("http://localhost:8081/home/demand");
+            notificacaoGerenteNegocio.setLinkNotificacao("http://localhost:8081/notifications/demand");
             notificacaoGerenteNegocio.setIdComponenteLink(demandaSalva.getIdDemanda());
 
             List<Usuario> usuariosGerenteNegocio = new ArrayList<>();
@@ -339,7 +339,7 @@ public class DemandaController {
             notificacao.setDescricaoNotificacao("Foram adicionadas informações a sua demanda");
             notificacao.setTituloNotificacao("Adição de informações a demanda");
             notificacao.setTipoNotificacao(TipoNotificacao.DEMANDA);
-            notificacao.setLinkNotificacao("http://localhost:8081/home/demand");
+            notificacao.setLinkNotificacao("http://localhost:8081/notifications/demand");
             notificacao.setIdComponenteLink(demandaSalva.getIdDemanda());
 
             List<Usuario> usuarios = new ArrayList<>();

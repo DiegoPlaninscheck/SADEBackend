@@ -112,7 +112,7 @@ public class PropostaController {
         notificacaoSolicitante.setDescricaoNotificacao("Sua demanda virou uma proposta");
         notificacaoSolicitante.setTituloNotificacao("Virou uma proposta");
         notificacaoSolicitante.setTipoNotificacao(TipoNotificacao.PROPOSTA);
-        notificacaoSolicitante.setLinkNotificacao("http://localhost:8081/home/proposal");
+        notificacaoSolicitante.setLinkNotificacao("http://localhost:8081/notifications/proposal");
         notificacaoSolicitante.setIdComponenteLink(propostaSalva.getIdProposta());
 
         List<Usuario> usuariosSolicitante = new ArrayList<>();
@@ -131,7 +131,7 @@ public class PropostaController {
         notificacaoGerenteNegocio.setDescricaoNotificacao("A demanda virou uma proposta");
         notificacaoGerenteNegocio.setTituloNotificacao("Virou uma proposta");
         notificacaoGerenteNegocio.setTipoNotificacao(TipoNotificacao.PROPOSTA);
-        notificacaoGerenteNegocio.setLinkNotificacao("http://localhost:8081/home/proposal");
+        notificacaoGerenteNegocio.setLinkNotificacao("http://localhost:8081/notifications/proposal");
         notificacaoGerenteNegocio.setIdComponenteLink(propostaSalva.getIdProposta());
 
         List<Usuario> usuariosGerenteNegocio = new ArrayList<>();
@@ -207,7 +207,7 @@ public class PropostaController {
                 notificacao.setDescricaoNotificacao("O analista iniciou um novo workflow de aprovação!");
                 notificacao.setTituloNotificacao("Novo workflow iniciado");
                 notificacao.setTipoNotificacao(TipoNotificacao.PROPOSTA);
-                notificacao.setLinkNotificacao("http://localhost:8081/home/proposal");
+                notificacao.setLinkNotificacao("http://localhost:8081/notifications/proposal");
                 notificacao.setIdComponenteLink(propostaSalva.getDemanda().getIdDemanda());
                 notificacao.setUsuariosNotificacao(usuarios);
                 notificacao = notificacaoService.save(notificacao);

@@ -132,7 +132,7 @@ public class PautaController {
         notificacao.setDescricaoNotificacao("A proposta foi adicionada a uma pauta");
         notificacao.setTituloNotificacao("Pauta criada");
         notificacao.setTipoNotificacao(TipoNotificacao.PAUTA);
-        notificacao.setLinkNotificacao("http://localhost:8081/home/agenda");
+        notificacao.setLinkNotificacao("http://localhost:8081/notifications/agenda");
         notificacao.setIdComponenteLink(pautaSalva.getIdPauta());
 
         if (!pautaCriacaoDTO.isTeste()) {
@@ -255,7 +255,7 @@ public class PautaController {
         notificacao.setDescricaoNotificacao("A comissão adicionou o parecer na pauta. Veja o que foi concluído!");
         notificacao.setTituloNotificacao("Parecer da comissão adicionado");
         notificacao.setTipoNotificacao(TipoNotificacao.PAUTA);
-        notificacao.setLinkNotificacao("http://localhost:8081/home/agenda");
+        notificacao.setLinkNotificacao("http://localhost:8081/notifications/agenda");
         notificacao.setIdComponenteLink(pautaSalva.getIdPauta());
 
         List<Usuario> usuarios = new ArrayList<>();
