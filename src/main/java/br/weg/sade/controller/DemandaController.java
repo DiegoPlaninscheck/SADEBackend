@@ -290,7 +290,7 @@ public class DemandaController {
             // Notificacao para o solicitante
             Notificacao notificacaoSolicitante = new Notificacao();
             notificacaoSolicitante.setAcao(AcaoNotificacao.DEMANDAAPROVADA);
-            notificacaoSolicitante.setDescricaoNotificacao("Demanda aprovado pelo analista de TI");
+            notificacaoSolicitante.setDescricaoNotificacao("Demanda " + demanda.getTituloDemanda() + " aprovado pelo analista de TI");
             notificacaoSolicitante.setTituloNotificacao("Demanda Aprovada");
             notificacaoSolicitante.setTipoNotificacao(TipoNotificacao.DEMANDA);
             notificacaoSolicitante.setLinkNotificacao("http://localhost:8081/notifications/demand");
@@ -309,7 +309,7 @@ public class DemandaController {
             // Notificação para o Gerente de Negocio
             Notificacao notificacaoGerenteNegocio = new Notificacao();
             notificacaoGerenteNegocio.setAcao(AcaoNotificacao.AVALIARDEMANDA);
-            notificacaoGerenteNegocio.setDescricaoNotificacao("Há uma nova demanda para ser avaliada");
+            notificacaoGerenteNegocio.setDescricaoNotificacao("Há uma nova demanda " + demanda.getTituloDemanda() + " para ser avaliada");
             notificacaoGerenteNegocio.setTituloNotificacao("Avaliar Demanda");
             notificacaoGerenteNegocio.setTipoNotificacao(TipoNotificacao.DEMANDA);
             notificacaoGerenteNegocio.setLinkNotificacao("http://localhost:8081/notifications/demand");
@@ -336,7 +336,7 @@ public class DemandaController {
 
             Notificacao notificacao = new Notificacao();
             notificacao.setAcao(AcaoNotificacao.ADICAOINFORMACOESDEMANDA);
-            notificacao.setDescricaoNotificacao("Foram adicionadas informações a sua demanda");
+            notificacao.setDescricaoNotificacao("Foram adicionadas informações a sua demanda " + demanda.getTituloDemanda());
             notificacao.setTituloNotificacao("Adição de informações a demanda");
             notificacao.setTipoNotificacao(TipoNotificacao.DEMANDA);
             notificacao.setLinkNotificacao("http://localhost:8081/notifications/demand");

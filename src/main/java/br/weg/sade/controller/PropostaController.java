@@ -109,7 +109,7 @@ public class PropostaController {
         // Notificação Solicitante
         Notificacao notificacaoSolicitante = new Notificacao();
         notificacaoSolicitante.setAcao(AcaoNotificacao.VIROUPROPOSTA);
-        notificacaoSolicitante.setDescricaoNotificacao("Sua demanda virou uma proposta");
+        notificacaoSolicitante.setDescricaoNotificacao("Sua demanda " + proposta.getDemanda().getTituloDemanda() + " virou uma proposta");
         notificacaoSolicitante.setTituloNotificacao("Virou uma proposta");
         notificacaoSolicitante.setTipoNotificacao(TipoNotificacao.PROPOSTA);
         notificacaoSolicitante.setLinkNotificacao("http://localhost:8081/notifications/proposal");
@@ -128,7 +128,7 @@ public class PropostaController {
         // Notificação Gerente de Negocio do Solicitante
         Notificacao notificacaoGerenteNegocio = new Notificacao();
         notificacaoGerenteNegocio.setAcao(AcaoNotificacao.VIROUPROPOSTA);
-        notificacaoGerenteNegocio.setDescricaoNotificacao("A demanda virou uma proposta");
+        notificacaoGerenteNegocio.setDescricaoNotificacao("A demanda " + proposta.getDemanda().getTituloDemanda() + " virou uma proposta");
         notificacaoGerenteNegocio.setTituloNotificacao("Virou uma proposta");
         notificacaoGerenteNegocio.setTipoNotificacao(TipoNotificacao.PROPOSTA);
         notificacaoGerenteNegocio.setLinkNotificacao("http://localhost:8081/notifications/proposal");

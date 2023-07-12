@@ -129,7 +129,7 @@ public class PautaController {
 
         Notificacao notificacao = new Notificacao();
         notificacao.setAcao(AcaoNotificacao.VIROUPAUTA);
-        notificacao.setDescricaoNotificacao("A proposta foi adicionada a uma pauta");
+        notificacao.setDescricaoNotificacao("A proposta foi adicionada a uma pauta " + pauta.getTituloReuniaoPauta());
         notificacao.setTituloNotificacao("Pauta criada");
         notificacao.setTipoNotificacao(TipoNotificacao.PAUTA);
         notificacao.setLinkNotificacao("http://localhost:8081/notifications/agenda");
@@ -252,7 +252,7 @@ public class PautaController {
 
         Notificacao notificacao = new Notificacao();
         notificacao.setAcao(AcaoNotificacao.REUNIAO);
-        notificacao.setDescricaoNotificacao("A comissão adicionou o parecer na pauta. Veja o que foi concluído!");
+        notificacao.setDescricaoNotificacao("A comissão adicionou o parecer na pauta " + pauta.getTituloReuniaoPauta() + ". Veja o que foi concluído!");
         notificacao.setTituloNotificacao("Parecer da comissão adicionado");
         notificacao.setTipoNotificacao(TipoNotificacao.PAUTA);
         notificacao.setLinkNotificacao("http://localhost:8081/notifications/agenda");

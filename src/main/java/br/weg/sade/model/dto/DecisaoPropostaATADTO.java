@@ -10,6 +10,8 @@ import javax.validation.constraints.NotNull;
 @Data
 public class DecisaoPropostaATADTO {
 
+    private Integer idDecisaoPropostaAta;
+
     @Digits(integer = 15, fraction = 0)
     private Long numeroSequencial;
 
