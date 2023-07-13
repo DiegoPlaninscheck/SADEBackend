@@ -231,6 +231,19 @@ public class DemandaController {
         return ResponseEntity.status(HttpStatus.OK).body(demandaSalva);
     }
 
+    @Transactional
+    @PostMapping("/inserirscore/")
+    public ResponseEntity<Object> inserirScore() {
+        for(Demanda demanda : demandaService.findAll()){
+            if(!demanda.isRascunho()){
+                demanda.setScore(gerarScore(demanda));
+                demandaService.save(demanda);
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body("Foi tudo");
+    }
+
     @PutMapping("/{idDemanda}/{idAnalista}")
     public ResponseEntity<Object> edit(
             @RequestParam("demanda") @Valid String demandaJSON,
