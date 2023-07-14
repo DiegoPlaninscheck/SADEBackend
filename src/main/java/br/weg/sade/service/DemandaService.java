@@ -7,6 +7,7 @@ import br.weg.sade.repository.DemandaRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,4 +53,15 @@ public class DemandaService {
         demandaRepository.deleteById(integer);
     }
 
+    public List<Demanda> findByDepartamento(String departamento) {
+        List<Demanda> demandasPossiveis = demandaRepository.findDemandasByRascunho(false), demandasDepartamento = new ArrayList<>();
+
+        for(Demanda demanda : demandasPossiveis){
+            if(demanda.getUsuario().getDepartamento().equals(departamento)){
+                demandasDepartamento.add(demanda);
+            }
+        }
+
+        return demandasDepartamento;
+    }
 }

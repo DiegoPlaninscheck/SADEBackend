@@ -62,6 +62,11 @@ public class DemandaController {
         return ResponseEntity.status(HttpStatus.OK).body(demandaService.findDemandasByRascunho(rascunho));
     }
 
+    @GetMapping("/departamento/{departamento}")
+    public ResponseEntity<Object> findByDepartamento(@PathVariable(name = "departamento") String departamento) {
+        return ResponseEntity.status(HttpStatus.OK).body(demandaService.findByDepartamento(departamento));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Object> findById(@PathVariable(name = "id") Integer idDemanda) {
         if (!demandaService.existsById(idDemanda)) {
