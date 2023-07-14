@@ -193,7 +193,7 @@ public class HistoricoWorkflowController {
                 List<Usuario> usuarios = new ArrayList<>();
                 usuarios.add(historico.getDemanda().getUsuario());
                 notificacao.setAcao(AcaoNotificacao.STATUSDEMANDA);
-                notificacao.setDescricaoNotificacao("Demanda devolvida pelo analista de TI");
+                notificacao.setDescricaoNotificacao("Demanda " + historico.getDemanda().getTituloDemanda() + " devolvida pelo analista de TI");
                 notificacao.setTituloNotificacao("Demanda Devolvida");
                 notificacao.setTipoNotificacao(TipoNotificacao.DEMANDA);
                 notificacao.setLinkNotificacao("http://localhost:8081/notifications/demand");
@@ -273,7 +273,7 @@ public class HistoricoWorkflowController {
 
             notificacao.setAcao(AcaoNotificacao.STATUSDEMANDA);
             notificacao.setTituloNotificacao("Demanda Reprovada");
-            notificacao.setDescricaoNotificacao("Demanda reprovada pelo analista de TI");
+            notificacao.setDescricaoNotificacao("Demanda " + historicoWorkflow.getDemanda().getTituloDemanda() + " reprovada pelo analista de TI");
             notificacao.setTipoNotificacao(TipoNotificacao.DEMANDA);
             notificacao.setLinkNotificacao("http://localhost:8081/notifications/demand");
             notificacao.setIdComponenteLink(demandaAtualizar.getIdDemanda());

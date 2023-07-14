@@ -75,7 +75,7 @@ public class ATAController {
 
         Notificacao notificacao = new Notificacao();
         notificacao.setAcao(AcaoNotificacao.VIROUATA);
-        notificacao.setDescricaoNotificacao("A sua pauta acabou de virar um ATA");
+        notificacao.setDescricaoNotificacao("A sua pauta " + ata.getTituloReuniaoATA() + " acabou de virar um ATA");
         notificacao.setTituloNotificacao("Nova ATA criada");
         notificacao.setTipoNotificacao(TipoNotificacao.ATA);
         notificacao.setLinkNotificacao("http://localhost:8081/notifications/ata");
@@ -133,7 +133,7 @@ public class ATAController {
 
         Notificacao notificacao = new Notificacao();
         notificacao.setAcao(AcaoNotificacao.VIROUATA);
-        notificacao.setDescricaoNotificacao("A sua pauta acabou de virar um ATA");
+        notificacao.setDescricaoNotificacao("A sua pauta " + ata.getTituloReuniaoATA() + " acabou de virar um ATA");
         notificacao.setTituloNotificacao("Nova ATA criada");
         notificacao.setTipoNotificacao(TipoNotificacao.ATA);
         notificacao.setLinkNotificacao("http://localhost:8081/notifications/ata");
@@ -188,11 +188,16 @@ public class ATAController {
 
         ata = processoArquivos(ata, multipartFiles, analistaTIresponsavel);
 
+        List<DecisaoPropostaATA> decisoesATA = new ArrayList<>();
+
         for (DecisaoPropostaATADTO decisaoPropostaATADTO : ataDTO.getPropostasAta()) {
+            System.out.println("Decisao proposta ATA DTO: " + decisaoPropostaATADTO);
             DecisaoPropostaATA decisaoPropostaPauta = new DecisaoPropostaATA();
-            BeanUtils.copyProperties(decisaoPropostaATADTO, decisaoPropostaPauta);
-            ata.getPropostasAta().add(decisaoPropostaPauta);
+            BeanUtils.copyProperties(decisaoPropostaATADTO, decisaoPropostaPauta, UtilFunctions.getPropriedadesNulas(decisaoPropostaATADTO));
+            decisoesATA.add(decisaoPropostaPauta);
         }
+
+        ata.setPropostasAta(decisoesATA);
 
         PDFUtil pdfUtil = new PDFUtil();
         ArquivoPauta arquivoPauta = null;
@@ -209,7 +214,7 @@ public class ATAController {
 
         Notificacao notificacao = new Notificacao();
         notificacao.setAcao(AcaoNotificacao.AVALIACAODG);
-        notificacao.setDescricaoNotificacao("A ATA foi avaliada pela Direção Geral");
+        notificacao.setDescricaoNotificacao("A ATA " + ataSalva.getTituloReuniaoATA() + " foi avaliada pela Direção Geral");
         notificacao.setTituloNotificacao("ATA avaliada pela DG");
         notificacao.setTipoNotificacao(TipoNotificacao.ATA);
         notificacao.setLinkNotificacao("http://localhost:8081/notifications/ata");
@@ -217,10 +222,11 @@ public class ATAController {
 
         List<Usuario> usuarios = new ArrayList<>();
 
-        for (DecisaoPropostaATA deicasaoProposta : ataSalva.getPropostasAta()) {
-            Demanda demandaDecisao = demandaService.findById(deicasaoProposta.getProposta().getIdProposta()).get();
+        for (DecisaoPropostaATA decisaoProposta : ataSalva.getPropostasAta()) {
+            System.out.println("Decisao proposta: " + decisaoProposta);
+            Demanda demandaDecisao = demandaService.findById(decisaoProposta.getProposta().getIdProposta()).get();
             Tarefa tarefaStatus;
-            StatusDemanda statusEscolhidoComissao = deicasaoProposta.getStatusDemandaComissao();
+            StatusDemanda statusEscolhidoComissao = decisaoProposta.getStatusDemandaComissao();
 
             if (statusEscolhidoComissao == StatusDemanda.TODO) {
                 tarefaStatus = Tarefa.FINALIZAR;
@@ -239,12 +245,14 @@ public class ATAController {
                 historicoWorkflowService.initializeHistoricoByDemanda(new Timestamp(new Date().getTime()), Tarefa.CRIARPAUTA, StatusHistorico.EMANDAMENTO, analistaTIresponsavel, demandaDecisao);
             }
 
-            Usuario gerenteNegocio = usuarioService.findGerenteByDepartamento(deicasaoProposta.getProposta().
+            Usuario gerenteNegocio = usuarioService.findGerenteByDepartamento(decisaoProposta.getProposta().
                     getDemanda().getUsuario().getDepartamento());
 
-            usuarios.add(deicasaoProposta.getProposta().getDemanda().getUsuario());
+            usuarios.add(decisaoProposta.getProposta().getDemanda().getUsuario());
             usuarios.add(gerenteNegocio);
         }
+
+        System.out.println("USuarios: " + usuarios);
 
         notificacao.setUsuariosNotificacao(usuarios);
 
