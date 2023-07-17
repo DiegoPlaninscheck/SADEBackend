@@ -208,7 +208,11 @@ public class ATAController {
             System.out.println(e);
         }
 
-        ata.getPauta().getArquivosPauta().add(arquivoPauta);
+        if(arquivoPauta != null){
+            ata.getPauta().getArquivosPauta().add(arquivoPauta);
+        }
+
+        System.out.println("Decisões proposta: " +ata.getPropostasAta());
 
         ATA ataSalva = ataService.save(ata);
 
@@ -228,7 +232,7 @@ public class ATAController {
             Tarefa tarefaStatus;
             StatusDemanda statusEscolhidoComissao = decisaoProposta.getStatusDemandaComissao();
 
-            if (statusEscolhidoComissao == StatusDemanda.TODO) {
+            if (statusEscolhidoComissao.equals(StatusDemanda.TODO)) {
                 tarefaStatus = Tarefa.FINALIZAR;
             } else {
                 tarefaStatus = Tarefa.REPROVARDEMANDA;

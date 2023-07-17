@@ -39,7 +39,7 @@ public class ATA {
     @JoinColumn(name = "idPauta", nullable = false)
     private Pauta pauta;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
     @JoinColumn(name = "idAta", nullable = false)
     private List<DecisaoPropostaATA> propostasAta;
 
